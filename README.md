@@ -10,6 +10,39 @@ Click to skip ahead to other sections:
 * [Current Limitations](README.md#current-limitations)
 * [To Do Before Launch](README.md#to-do-before-launch)
 
+Features included in each branch:
+
+|Feature|Current Master Branch|Required for Launch|Wish-list|
+|---|---|---|---|
+|**General**| | | |
+|  Confirmed tract::CCA conversion table| |x|x|
+|**Data Options**| | | |
+|  Premade plots|x| | |
+|  Custom plot - enter manually|x| | |
+|  Custom plot - dropdown| |x|x|
+|  Calculate by count/proportion/mean|x|x|x|
+|  Calculate by individual/household|x|x|x|
+|  Specify total/percent/per 100k| |x|x|
+|**Map**| | | |
+|  Custom title| |x|x|
+|  Geography labels| |x|x|
+|  Show as percent| |x|x|
+|  Lab themes| | |x|
+|  Save graphic button| |x|x|
+|  Show code button| | |x|
+|**Bar Plot**| | | |
+|  Custom title| | |x|
+|  Direction (desc/ascending)|x|x|x|
+|  Number of geographies to include|x|x|x|
+|  Lab themes| | |x|
+|  Error bars| |x|x|
+|  Save graphic button| |x|x|
+|  Show code button| | |x|
+|**Table**| | | |
+|  Save table button| |x|x|
+|**Misc**| | | |
+|  Leaflet plots| | |x|
+
 *************
 
 ## Overview
