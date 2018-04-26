@@ -15,7 +15,7 @@ Features included in each branch:
 |Feature|Current Master Branch|Launch Version|Wish-list Version|
 |---|---|---|---|
 |**General**| | | |
-|  Confirmed tract::CCA conversion table| |x|x|
+|  Confirmed tract:CCA conversion table| |x|x|
 |**Data Options**| | | |
 |  Premade plots|x| | |
 |  Custom plot - enter manually|x| | |
