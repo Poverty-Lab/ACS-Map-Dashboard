@@ -24,9 +24,9 @@ Features included in each branch:
 |  Calculate by individual/household|x|x|x|
 |  Specify total/percent/per 100k| |x|x|
 |**Map**| | | |
-|  Custom title| |x|x|
-|  Geography labels| |x|x|
-|  Show as percent| |x|x|
+|  Custom title| | |x|
+|  Geography labels| | |x|
+|  Show as percent| | |x|
 |  Lab themes| | |x|
 |  Save graphic button| |x|x|
 |  Show code button| | |x|
