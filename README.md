@@ -12,7 +12,7 @@ Click to skip ahead to other sections:
 
 Features included in each branch:
 
-|Feature|Current Master Branch|Required for Launch|Wish-list|
+|Feature|Current Master Branch|Launch Version|Wish-list Version|
 |---|---|---|---|
 |**General**| | | |
 |  Confirmed tract::CCA conversion table| |x|x|
