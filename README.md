@@ -105,19 +105,20 @@ Click here to return to the [Outline](README.md#outline).
 *This was last updated on January 5, 2018*
 
 ### Required
-- [ ] Get this thing on gitlab: 1 hour, Isaac
-- [ ] Host online (?): 3-4 hours
+- [x] Get this thing on gitlab: 1 hour, Isaac
+- [ ] Host online: 1 hour
 - [x] Write a one-page readme on use: 1 hour, Isaac
-- [ ] Write a supplemental one- or two-pager explaining our aggregation method and link to it in the app: 1-2 hours, Isaac
+- [x] Write a supplemental one- or two-pager explaining our aggregation method and link to it in the app: 1-2 hours, Isaac
 - [ ] Address margin of error calculation: 5-10 hours, statistical and programming expertise
 - [ ] Add ability to transform statistics from a total to a percent/per-capita number: 5-10 hours, R and ACS expertise 
+- [ ] Fix save button (otherwise plots can be saved by right-clicking): 1 hour, R expertise
 
 ### Wish List
 - [ ] Improve plot customization options, functionality (titles, axis labels, showing statistic as a percent, etc.): 10 hours, R Shiny expertise
 - [ ] Add a colorbrewer pallet for each lab: 2-3 hours, R expertise 
-- [ ] Fix save button (otherwise plots can be saved by right-clicking): 1 hour, R expertise
 - [ ] Clean UI text, warnings: 2-3 hours, R Shiny expertise 
 - [ ] Improve and validate the Show Code functionality: 2-3 hours, R expertise 
+- [ ] Others - see table at top of readme
 
 Click here to return to the [Outline](README.md#outline).
 
