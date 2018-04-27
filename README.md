@@ -49,7 +49,7 @@ Features included in each branch:
 
 This app produces customizable visualizations of ACS statistics by CCA. The app can produce maps, bar plots, and tables of most ACS variables by CCA. To do this, it takes one of two types of inputs: pre-loaded and aggregated data from a file, or ACS data downloaded in the app via a census API.  
 
-![Purpose](https://urbangitlab.uchicago.edu/ahuvia/acs_map_dashboard/raw/2018_updates/Visuals/2018-01-05-acs_dashboard_purpose.png)
+![Purpose](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_purpose.png)
 
 Click here to return to the [Outline](README.md#outline).
 
@@ -57,11 +57,11 @@ Click here to return to the [Outline](README.md#outline).
 
 The user selects the data to be represented on the left-hand pane. The graphic can be customized in the right-hand pane. The graphic is presented in the middle pane.
 
-![Map Tab](https://urbangitlab.uchicago.edu/ahuvia/acs_map_dashboard/raw/2018_updates/Visuals/2018-01-05-acs_dashboard_ss1.png)
+![Map Tab](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_ss1.png)
 
-![Bar Plot Tab](https://urbangitlab.uchicago.edu/ahuvia/acs_map_dashboard/raw/2018_updates/Visuals/2018-01-05-acs_dashboard_ss2.png)
+![Bar Plot Tab](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_ss2.png)
 
-![Table Tab](https://urbangitlab.uchicago.edu/ahuvia/acs_map_dashboard/raw/2018_updates/Visuals/2018-01-05-acs_dashboard_ss3.png)
+![Table Tab](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_ss3.png)
 
 Click here to return to the [Outline](README.md#outline).
 
@@ -87,7 +87,7 @@ Ultimately, the following files are loaded by the app:
 
 
 ### Figure 1. Code Workflow
-![Workflow](https://urbangitlab.uchicago.edu/ahuvia/acs_map_dashboard/raw/2018_updates/Visuals/2018-01-05-acs_dashboard_workflow.png)
+![Workflow](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_workflow.png)
 
 Click here to return to the [Outline](README.md#outline).
 
