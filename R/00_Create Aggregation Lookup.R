@@ -13,16 +13,49 @@ rm(list = ls())
 
 
 ####  Load Data  ####
-setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/Data/Shapefiles/" )
+# setwd( dir = "~/RStudio_All/ACS-Map-Dashboard/Data/Shapefiles/" )
+# 
+# tracts <- readOGR( dsn = "Census Tracts (2010)/"
+#                    , layer = "tracts" )
+# 
+# blocks <- readOGR( dsn = "Census Blocks (2010)/"
+#                    , layer = "blocks" )
+# 
+# CCAs <-   readOGR( dsn = "CCAs/"
+#                    , layer = "CCAs" )
+# 
+# # export these files as individual RDS files
+# saveRDS( object = tracts
+#          , file = "Census Tracts (2010)/tracts.rds" )
+# 
+# saveRDS( object = blocks
+#          , file = "Census Blocks (2010)/blocks.rds" )
+# 
+# saveRDS( object = CCAs
+#          , file = "CCAs/CCAs.rds" )
 
-tracts <- readOGR( dsn = "Census Tracts (2010)/"
-                   , layer = "tracts" )
+# note: the code written above uses a local version
+#       of the shapefiles to create spatial polygond data frames.
+#       The use of sf::read_sf() should be used, but rgdal::readOGR()
+#       is used for backwards compability.
+#       For portability, these shapefiles are now hosted on GitHub as
+#       .rds files so that everyone can import them.
 
-blocks <- readOGR( dsn = "Census Blocks (2010)"
-                   , layer = "blocks")
+# import shapefiles from GitHub
+tracts <- 
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/Shapefiles/Census%20Tracts%20(2010)/tracts.rds" ) %>%
+  gzcon() %>%
+  readRDS()
 
-CCAs <-   readOGR( dsn = "CCAs"
-                   , layer = "CCAs")
+blocks <-
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/Shapefiles/Census%20Blocks%20(2010)/blocks.rds" ) %>%
+  gzcon() %>%
+  readRDS()
+
+CCAs <-
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/Shapefiles/CCAs/CCAs.rds" ) %>%
+  gzcon() %>%
+  readRDS()
 
 
 ####  Create Tract to CCA Lookup  ####
@@ -48,10 +81,8 @@ lookup <- blocks@data %>%
 ####  Compare with CMAP version  ####
 ## CMAP does something similar, and shared their lookup with us. However, theirs doesn't account for tracts that have some data outside of city boundaries 
 ## Load their lookup
-setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/Data/" )
-
 CMAP_lookup <- 
-  read.csv( file = "Blocks_to_CCA_TR.csv"
+  read.csv( file = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/Blocks_to_CCA_TR.csv"
             , header = TRUE
             , stringsAsFactors = FALSE )
 

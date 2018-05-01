@@ -18,16 +18,14 @@ lookup_vars <- function(x) {
 }
 
 # load necessary data
-setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/Data/" )
-
 variables <- 
-  read.csv( file = "Preselected Variables.csv"
+  read.csv( file = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/Preselected%20Variables.csv"
             , header = TRUE
             , stringsAsFactors = FALSE )
 
 ####  ACS Package Prep  ####
 # install API key - only once
-# acs::api.key.install(key = Sys.getenv( x = "CENSUS_KEY" ) )
+acs::api.key.install(key = Sys.getenv( x = "CENSUS_KEY" ) )
 
 # set geographies
 setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/Data/" )

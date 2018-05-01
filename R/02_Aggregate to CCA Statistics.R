@@ -6,17 +6,24 @@
 
 ####  Startup  ####
 rm(list = ls())
-library(acs)
+library( acs )
+library( RCurl )
+
+# create function to source scripts from GitHub
+source_github <- function( url ) {
+  # load package
+  require(RCurl)
+  
+  # read script lines from website and evaluate
+  script <- getURL(url, ssl.verifypeer = FALSE)
+  eval(parse(text = script), envir=.GlobalEnv)
+} 
 
 ## Source aggregation function
-setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/R/" )
-
-source( file = "00_Aggregation Function.R" )
+source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/00_Aggregation%20Function.R" )
 
 ## Load tract-level data
-setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/Data/" )
-
-dfTract <- read.csv( file = "Tract Statistics.csv"
+dfTract <- read.csv( file = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/Tract%20Statistics.csv"
                     , header = TRUE
                     , stringsAsFactors = FALSE )
 

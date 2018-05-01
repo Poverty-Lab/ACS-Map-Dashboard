@@ -6,25 +6,28 @@
 
 ####  Startup  ####
 rm(list = ls())
-library(ggplot2)
-library(rgdal)
+library( magrittr )
+library( ggplot2 )
+library( rgdal )
 
 ## Load tract-level data
-setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/Data/" )
-
-dfCCA <- read.csv( file = "CCA Statistics.csv"
+dfCCA <- read.csv( file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/CCA%20Statistics.csv"
                   , header = TRUE
                   , stringsAsFactors = FALSE )
 
 ## Load CCA map (unfortified)
-CCAs_Shape <- readOGR( dsn = "Shapefiles/CCAs/"
-                       , layer = "CCAs"
-                       , stringsAsFactors = FALSE )
+CCAs_Shape <- 
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/Shapefiles/CCAs/CCAs.rds" ) %>%
+  gzcon() %>%
+  readRDS()
 
 
 ####  Fortify  ####
 ## Fortify to get shapefile into a format that can be read by ggplot
-dfCCAF <- ggplot2::fortify(CCAs_Shape, region = "CCA")
+## note: broom::tidy() is now recommended
+##       however, both ggplot2::fortify() and its broom equivalent
+#        cause fatal errors when the `region` argument is specified
+dfCCAF <- ggplot2::fortify( model = CCAs_Shape )
 names(dfCCAF)[names(dfCCAF) == "id"] <- "CCA"
 
 ## Merge to add statistics 

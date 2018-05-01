@@ -7,39 +7,48 @@
 
 ####  Startup  ####
 rm(list = ls())
-library(dplyr)
-library(shiny)
-library(shinyjs)
-library(ggplot2)
-library(scales)
-library(shinyBS)
-library(shinythemes)
-library(dygraphs)
-library(plotly)
-library(DT)
-library(shinydashboard)
-library(grDevices)
-library(acs)
+library( dplyr )
+library( shiny )
+library( shinyjs )
+library( ggplot2 )
+library( scales )
+library( shinyBS )
+library( shinythemes )
+library( dygraphs )
+library( plotly )
+library( DT )
+library( shinydashboard )
+library( grDevices )
+library( acs )
+library( RCurl )
 
 ## Source aggregation function and plot themes
-setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/R/" )
+# create function to source scripts from GitHub
+source_github <- function( url ) {
+  # load package
+  require(RCurl)
+  
+  # read script lines from website and evaluate
+  script <- getURL(url, ssl.verifypeer = FALSE)
+  eval(parse(text = script), envir=.GlobalEnv)
+}
 
-source( file = "00_Aggregation Function.R" )
-source( file = "00_Themes.R")
+source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/00_Aggregation%20Function.R" )
+source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/00_Themes.R")
 
 ####  Load data  ####
 ## Load prepared datasets (do data prep outside of app)
-# load necessary data
-setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/Data/" )
-
 variables <- 
-  read.csv( file = "Preselected Variables.csv"
+  read.csv( file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Preselected%20Variables.csv"
             , header = TRUE
             , stringsAsFactors = FALSE )
 CCA <- 
-  read.csv( file = "CCA Statistics.csv"
+  read.csv( file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/CCA%20Statistics.csv"
             , header = TRUE
             , stringsAsFactors = FALSE )
+
+download.file( url = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/CCA%20Statistics%20Fortified.RData"
+               , destfile = "CCA Statistics Fortified.RData" )
 
 load( file = "CCA Statistics Fortified.RData" )
 
@@ -54,7 +63,10 @@ statOptions <- c("Total", "Percent", "Per 100k")
 
 
 ####  Prime ACS Download Capabilities  ####
-geog <- readRDS( file = "Cook_County_GeoSet.rds" )
+geog <- 
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/Cook_County_GeoSet.rds" ) %>%
+  gzcon() %>%
+  readRDS()
 
 
 
@@ -305,3 +317,5 @@ dfCCAF %>%
 
 ####  App  ####
 shinyApp(ui = ui, server = server)
+
+# end of script #

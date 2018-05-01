@@ -35,9 +35,8 @@ tractToCCA <- function(x, tractID
   }
   
   if(!"lookup" %in% ls()) {
-    setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/Data/" )
     
-    lookup <- read.csv( file = "Tract to CCA Aggregation Lookup.csv"
+    lookup <- read.csv( file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Tract%20Statistics.csv"
                         , header = TRUE
                         , stringsAsFactors = FALSE )
     
