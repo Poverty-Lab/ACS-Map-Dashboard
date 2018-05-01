@@ -28,15 +28,22 @@ CCAs_Shape <-
 ##       however, both ggplot2::fortify() and its broom equivalent
 #        cause fatal errors when the `region` argument is specified
 dfCCAF <- ggplot2::fortify( model = CCAs_Shape )
-names(dfCCAF)[names(dfCCAF) == "id"] <- "CCA"
+
+# the rownames are the polygon IDs
+# add them as a column within CCAs_Shape
+CCAs_Shape@data$id <- row.names( CCAs_Shape@data )
+
+# merge to add id to dfCCA
+dfCCA <- merge( x = dfCCA
+                , y = CCAs_Shape@data[, c("CCA", "id")]
+                , by = "CCA" )
 
 ## Merge to add statistics 
-dfCCAF <- merge(dfCCAF, dfCCA, by = "CCA", sort = F)
+dfCCAF <- merge(dfCCAF, dfCCA, by = "id", sort = F)
 
 
 ####  Save  ####
-save( dfCCAF
-      , file = "CCA Statistics Fortified.RData"
-      , row.names = FALSE )
+saveRDS( object = dfCCAF
+      , file = "CCA Statistics Fortified.rds" )
 
 # end of script #

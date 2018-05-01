@@ -47,10 +47,10 @@ CCA <-
             , header = TRUE
             , stringsAsFactors = FALSE )
 
-download.file( url = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/CCA%20Statistics%20Fortified.RData"
-               , destfile = "CCA Statistics Fortified.RData" )
-
-load( file = "CCA Statistics Fortified.RData" )
+dfCCAF <-
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/CCA%20Statistics%20Fortified.rds" ) %>%
+  gzcon() %>%
+  readRDS()
 
 # Set options for preset dataframes
 contentOptions <- paste0( variables$Population
