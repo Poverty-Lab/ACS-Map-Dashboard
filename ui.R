@@ -33,7 +33,7 @@ ui <- fluidPage(useShinyjs(),
                          
                          wellPanel("Data",
                                    
-                                   selectizeInput("table", "ACS Table", choices = tableOptions, selected = tableOptions1, multiple = FALSE, options = list(searchConjunction = "and")),
+                                   selectizeInput("table", "ACS Table", choices = tableOptions, multiple = FALSE, options = list(searchConjunction = "and")),
                                    textOutput("universe"),
                                    
                                    shiny::uiOutput( outputId = "variableOptions" ),

@@ -27,22 +27,18 @@ server <- shinyServer(function(input, output, session) {
     
     dataF <- dfCCAF #in future, make dependent on geog selection
     
-    if(nchar(input$custom) == 10) {
-      acs <- acs::acs.fetch(geography = geog, endyear = 2015, span = 5, variable = input$custom)
-      agg <- tractToCCA(x = estimate(acs), tractID = acs@geography$tract, type = input$customtype, level = input$custompop, return_df = T)
-      dataF <- merge(dataF, dplyr::select(agg, CCA, x))
-      var <- "x"
-    } else {
-      var <- variables$App.Name[paste0(variables$Population, " - ", variables$Statistic) == input$content] #in future, make dependent on stat selection as well
-    }
+    var <- variableList$variableID[variableList$stub == input$variable]
+    acs <- acs::acs.fetch(geography = geog, endyear = 2015, span = 5, variable = var)
+    agg <- tractToCCA(x = estimate(acs), tractID = acs@geography$tract, type = input$customtype, level = input$custompop, return_df = T)
+    dataF <- merge(dataF, dplyr::select(agg, CCA, x))
     
     dataF %>%
       ggplot() +
-      geom_polygon(data = dataF, aes(x = long, y = lat, group = group, fill = eval(parse(text = var))), color = NA, size = .25) +
+      geom_polygon(data = dataF, aes(x = long, y = lat, group = group, fill = x), color = NA, size = .25) +
       coord_map() +
       ggtitle(input$titleMap) + 
-      scale_fill_gradient(low = "#ffcccc", high = "#ff0000",
-                          labels = comma) +
+      # scale_fill_gradient(low = "#ffcccc", high = "#ff0000",
+      #                     labels = comma) +
       theme(legend.title = element_blank()) +
       themeMap
     
@@ -161,18 +157,17 @@ server <- shinyServer(function(input, output, session) {
                       "Homicides")
   geogOptions <- c("CCA", "Census Tract", "ZIP", "Heatmap") #make reactive such that only those available for each content option show (or others are greyed out)
   
-  updateSelectizeInput(session, "table", choices = tableOptions, server = TRUE)
+  updateSelectizeInput(session, "table", choices = tableOptions, server = TRUE, selected = "UNWEIGHTED SAMPLE COUNT OF THE POPULATION")
 
   output$universe <- renderPrint(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])
   
   
-  output$variableOptions <- shiny::renderUI({
+  output$variableOptions <- renderUI({
     
     selectedTable <- tableList$tableID[tableList$stub == input$table]
     variables <- variableList$stub[variableList$tableID == selectedTable]
-    variable1 <- variables[1]
 
-    selectizeInput("variable", "Variable from Table", choices = variables, selected = variable1, multiple = FALSE, options = list(searchConjunction = "and"))
+    selectizeInput("variable", "Variable from Table", choices = variables, multiple = FALSE, options = list(searchConjunction = "and"))
     
   })
   

@@ -31,7 +31,7 @@ source_github <- function( url ) {
   eval(parse(text = script), envir=.GlobalEnv)
 }
 
-source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/00_Aggregation%20Function.R" )
+source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/dev_ia/R/00_Aggregation%20Function.R" )
 source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/00_Themes.R")
 
 ####  Load data  ####
@@ -56,7 +56,6 @@ variableList <- read.csv(file = "https://raw.githubusercontent.com/Poverty-Lab/A
 
 # Set options for preset dataframes
 tableOptions <- tableList$stub
-tableOptions1 <- tableOptions[1]
 
 
 contentOptions <- paste0( variables$Population
