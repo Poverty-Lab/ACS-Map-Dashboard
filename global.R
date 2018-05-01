@@ -50,7 +50,15 @@ dfCCAF <-
   gzcon() %>%
   readRDS()
 
+tableList <- read.csv(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Variable%20selection_tables.csv", stringsAsFactors = F) #table selection options
+universeList <- read.csv(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Variable%20selection_universes.csv", stringsAsFactors = F) #universe label for that table
+variableList <- read.csv(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Variable%20selection_variables.csv", stringsAsFactors = F) #variable selection options
+
 # Set options for preset dataframes
+tableOptions <- tableList$stub
+tableOptions1 <- tableOptions[1]
+
+
 contentOptions <- paste0( variables$Population
                           , " - "
                           , variables$Statistic ) # add headers from variables$category 

@@ -21,7 +21,7 @@ library( acs )
 library( RCurl )
 
 ####  Server  ####
-server <- shinyServer(function(input, output) {
+server <- shinyServer(function(input, output, session) {
   
   output$map <- renderPlot({
     
@@ -161,6 +161,27 @@ server <- shinyServer(function(input, output) {
                       "Homicides")
   geogOptions <- c("CCA", "Census Tract", "ZIP", "Heatmap") #make reactive such that only those available for each content option show (or others are greyed out)
   
+  updateSelectizeInput(session, "table", choices = tableOptions, server = TRUE)
+
+  output$universe <- renderPrint(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])
+  
+  
+  output$variableOptions <- shiny::renderUI({
+    
+    selectedTable <- tableList$tableID[tableList$stub == input$table]
+    variables <- variableList$stub[variableList$tableID == selectedTable]
+    variable1 <- variables[1]
+
+    selectizeInput("variable", "Variable from Table", choices = variables, selected = variable1, multiple = FALSE, options = list(searchConjunction = "and"))
+    
+  })
+  
+  
+  # output$variableOptions <- renderUI({
+  #   variableList$stub[variableList$tableID == tableList$tableID[tableList$stub == input$table]]
+  # })
+  # updateSelectizeInput(session, "variable", choices = variableOptions, server = TRUE)
+  # 
   })
 
 

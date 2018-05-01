@@ -33,8 +33,12 @@ ui <- fluidPage(useShinyjs(),
                          
                          wellPanel("Data",
                                    
-                                   selectInput("content", "Premade Plots", choices = contentOptions),
-                                   textInput("custom", "Custom Plot - ACS variable given in format XXXXXX_XXX"),
+                                   selectizeInput("table", "ACS Table", choices = tableOptions, selected = tableOptions1, multiple = FALSE, options = list(searchConjunction = "and")),
+                                   textOutput("universe"),
+                                   
+                                   shiny::uiOutput( outputId = "variableOptions" ),
+                                   
+                                   
                                    radioButtons("customtype", "This custom statistic is a:", choices = c("Count", "Proportion", "Mean"), inline = T),
                                    radioButtons("custompop", "This custom statistic is of which level:", choices = c("Individual", "Household"), inline = T),
                                    radioButtons("stat", "Statistic", choices = statOptions)
