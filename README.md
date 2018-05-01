@@ -1,5 +1,27 @@
 # ACS Dashboard
 
+## Run App
+
+Run the app yourself using the following lines of code:
+
+```R
+# install necessary packages
+install.packages( pkgs = c("dplyr", "shiny", "shinyjs"
+                           , "ggplot2", "scales", "shinyBS"
+                           , "shinythemes", "dygraphs", "plotly"
+                           , "DT", "shinydashboard", "grDevices"
+                           , "acs", "RCurl" ) )
+                           
+# load the shiny packages
+library( shiny )
+
+# Run shiny app from your R/RStudio Console
+shiny::runUrl( url = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/archive/master.zip" )
+
+# end of script #
+
+```
+
 ## Outline
 
 Click to skip ahead to other sections: 
