@@ -66,4 +66,7 @@ geog <-
   gzcon() %>%
   readRDS()
 
+# allows the users to access API of the Census
+acs::api.key.install( key = Sys.getenv( x = "CENSUS_KEY" ) )
+
 # end of script #
