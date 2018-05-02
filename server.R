@@ -159,7 +159,7 @@ server <- shinyServer(function(input, output, session) {
   
   updateSelectizeInput(session, "table", choices = tableOptions, server = TRUE, selected = "UNWEIGHTED SAMPLE COUNT OF THE POPULATION")
 
-  output$universe <- renderPrint(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])
+  output$universe <- renderText(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])
   
   
   output$variableOptions <- renderUI({
