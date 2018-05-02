@@ -41,8 +41,12 @@ ui <- fluidPage(useShinyjs(),
                                    
                                    radioButtons("customtype", "This custom statistic is a:", choices = c("Count", "Proportion", "Mean"), inline = T),
                                    radioButtons("custompop", "This custom statistic is of which level:", choices = c("Individual", "Household"), inline = T),
-                                   radioButtons("stat", "Statistic", choices = statOptions)
+                                   radioButtons("stat", "Statistic to show:", choices = statOptions)
+                                   
+                                   ####################
+                                   ## IN DEVELOPMENT ##
                                    #radioButtons("geog", "Geography", choices = geogOptions)
+                                   ####################
                                    
                          )
                          
@@ -57,24 +61,20 @@ ui <- fluidPage(useShinyjs(),
                                               column(width = 6,
                                                      
                                                      plotOutput("map"),
-                                                     actionButton("save", "Save Graphic"),
-                                                     
-                                                     actionButton("showCodeMap", "Show Code"),
-                                                     hidden(
-                                                       div(id='mapCodeDiv',
-                                                           verbatimTextOutput("mapCode")
-                                                       )
-                                                     )
+                                                     actionButton("save", "Save Graphic")
                                                      
                                               ),
                                               
                                               column(width = 3, 
                                                      
-                                                     wellPanel("Map Options",
+                                                     wellPanel("Map Options"#,
                                                                
-                                                               textInput(label = "Title", inputId = "titleMap"),
-                                                               checkboxGroupInput(label = "Map Features", inputId = "mapfeatures", choices = c("Geography Labels", "Show as Percent"), inline = T, selected = NULL),
-                                                               radioButtons(label = "Lab Theme", inputId = "labMap", choices = c("Poverty", "Crime"), selected = "Poverty")
+                                                               ####################
+                                                               ## IN DEVELOPMENT ##
+                                                               # textInput(label = "Title", inputId = "titleMap"),
+                                                               # checkboxGroupInput(label = "Map Features", inputId = "mapfeatures", choices = c("Geography Labels", "Show as Percent"), inline = T, selected = NULL),
+                                                               # radioButtons(label = "Lab Theme", inputId = "labMap", choices = c("Poverty", "Crime"), selected = "Poverty")
+                                                               ####################
                                                                
                                                      )
                                               )
@@ -93,10 +93,18 @@ ui <- fluidPage(useShinyjs(),
                                                      
                                                      wellPanel("Bar Plot Options",
                                                                
-                                                               textInput(label = "Title", inputId = "titleBar"),
+                                                               ####################
+                                                               ## IN DEVELOPMENT ##
+                                                               # textInput(label = "Title", inputId = "titleBar"),
+                                                               ####################
+                                                               
                                                                radioButtons(label = "Direction", inputId = "direction", choices = c("Descending", "Ascending"), inline = T, selected = "Descending"),
-                                                               sliderInput(label = "Number of Geographies", inputId = "nGeog", min = 0, max = 20, value = 15, round = T),
-                                                               radioButtons(label = "Lab Theme", inputId = "labBar", choices = c("Poverty", "Crime"), selected = "Poverty")
+                                                               sliderInput(label = "Number of Geographies", inputId = "nGeog", min = 0, max = 20, value = 15, round = T)#,
+                                                               
+                                                               ####################
+                                                               ## IN DEVELOPMENT ##
+                                                               # radioButtons(label = "Lab Theme", inputId = "labBar", choices = c("Poverty", "Crime"), selected = "Poverty")
+                                                               ####################
                                                                
                                                      )
                                                      

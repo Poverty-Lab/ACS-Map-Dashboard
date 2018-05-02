@@ -37,39 +37,12 @@ server <- shinyServer(function(input, output, session) {
       geom_polygon(data = dataF, aes(x = long, y = lat, group = group, fill = x), color = NA, size = .25) +
       coord_map() +
       ggtitle(input$titleMap) + 
-      # scale_fill_gradient(low = "#ffcccc", high = "#ff0000",
+      # scale_fill_gradient(low = "#ffcccc", high = "#ff0000",  ## IN DEVELOPMENT - make colors dependent on lab branding ##
       #                     labels = comma) +
       theme(legend.title = element_blank()) +
       themeMap
     
   })
-  
-  
-  observeEvent(input$showCodeMap, {
-    toggle('mapCodeDiv')
-    output$mapCode <- renderText({
-      
-      paste0(
-        'library(ggplot2)
-        setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/R/" )
-        source( file "00_Themes.R" )
-        setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/Data)
-        load( file =', gsub( pattern = " ", replacement = "", x = input$geog ), '_F.RData" )
-        
-        dfCCAF %>%
-        ggplot() +
-        geom_polygon(data = ',paste0(gsub(" ", "", input$geog), "_F"),', aes(x = long, y = lat, group = group, fill = ',variables$App.Name[paste0(variables$Population, " - ", variables$Statistic) == input$content],', size = .25)) +
-        coord_map() +
-        ggtitle(', paste0( "'", input$titleMap, "'" ), ' ) + 
-        scale_fill_gradient(low = "#ffcccc", high = "#ff0000",
-        labels = comma) +
-        theme(legend.title = element_blank()) +
-        themeMap'
-        )
-      
-    })
-  })
-  
   
   output$bar <- renderPlot({
     
@@ -136,31 +109,22 @@ server <- shinyServer(function(input, output, session) {
     
   })
   
+  ####################
+  ## IN DEVELOPMENT ##
   output$save <- downloadHandler(
     filename = "plot.png",
     content = function(file) {
       ggsave(file, plot = map, device = "png")
     }
   )
+
+  # geogOptions <- c("CCA", "Census Tract", "ZIP", "Heatmap") #make reactive such that only those available for each content option show (or others are greyed out)
   
-  # output$save <- downloadHandler(
-  #   filename = "plot.png",
-  #   content = function(file) {
-  #     device <- function(..., width, height) {
-  #       grDevices::png(..., width = width, height = height, res = 300, units = "in")
-  #     }
-  #     ggsave(file, plot = function () {map}, device = device)
-  #   }
-  # )
-  
-  contentOptions <- c("Children Under 5 in Poverty",
-                      "Homicides")
-  geogOptions <- c("CCA", "Census Tract", "ZIP", "Heatmap") #make reactive such that only those available for each content option show (or others are greyed out)
+  ####################
   
   updateSelectizeInput(session, "table", choices = tableOptions, server = TRUE, selected = "UNWEIGHTED SAMPLE COUNT OF THE POPULATION")
 
   output$universe <- renderText(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])
-  
   
   output$variableOptions <- renderUI({
     
@@ -171,13 +135,7 @@ server <- shinyServer(function(input, output, session) {
     
   })
   
-  
-  # output$variableOptions <- renderUI({
-  #   variableList$stub[variableList$tableID == tableList$tableID[tableList$stub == input$table]]
-  # })
-  # updateSelectizeInput(session, "variable", choices = variableOptions, server = TRUE)
-  # 
-  })
+})
 
 
 # end of script #
