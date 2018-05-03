@@ -25,5 +25,5 @@ lookup <- data.frame(id = as.character(seq(0, 76)),
 CCAsF <- merge(CCAsF, lookup, by = "id")
 
 ## Save
-write.csv(CCAs, "Data/CCAs.csv", row.names = F)
-write.csv(CCAsF, "Data/CCAsF.csv", row.names = F)
+saveRDS(CCAs, "Data/CCAs.rds")
+saveRDS(CCAsF, "Data/CCAsF.rds")

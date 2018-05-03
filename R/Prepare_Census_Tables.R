@@ -36,6 +36,6 @@ universeList <- raw[raw$rowType == "Table Universe", c(2,4)]
 
 
 ####  Save  ####
-write.csv(tableList, file = "Data/Census_tables.csv", row.names = F)
-write.csv(variableList, file = "Data/Census_variables.csv", row.names = F)
-write.csv(universeList, file = "Data/Census_universes.csv", row.names = F)
+saveRDS(tableList, file = "Data/Census_tables.rds")
+saveRDS(variableList, file = "Data/Census_variables.rds")
+saveRDS(universeList, file = "Data/Census_universes.rds")
