@@ -52,7 +52,11 @@ universeList <- read.csv(file = "https://raw.githubusercontent.com/Poverty-Lab/A
 variableList <- read.csv(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Census_variables.csv", stringsAsFactors = F) #variable selection options
 
 #tract:CCA lookup
-load(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/dev_ia/Data/Blocks_to_CCA_TR.rds") ##########FIX ######################
+# load(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/dev_ia/Data/Blocks_to_CCA_TR.rds") ##########FIX ######################
+lookup <- 
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/dev_ia/Data/Blocks_to_CCA_TR.rds" ) %>%
+  gzcon() %>%
+  readRDS()
 
 # Set options for dataframes
 tableOptions <- tableList$stub
@@ -62,7 +66,7 @@ statOptions <- c("Total", "Percent", "Per 100k")
 
 ####  Prime ACS Download Capabilities  ####
 geog <- 
-  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/Cook_County_GeoSet.rds" ) %>%
+  url( description = "https://raw.github.com/Poverty-Lab/ACS-Map-Dashboard/dev_ia/Data/Cook_County_GeoSet.rds" ) %>%
   gzcon() %>%
   readRDS()
 

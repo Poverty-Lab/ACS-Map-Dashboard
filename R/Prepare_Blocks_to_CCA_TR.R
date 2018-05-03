@@ -17,4 +17,4 @@ lookup$CCA[lookup$CCA == "O'HARE"] <- "OHARE"
 names(lookup)[1:2] <- c("blockID", "tractID")
 
 ## Save
-save(lookup, file = "Data/Blocks_to_CCA_TR.rds")
+saveRDS(lookup, file = "Data/Blocks_to_CCA_TR.rds")
