@@ -8,7 +8,7 @@
 library(dplyr)
 
 ####  Aggregate Function  ####
-tractToCCA <- function(x, tractID
+tractToCCA <- function(x, tractID, lookup = lookup
                        , type = c("Count", "Proportion", "Mean")
                        , level = c("Individual", "Household")
                        , transformation = NA, return_df = FALSE ) {
@@ -32,15 +32,6 @@ tractToCCA <- function(x, tractID
   }
   if(!level %in% c("Individual", "Household")) {
     stop("level must be one of Individual, Household")
-  }
-  
-  if(!"lookup" %in% ls()) {
-    
-    lookup <- read.csv( file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Blocks_to_CCA_TR.csv"
-                        , header = TRUE
-                        , stringsAsFactors = FALSE )
-    
-    lookup$tractID <- as.character(lookup$TRACT)
   }
   if(!is.data.frame(lookup)) {
     stop("It looks like you already have something in your environment named 'lookup,' that is not the lookup dataframe required by this funciton. Please rename and delete it.")
