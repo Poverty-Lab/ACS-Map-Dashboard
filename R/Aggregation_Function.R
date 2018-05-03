@@ -40,7 +40,7 @@ tractToCCA <- function(x, tractID
                         , header = TRUE
                         , stringsAsFactors = FALSE )
     
-    lookup$tractID <- as.character(lookup$tractID)
+    lookup$tractID <- as.character(lookup$TRACT)
   }
   if(!is.data.frame(lookup)) {
     stop("It looks like you already have something in your environment named 'lookup,' that is not the lookup dataframe required by this funciton. Please rename and delete it.")
@@ -65,11 +65,11 @@ tractToCCA <- function(x, tractID
   df <- merge(lookup, inputs, by = "tractID")
   
   if(level == "Individual") {
-    df$pop <- df$pop
-    df$popProp <- df$pctPop
+    df$pop <- df$pop #FIX
+    df$popProp <- df$TR_POP_RAT
   } else if(level == "Household") {
-    df$pop <- df$HH
-    df$popProp <- df$pctHH
+    df$pop <- df$HH #FIX
+    df$popProp <- df$TR_HH_RAT
   }
   
   

@@ -36,16 +36,16 @@ source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dash
 
 ####  Load data  ####
 ## Load prepared datasets (data prep is done outside of app)
-CCA <- 
+CCAs <- 
   read.csv( file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/CCAs.csv"
             , header = TRUE
             , stringsAsFactors = FALSE )
 
 #for map (this is a fortified dataset compatible with ggplot)
-dfCCAF <-
-  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/raw/master/Data/CCAsF.csv" ) %>%  
-  gzcon() %>%
-  readRDS()
+CCAsF <-
+  read.csv( file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/CCAsF.csv"
+            , header = TRUE
+            , stringsAsFactors = FALSE )
 
 tableList <- read.csv(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Census_tables.csv", stringsAsFactors = F) #table selection options
 universeList <- read.csv(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Census_universes.csv", stringsAsFactors = F) #universe label for that table
