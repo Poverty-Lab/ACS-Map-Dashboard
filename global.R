@@ -33,7 +33,7 @@ source_github <- function( url ) {
 }
 
 source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Aggregation_Function.R" )
-source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Themes.R")
+source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Themes.R" )
 
 ####  Load data  ####
 ## Load CCA lists to append data onto
