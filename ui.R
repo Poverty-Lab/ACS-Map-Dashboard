@@ -19,6 +19,7 @@ library( shinydashboard )
 library( grDevices )
 library( acs )
 library( RCurl )
+library( lettercase )
 
 ####  UI  ####
 ui <- fluidPage(useShinyjs(),

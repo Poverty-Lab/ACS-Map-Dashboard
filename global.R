@@ -19,6 +19,7 @@ library( shinydashboard )
 library( grDevices )
 library( acs )
 library( RCurl )
+library( lettercase )
 
 ## Source aggregation function and plot themes
 # create function to source scripts from GitHub

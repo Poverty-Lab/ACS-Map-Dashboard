@@ -19,6 +19,7 @@ library( shinydashboard )
 library( grDevices )
 library( acs )
 library( RCurl )
+library( lettercase )
 
 #FOR TESTING
 #input <- c(); input$variable = variableList$stub[1]; input$customtype = "Count"; input$custompop = "Individual"
@@ -75,6 +76,8 @@ server <- shinyServer(function(input, output, session) {
         dplyr::arrange(desc(x)) %>%
         head(input$nGeog)
       
+      data$CCA <- lettercase::str_title_case(tolower(as.character(data$CCA)))
+      
       bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, desc(eval(data$x))), y = data$x), stat = "identity") + #, fill = "#8a0021") +
         
@@ -94,6 +97,8 @@ server <- shinyServer(function(input, output, session) {
       data <- data %>%
         dplyr::arrange(x) %>%
         head(input$nGeog)
+      
+      data$CCA <- lettercase::str_title_case(tolower(as.character(data$CCA)))
       
       bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, eval(data$x)), y = data$x), stat = "identity") + #, fill = "#8a0021") +
@@ -124,6 +129,8 @@ server <- shinyServer(function(input, output, session) {
     agg <- tractToCCA(x = estimate(acs), tractID = acs@geography$tract, type = input$customtype, level = input$custompop, return_df = T)
     
     names(agg)[2] <- input$variable
+    
+    agg$CCA <- lettercase::str_title_case(tolower(as.character(agg$CCA)))
     
     agg
     
