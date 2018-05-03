@@ -34,23 +34,6 @@ tractToCCA <- function(x, tractID
     stop("level must be one of Individual, Household")
   }
   
-  if(!"lookup" %in% ls()) {
-    
-    lookup <- read.csv( file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Blocks_to_CCA_TR.csv"
-                        , header = TRUE
-                        , stringsAsFactors = FALSE )
-    
-    lookup$tractID <- as.character(lookup$tractID)
-  }
-  if(!is.data.frame(lookup)) {
-    stop("It looks like you already have something in your environment named 'lookup,' that is not the lookup dataframe required by this funciton. Please rename and delete it.")
-  }
-  if(is.data.frame(lookup)) {
-    if(length(lookup) != 7 & nrow(lookup != 879)) {
-      stop("It looks like you already have something in your environment named 'lookup,' that is not the lookup dataframe required by this funciton. Please rename and delete it.")
-    }
-  }
-  
   
   ## Reformat tract ID as necessary
   tractID <- as.character(tractID)
@@ -65,11 +48,11 @@ tractToCCA <- function(x, tractID
   df <- merge(lookup, inputs, by = "tractID")
   
   if(level == "Individual") {
-    df$pop <- df$pop
-    df$popProp <- df$pctPop
+    df$pop <- df$pop #FIX
+    df$popProp <- df$TR_POP_RAT
   } else if(level == "Household") {
-    df$pop <- df$HH
-    df$popProp <- df$pctHH
+    df$pop <- df$HH #FIX
+    df$popProp <- df$TR_HH_RAT
   }
   
   

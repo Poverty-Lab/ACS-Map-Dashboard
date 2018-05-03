@@ -20,12 +20,15 @@ library( grDevices )
 library( acs )
 library( RCurl )
 
+#FOR TESTING
+#input <- c(); input$variable = variableList$stub[1]; input$customtype = "Count"; input$custompop = "Individual"
+
 ####  Server  ####
 server <- shinyServer(function(input, output, session) {
   
   output$map <- renderPlot({
     
-    dataF <- dfCCAF #in future, make dependent on geog selection
+    dataF <- CCAsF #in future, make dependent on geog selection
     
     #download data
     var <- variableList$variableID[variableList$stub == input$variable]
@@ -49,7 +52,7 @@ server <- shinyServer(function(input, output, session) {
   
   output$bar <- renderPlot({
     
-    data <- CCA #in future, make dependent on geog selection
+    data <- CCAs #in future, make dependent on geog selection
     
     #download data
     var <- variableList$variableID[variableList$stub == input$variable]
@@ -111,7 +114,7 @@ server <- shinyServer(function(input, output, session) {
   
   output$table <- renderTable({
     
-    data <- CCA #in future, make dependent on geog selection
+    data <- CCAs #in future, make dependent on geog selection
     
     #download data
     var <- variableList$variableID[variableList$stub == input$variable]
