@@ -27,9 +27,12 @@ server <- shinyServer(function(input, output, session) {
     
     dataF <- dfCCAF #in future, make dependent on geog selection
     
+    #download data
     var <- variableList$variableID[variableList$stub == input$variable]
     acs <- acs::acs.fetch(geography = geog, endyear = 2015, span = 5, variable = var)
     agg <- tractToCCA(x = estimate(acs), tractID = acs@geography$tract, type = input$customtype, level = input$custompop, return_df = T)
+    
+    #merge to map-ready dataframe
     dataF <- merge(dataF, dplyr::select(agg, CCA, x))
     
     dataF %>%
@@ -47,35 +50,57 @@ server <- shinyServer(function(input, output, session) {
   output$bar <- renderPlot({
     
     data <- CCA #in future, make dependent on geog selection
-    var <- variables$App.Name[paste0(variables$Population, " - ", variables$Statistic) == input$content] #in future, make dependent on stat selection as well
-    varmin <- paste0(var, ".5..")
-    varmax <- paste0(var, ".95..")
     
+    #download data
+    var <- variableList$variableID[variableList$stub == input$variable]
+    acs <- acs::acs.fetch(geography = geog, endyear = 2015, span = 5, variable = var)
+    agg <- tractToCCA(x = estimate(acs), tractID = acs@geography$tract, type = input$customtype, level = input$custompop, return_df = T)
+    
+    #merge to plot-ready dataframe
+    data <- merge(data, dplyr::select(agg, CCA, x))
+    
+    ####################
+    ## IN DEVELOPMENT ##
+    ####################
+    ## Error bars
+    
+    ####################
+
     if(input$direction == "Descending") {
       
       data <- data %>%
-        dplyr::arrange(desc(data[[var]])) %>%
+        dplyr::arrange(desc(x)) %>%
         head(input$nGeog)
       bar <- ggplot() +
-        geom_bar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), y = data[[var]]), stat = "identity", fill = "#8a0021") +
-        geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
+        geom_bar(aes(x = reorder(data$CCA, desc(eval(data$x))), y = data$x), stat = "identity") + #, fill = "#8a0021") +
+        
+        ####################
+        ## IN DEVELOPMENT ##
+        # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
+        # ggtitle(input$titleBar) +
+        ####################
+        
         scale_y_continuous(labels = comma) +
-        ggtitle(input$titleBar) +
-        xlab("Community Area") + ylab(input$content) +
+        xlab("Community Area") + ylab(input$variable) +
         themeMOE
       
       
     } else if(input$direction == "Ascending") {
       
       data <- data %>%
-        dplyr::arrange(data[[var]]) %>%
+        dplyr::arrange(x) %>%
         head(input$nGeog)
       bar <- ggplot() +
-        geom_bar(aes(x = reorder(data$CCA, eval(data[[var]])), y = data[[var]]), stat = "identity", fill = "#8a0021") +
-        geom_errorbar(aes(x = reorder(data$CCA, eval(data[[var]])), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
+        geom_bar(aes(x = reorder(data$CCA, eval(data$x)), y = data$x), stat = "identity") + #, fill = "#8a0021") +
+        
+        ####################
+        ## IN DEVELOPMENT ##
+        # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
+        # ggtitle(input$titleBar) +
+        ####################
+        
         scale_y_continuous(labels = comma) +
-        ggtitle(input$titleBar) +
-        xlab("Community Area") + ylab(input$content) +
+        xlab("Community Area") + ylab(input$variable) +
         themeMOE
       
     }
@@ -88,24 +113,14 @@ server <- shinyServer(function(input, output, session) {
     
     data <- CCA #in future, make dependent on geog selection
     
-    if(nchar(input$custom) == 10) {
-      acs <- acs::acs.fetch(geography = geog, endyear = 2015, span = 5, variable = input$custom)
-      data$x <- tractToCCA(x = estimate(acs), tractID = acs@geography$tract, type = input$customtype, level = input$custompop, return_df = F)
-      var <- "x"
-      varname <- acs@acs.colnames
-    } else {
-      var <- variables$App.Name[paste0(variables$Population, " - ", variables$Statistic) == input$content] #in future, make dependent on stat selection as well
-      varname <- input$content
-    }
+    #download data
+    var <- variableList$variableID[variableList$stub == input$variable]
+    acs <- acs::acs.fetch(geography = geog, endyear = 2015, span = 5, variable = var)
+    agg <- tractToCCA(x = estimate(acs), tractID = acs@geography$tract, type = input$customtype, level = input$custompop, return_df = T)
     
-    vars = c("CCA", var)
+    names(agg)[2] <- input$variable
     
-    table <- data %>%
-      dplyr::select_(.dots = vars)
-    
-    names(table) <- c("CCA", varname)
-    
-    table
+    agg
     
   })
   
