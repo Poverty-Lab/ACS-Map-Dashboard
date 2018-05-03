@@ -23,6 +23,7 @@ library( lettercase )
 
 #FOR TESTING
 #input <- c(); input$variable = variableList$stub[1]; input$customtype = "Count"; input$custompop = "Individual"
+#x = estimate(acs); tractID = acs@geography$tract; type = input$customtype; level = input$custompop; return_df = T
 
 ####  Server  ####
 server <- shinyServer(function(input, output, session) {
