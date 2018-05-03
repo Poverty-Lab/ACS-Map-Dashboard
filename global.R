@@ -31,30 +31,39 @@ source_github <- function( url ) {
   eval(parse(text = script), envir=.GlobalEnv)
 }
 
-source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/dev_ia/R/Aggregation_Function.R" )############FIX
+source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Aggregation_Function.R" )############FIX
 source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Themes.R")
 
 ####  Load data  ####
 ## Load CCA lists to append data onto
 CCAs <- 
-  read.csv( file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/CCAs.csv"
-            , header = TRUE
-            , stringsAsFactors = FALSE )
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/CCAs.rds?raw=true" ) %>%
+  gzcon() %>%
+  readRDS()
 
-CCAsF <- # a fortified version compatible with ggplot
-  read.csv( file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/CCAsF.csv"
-            , header = TRUE
-            , stringsAsFactors = FALSE )
+CCAsF <-  # a fortified version compatible with ggplot
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/CCAsF.rds?raw=true" ) %>%
+  gzcon() %>%
+  readRDS()
 
 #lists of census variables, tables, universes of data for each table
-tableList <- read.csv(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Census_tables.csv", stringsAsFactors = F) #table selection options
-universeList <- read.csv(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Census_universes.csv", stringsAsFactors = F) #universe label for that table
-variableList <- read.csv(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Census_variables.csv", stringsAsFactors = F) #variable selection options
+tableList <- 
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Census_tables.rds?raw=true" ) %>%
+  gzcon() %>%
+  readRDS()
+universeList <- 
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Census_universes.rds?raw=true" ) %>%
+  gzcon() %>%
+  readRDS()
+variableList <- 
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Census_variables.rds?raw=true" ) %>%
+  gzcon() %>%
+  readRDS()
 
 #tract:CCA lookup
-# load(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/dev_ia/Data/Blocks_to_CCA_TR.rds") ##########FIX ######################
+# load(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Blocks_to_CCA_TR.rds") ##########FIX ######################
 lookup <- 
-  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/dev_ia/Data/Blocks_to_CCA_TR.rds" ) %>%
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Blocks_to_CCA_TR.rds?raw=true" ) %>%
   gzcon() %>%
   readRDS()
 
@@ -66,7 +75,7 @@ statOptions <- c("Total", "Percent", "Per 100k")
 
 ####  Prime ACS Download Capabilities  ####
 geog <- 
-  url( description = "https://raw.github.com/Poverty-Lab/ACS-Map-Dashboard/dev_ia/Data/Cook_County_GeoSet.rds" ) %>%
+  url( description = "https://raw.github.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Cook_County_GeoSet.rds" ) %>%
   gzcon() %>%
   readRDS()
 
