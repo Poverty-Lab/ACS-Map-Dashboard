@@ -74,6 +74,7 @@ server <- shinyServer(function(input, output, session) {
       data <- data %>%
         dplyr::arrange(desc(x)) %>%
         head(input$nGeog)
+      
       bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, desc(eval(data$x))), y = data$x), stat = "identity") + #, fill = "#8a0021") +
         
@@ -93,6 +94,7 @@ server <- shinyServer(function(input, output, session) {
       data <- data %>%
         dplyr::arrange(x) %>%
         head(input$nGeog)
+      
       bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, eval(data$x)), y = data$x), stat = "identity") + #, fill = "#8a0021") +
         

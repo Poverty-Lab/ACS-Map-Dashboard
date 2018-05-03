@@ -119,6 +119,20 @@ ui <- fluidPage(useShinyjs(),
                                                      tableOutput("table"),
                                                      actionButton("save", "Save Data")
                                                      
+                                              ),
+                                              
+                                              column(width = 3,
+                                                     
+                                                     wellPanel("Table Options"
+                                                               
+                                                               ####################
+                                                               ## IN DEVELOPMENT ##
+                                                               # sort
+                                                               # round
+                                                               ####################
+                                                               
+                                                     )
+                                                     
                                               )
                                               
                                      )
