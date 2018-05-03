@@ -33,14 +33,6 @@ tractToCCA <- function(x, tractID, lookup = lookup
   if(!level %in% c("Individual", "Household")) {
     stop("level must be one of Individual, Household")
   }
-  if(!is.data.frame(lookup)) {
-    stop("lookup is not a dataframe")
-  }
-  if(is.data.frame(lookup)) {
-    if(length(lookup) != 7 & nrow(lookup != 879)) {
-      stop("lookup is not the right dataframe")
-    }
-  }
   
   
   ## Reformat tract ID as necessary
