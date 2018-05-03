@@ -8,7 +8,7 @@
 library(dplyr)
 
 ####  Aggregate Function  ####
-tractToCCA <- function(x, tractID, lookup = lookup
+tractToCCA <- function(x, tractID
                        , type = c("Count", "Proportion", "Mean")
                        , level = c("Individual", "Household")
                        , transformation = NA, return_df = FALSE ) {

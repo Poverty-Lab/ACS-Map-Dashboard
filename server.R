@@ -20,6 +20,9 @@ library( grDevices )
 library( acs )
 library( RCurl )
 
+#FOR TESTING
+#input <- c(); input$variable = variableList$stub[1]; input$customtype = "Count"; input$custompop = "Individual"
+
 ####  Server  ####
 server <- shinyServer(function(input, output, session) {
   
