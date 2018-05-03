@@ -44,8 +44,13 @@ server <- shinyServer(function(input, output, session) {
       geom_polygon(data = dataF, aes(x = long, y = lat, group = group, fill = x), color = NA, size = .25) +
       coord_map() +
       ggtitle(input$titleMap) + 
+      
+      ####################
+      ## IN DEVELOPMENT ##
       # scale_fill_gradient(low = "#ffcccc", high = "#ff0000",  ## IN DEVELOPMENT - make colors dependent on lab branding ##
       #                     labels = comma) +
+      ####################
+      
       theme(legend.title = element_blank()) +
       themeMap
     
@@ -62,13 +67,6 @@ server <- shinyServer(function(input, output, session) {
     
     #merge to plot-ready dataframe
     data <- merge(data, dplyr::select(agg, CCA, x))
-    
-    ####################
-    ## IN DEVELOPMENT ##
-    ####################
-    ## Error bars
-    
-    ####################
 
     if(input$direction == "Descending") {
       
@@ -128,9 +126,19 @@ server <- shinyServer(function(input, output, session) {
     acs <- acs::acs.fetch(geography = geog, endyear = 2015, span = 5, variable = var)
     agg <- tractToCCA(x = estimate(acs), tractID = acs@geography$tract, type = input$customtype, level = input$custompop, return_df = T)
     
-    names(agg)[2] <- input$variable
-    
     agg$CCA <- lettercase::str_title_case(tolower(as.character(agg$CCA)))
+    
+    if(input$sort == "High to Low") {
+      agg <- dplyr::arrange(agg, desc(x))
+    } else if(input$sort == "Low to High") {
+      agg <- dplyr::arrange(agg, x)
+    }
+    
+    if(input$round == "Round") {
+      agg$x <- as.character(round(agg$x)) #This is a workaround - ideally this could stay a numeric without displaying ".00"
+    }
+    
+    names(agg)[2] <- input$variable
     
     agg
     
@@ -144,9 +152,6 @@ server <- shinyServer(function(input, output, session) {
       ggsave(file, plot = map, device = "png")
     }
   )
-
-  # geogOptions <- c("CCA", "Census Tract", "ZIP", "Heatmap") #make reactive such that only those available for each content option show (or others are greyed out)
-  
   ####################
   
   updateSelectizeInput(session, "table", choices = tableOptions, server = TRUE, selected = "UNWEIGHTED SAMPLE COUNT OF THE POPULATION")
