@@ -21,59 +21,28 @@ library( acs )
 library( RCurl )
 
 ####  Server  ####
-server <- shinyServer(function(input, output) {
+server <- shinyServer(function(input, output, session) {
   
   output$map <- renderPlot({
     
     dataF <- dfCCAF #in future, make dependent on geog selection
     
-    if(nchar(input$custom) == 10) {
-      acs <- acs::acs.fetch(geography = geog, endyear = 2015, span = 5, variable = input$custom)
-      agg <- tractToCCA(x = estimate(acs), tractID = acs@geography$tract, type = input$customtype, level = input$custompop, return_df = T)
-      dataF <- merge(dataF, dplyr::select(agg, CCA, x))
-      var <- "x"
-    } else {
-      var <- variables$App.Name[paste0(variables$Population, " - ", variables$Statistic) == input$content] #in future, make dependent on stat selection as well
-    }
+    var <- variableList$variableID[variableList$stub == input$variable]
+    acs <- acs::acs.fetch(geography = geog, endyear = 2015, span = 5, variable = var)
+    agg <- tractToCCA(x = estimate(acs), tractID = acs@geography$tract, type = input$customtype, level = input$custompop, return_df = T)
+    dataF <- merge(dataF, dplyr::select(agg, CCA, x))
     
     dataF %>%
       ggplot() +
-      geom_polygon(data = dataF, aes(x = long, y = lat, group = group, fill = eval(parse(text = var))), color = NA, size = .25) +
+      geom_polygon(data = dataF, aes(x = long, y = lat, group = group, fill = x), color = NA, size = .25) +
       coord_map() +
       ggtitle(input$titleMap) + 
-      scale_fill_gradient(low = "#ffcccc", high = "#ff0000",
-                          labels = comma) +
+      # scale_fill_gradient(low = "#ffcccc", high = "#ff0000",  ## IN DEVELOPMENT - make colors dependent on lab branding ##
+      #                     labels = comma) +
       theme(legend.title = element_blank()) +
       themeMap
     
   })
-  
-  
-  observeEvent(input$showCodeMap, {
-    toggle('mapCodeDiv')
-    output$mapCode <- renderText({
-      
-      paste0(
-        'library(ggplot2)
-        setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/R/" )
-        source( file "00_Themes.R" )
-        setwd( dir = "/export/code_library/R/UL_packages/acs_map_dashboard/Data)
-        load( file =', gsub( pattern = " ", replacement = "", x = input$geog ), '_F.RData" )
-        
-        dfCCAF %>%
-        ggplot() +
-        geom_polygon(data = ',paste0(gsub(" ", "", input$geog), "_F"),', aes(x = long, y = lat, group = group, fill = ',variables$App.Name[paste0(variables$Population, " - ", variables$Statistic) == input$content],', size = .25)) +
-        coord_map() +
-        ggtitle(', paste0( "'", input$titleMap, "'" ), ' ) + 
-        scale_fill_gradient(low = "#ffcccc", high = "#ff0000",
-        labels = comma) +
-        theme(legend.title = element_blank()) +
-        themeMap'
-        )
-      
-    })
-  })
-  
   
   output$bar <- renderPlot({
     
@@ -140,28 +109,33 @@ server <- shinyServer(function(input, output) {
     
   })
   
+  ####################
+  ## IN DEVELOPMENT ##
   output$save <- downloadHandler(
     filename = "plot.png",
     content = function(file) {
       ggsave(file, plot = map, device = "png")
     }
   )
+
+  # geogOptions <- c("CCA", "Census Tract", "ZIP", "Heatmap") #make reactive such that only those available for each content option show (or others are greyed out)
   
-  # output$save <- downloadHandler(
-  #   filename = "plot.png",
-  #   content = function(file) {
-  #     device <- function(..., width, height) {
-  #       grDevices::png(..., width = width, height = height, res = 300, units = "in")
-  #     }
-  #     ggsave(file, plot = function () {map}, device = device)
-  #   }
-  # )
+  ####################
   
-  contentOptions <- c("Children Under 5 in Poverty",
-                      "Homicides")
-  geogOptions <- c("CCA", "Census Tract", "ZIP", "Heatmap") #make reactive such that only those available for each content option show (or others are greyed out)
+  updateSelectizeInput(session, "table", choices = tableOptions, server = TRUE, selected = "UNWEIGHTED SAMPLE COUNT OF THE POPULATION")
+
+  output$universe <- renderText(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])
   
+  output$variableOptions <- renderUI({
+    
+    selectedTable <- tableList$tableID[tableList$stub == input$table]
+    variables <- variableList$stub[variableList$tableID == selectedTable]
+
+    selectizeInput("variable", "Variable from Table", choices = variables, multiple = FALSE, options = list(searchConjunction = "and"))
+    
   })
+  
+})
 
 
 # end of script #
