@@ -15,6 +15,7 @@ library( RCurl )
 library( scales )
 library( shiny )
 
+
 ####  UI  ####
 ui <- fluidPage( fluidRow(br()),
                 
@@ -36,10 +37,10 @@ ui <- fluidPage( fluidRow(br()),
                                    radioButtons("custompop", "This custom statistic is of which level:", choices = c("Individual", "Household"), inline = T),
                                    radioButtons("stat", "Statistic to show:", choices = statOptions)
                                    
-                                   ####################
-                                   ## IN DEVELOPMENT ##
+                                   ################################
+                                   ## IN DEVELOPMENT - WISH LIST ##
                                    #radioButtons("geog", "Geography", choices = geogOptions)
-                                   ####################
+                                   ################################
                                    
                          )
                          
@@ -112,6 +113,17 @@ ui <- fluidPage( fluidRow(br()),
                                               column(width = 6,
                                                      
                                                      dataTableOutput( outputId = "table" )
+                                                     
+                                              ),
+                                              
+                                              column(width = 3,
+                                                     
+                                                     wellPanel("Table Options",
+                                                               
+                                                               radioButtons(label = "Sort", inputId = "sort", choices = c("None", "High to Low", "Low to High"), inline = T, selected = "None"),
+                                                               radioButtons(label = "Round", inputId = "round", choices = c("Round", "Don't Round"), inline = T, selected = "Round")
+
+                                                     )
                                                      
                                               )
                                               

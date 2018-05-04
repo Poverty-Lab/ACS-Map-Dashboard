@@ -15,8 +15,10 @@ library( RCurl )
 library( scales )
 library( shiny )
 
+
 #FOR TESTING
 #input <- c(); input$variable = variableList$stub[1]; input$customtype = "Count"; input$custompop = "Individual"
+#x = estimate(acs); tractID = acs@geography$tract; type = input$customtype; level = input$custompop; return_df = T
 
 ####  Server  ####
 server <- shinyServer(function(input, output, session) {
@@ -79,15 +81,22 @@ server <- shinyServer(function(input, output, session) {
                    , color = NA, size = .25) +
       coord_map() +
       ggtitle(input$titleMap) + 
+      
+      ####################
+      ## IN DEVELOPMENT ##
       # scale_fill_gradient(low = "#ffcccc", high = "#ff0000",  ## IN DEVELOPMENT - make colors dependent on lab branding ##
       #                     labels = comma) +
+      ####################
+      
       theme(legend.title = element_blank()) +
       themeMap
   })
   
+
   # store barplot created from cca.ct.data()
   user.bplot <- reactive({
     # create barplot using ggplot
+
     if(input$direction == "Descending") {
       
       data <- 
@@ -95,6 +104,7 @@ server <- shinyServer(function(input, output, session) {
         dplyr::arrange(desc(x)) %>%
         head(input$nGeog)
       
+
       ggplot() +
         geom_bar(aes(x = reorder(data$CCA, desc(eval(data$x))), y = data$x)
                  , stat = "identity") + #, fill = "#8a0021") +
@@ -116,9 +126,11 @@ server <- shinyServer(function(input, output, session) {
         dplyr::arrange(x) %>%
         head(input$nGeog)
       
+
       ggplot() +
         geom_bar(aes(x = reorder(data$CCA, eval(data$x)), y = data$x)
                  , stat = "identity") + #, fill = "#8a0021") +
+
         
       ####################
       ## IN DEVELOPMENT ##
@@ -132,6 +144,7 @@ server <- shinyServer(function(input, output, session) {
     }
   })
   
+
   # display user.map() in the UI
   output$map <- renderPlot({
     user.map()
@@ -174,6 +187,7 @@ server <- shinyServer(function(input, output, session) {
                                  , lengthMenu = list( c(15, 35, -1)
                                                       , c(15, 35, "All 77") )
                                  , pageLength = 15 ) )
+
   })
   
   ####################
@@ -184,9 +198,6 @@ server <- shinyServer(function(input, output, session) {
       ggsave(file, plot = map, device = "png")
     }
   )
-
-  # geogOptions <- c("CCA", "Census Tract", "ZIP", "Heatmap") #make reactive such that only those available for each content option show (or others are greyed out)
-  
   ####################
   
   updateSelectizeInput(session, "table", choices = tableOptions, server = TRUE, selected = "UNWEIGHTED SAMPLE COUNT OF THE POPULATION")
