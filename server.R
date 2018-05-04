@@ -47,7 +47,7 @@ server <- shinyServer(function(input, output, session) {
                       , type = input$customtype
                       , level = input$custompop
                       , return_df = T )
-    
+
     # return agg to the Global Environment
     return( agg )
   })
@@ -176,6 +176,21 @@ server <- shinyServer(function(input, output, session) {
   )
   
   output$table <- renderDataTable({
+    
+    if(input$round == "Round") {
+      
+      if(input$customtype == "Count") {
+        
+        nDigits = 0
+        
+      } else if(input$customtype %in% c("Proportion", "Mean")) {
+        
+        nDigits = 2
+        
+      }
+      
+    }
+    
     # transfrom user.data()
     # to be dislayed on a DataTable
     datatable( data = user.data()
@@ -186,7 +201,8 @@ server <- shinyServer(function(input, output, session) {
                                  , buttons = list( "csv" )
                                  , lengthMenu = list( c(15, 35, -1)
                                                       , c(15, 35, "All 77") )
-                                 , pageLength = 15 ) )
+                                 , pageLength = 15 ) ) %>%
+      DT::formatRound(columns = input$variable, digits = nDigits)
 
   })
   

@@ -120,7 +120,6 @@ ui <- fluidPage( fluidRow(br()),
                                                      
                                                      wellPanel("Table Options",
                                                                
-                                                               radioButtons(label = "Sort", inputId = "sort", choices = c("None", "High to Low", "Low to High"), inline = T, selected = "None"),
                                                                radioButtons(label = "Round", inputId = "round", choices = c("Round", "Don't Round"), inline = T, selected = "Round")
 
                                                      )
