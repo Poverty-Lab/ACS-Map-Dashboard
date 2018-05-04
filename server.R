@@ -189,6 +189,10 @@ server <- shinyServer(function(input, output, session) {
         
       }
       
+    } else if(input$round = "Don't Round") {
+      
+      nDigits = 12
+      
     }
     
     # transfrom user.data()
