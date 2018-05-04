@@ -205,8 +205,8 @@ server <- shinyServer(function(input, output, session) {
                                  , buttons = list( "csv" )
                                  , lengthMenu = list( c(15, 35, -1)
                                                       , c(15, 35, "All 77") )
-                                 , pageLength = 15 ) ) #%>%
-      #DT::formatRound(columns = "x", digits = nDigits)
+                                 , pageLength = 15 ) ) %>%
+      DT::formatRound(columns = "x", digits = nDigits)
 
   })
   

@@ -67,7 +67,8 @@ tractToCCA <- function(x, tractID
       dplyr::mutate(x.Count = x * pct) %>% #calculate total income for each tract-CCA pairing
       dplyr::group_by(CCA) %>%
       dplyr::summarise(x = sum(x.Count, na.rm = T)) %>% #returns a count
-      dplyr::filter(!is.na(CCA))
+      dplyr::filter(!is.na(CCA)) %>%
+      dplyr::select(CCA, x)
     
   } else if(type == "Proportion") {
     
@@ -77,7 +78,8 @@ tractToCCA <- function(x, tractID
       dplyr::summarise(x.Count = sum(x.Count, na.rm = T),
                        tot = sum(tot, na.rm = T)) %>%
       dplyr::mutate(x = x.Count / tot) %>% #returns a proportion
-      dplyr::filter(!is.na(CCA))
+      dplyr::filter(!is.na(CCA)) %>%
+      dplyr::select(CCA, x)
     
   } else if(type == "Mean") {
     
@@ -87,7 +89,8 @@ tractToCCA <- function(x, tractID
       dplyr::summarise(x.Count = sum(x.Count, na.rm = T),
                        tot = sum(tot, na.rm = T)) %>%
       dplyr::mutate(x = x.Count / tot) %>% #returns a mean
-      dplyr::filter(!is.na(CCA))
+      dplyr::filter(!is.na(CCA)) %>%
+      dplyr::select(CCA, x)
     
   } 
   
