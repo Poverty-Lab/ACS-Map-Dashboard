@@ -15,6 +15,7 @@ library( RCurl )
 library( scales )
 library( shiny )
 
+
 ## Source aggregation function and plot themes
 # create function to source scripts from GitHub
 source_github <- function( url ) {
@@ -26,8 +27,8 @@ source_github <- function( url ) {
   eval(parse(text = script), envir=.GlobalEnv)
 }
 
-source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Aggregation_Function.R" )############FIX
-source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Themes.R")
+source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Aggregation_Function.R" )
+source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Themes.R" )
 
 ####  Load data  ####
 ## Load CCA lists to append data onto
@@ -46,25 +47,25 @@ tableList <-
   url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Census_tables.rds?raw=true" ) %>%
   gzcon() %>%
   readRDS()
+
 universeList <- 
   url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Census_universes.rds?raw=true" ) %>%
   gzcon() %>%
   readRDS()
+
 variableList <- 
   url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Census_variables.rds?raw=true" ) %>%
   gzcon() %>%
   readRDS()
 
 #tract:CCA lookup
-# load(file = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Blocks_to_CCA_TR.rds") ##########FIX ######################
 lookup <- 
   url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Blocks_to_CCA_TR.rds?raw=true" ) %>%
   gzcon() %>%
   readRDS()
 
-# Set options for dataframes
+#Set options for dataframes
 tableOptions <- tableList$stub
-
 statOptions <- c("Total", "Percent", "Per 100k")
 
 
