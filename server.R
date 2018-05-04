@@ -5,20 +5,14 @@
 #
 
 ####  Startup  ####
-library( dplyr )
-library( shiny )
-library( shinyjs )
-library( ggplot2 )
-library( scales )
-library( shinyBS )
-library( shinythemes )
-library( dygraphs )
-library( plotly )
-library( DT )
-library( shinydashboard )
-library( grDevices )
 library( acs )
+library( bitops )
+library( DT )
+library( dplyr )
+library( ggplot2 )
 library( RCurl )
+library( scales )
+library( shiny )
 
 #FOR TESTING
 #input <- c(); input$variable = variableList$stub[1]; input$customtype = "Count"; input$custompop = "Individual"
@@ -29,6 +23,16 @@ server <- shinyServer(function(input, output, session) {
   # store user data
   # in a reactive expression
   user.data <- reactive({
+    # require the the three inputs 
+    # needed to fetch ACS data are not NULL
+    # note: used to hide initial error message when data is loading
+    validate( need( expr = input$variable
+                    , message = "Please select a variable. Note: data is being downloaded over the internet so please be patient." )
+              , need( expr = input$customtype
+                      , message = "Please select a custom type." )
+              , need( expr = input$custompop
+                       , message = "Please select a custom population." ) )
+    
     #download data
     var <- variableList$variableID[variableList$stub == input$variable]
     acs <- acs::acs.fetch(geography = geog
@@ -161,7 +165,7 @@ server <- shinyServer(function(input, output, session) {
     # transfrom user.data()
     # to be dislayed on a DataTable
     datatable( data = user.data()
-               , caption = "View the CCA statistics"
+               , caption = "Table 1. View the ACS statistics by CCA"
                , colnames = c("CCA", input$variable )
                , extensions = "Buttons"
                , options = list( dom = "Blfrtip"

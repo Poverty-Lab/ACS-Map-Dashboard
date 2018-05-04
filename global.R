@@ -5,20 +5,14 @@
 #
 
 ####  Startup  ####
-library( dplyr )
-library( shiny )
-library( shinyjs )
-library( ggplot2 )
-library( scales )
-library( shinyBS )
-library( shinythemes )
-library( dygraphs )
-library( plotly )
-library( DT )
-library( shinydashboard )
-library( grDevices )
 library( acs )
+library( bitops )
+library( DT )
+library( dplyr )
+library( ggplot2 )
 library( RCurl )
+library( scales )
+library( shiny )
 
 ## Source aggregation function and plot themes
 # create function to source scripts from GitHub
