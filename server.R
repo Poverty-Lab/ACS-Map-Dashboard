@@ -38,6 +38,7 @@ server <- shinyServer(function(input, output, session) {
     
     #download data
     var <- variableList$variableID[variableList$stub == input$variable]
+    
     acs <- acs::acs.fetch(geography = geog
                           , endyear = 2015 # we should be using 2016 5-year ACS data
                           , span = 5
@@ -47,7 +48,39 @@ server <- shinyServer(function(input, output, session) {
                       , type = input$customtype
                       , level = input$custompop
                       , return_df = T )
-
+    
+    #also grab a total population estimate for this variable, to be used for calculating percent & per 100k outputs,
+    #by downloading the Bxxxxx_001 variant of whatever table
+    #Since we only need this when input$customtype != Total, let's only run it in those cases
+    if(input$customtype != "Total") {
+    
+    var.pop <- paste0(strsplit(var, "_")[[1]][1], "_001")
+    acs.pop <- acs::acs.fetch(geography = geog
+                          , endyear = 2015 # we should be using 2016 5-year ACS data
+                          , span = 5
+                          , variable = var.pop )
+    agg.pop <- tractToCCA(x = estimate(acs.pop)
+                      , tractID = acs.pop@geography$tract
+                      , type = input$customtype
+                      , level = input$custompop
+                      , return_df = T )
+    agg.pop <- dplyr::rename(agg.pop, x.pop = x)
+    
+    # merge on x.pop
+    if(input$customtype == "Percent") {
+      
+      agg$x <- agg$x / agg$x.pop
+      agg <- dplyr::select(agg, CCA, x)
+      
+    } else if(input$customtype == "Per 100k") {
+      
+      agg$x <- (agg$x / agg$x.pop) * 100000
+      agg <- dplyr::select(agg, CCA, x)
+      
+    }
+    
+    }
+    
     # return agg to the Global Environment
     return( agg )
   })
