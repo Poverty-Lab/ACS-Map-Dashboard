@@ -5,26 +5,19 @@
 #
 
 ####  Startup  ####
-library( dplyr )
-library( shiny )
-library( shinyjs )
-library( ggplot2 )
-library( scales )
-library( shinyBS )
-library( shinythemes )
-library( dygraphs )
-library( plotly )
-library( DT )
-library( shinydashboard )
-library( grDevices )
 library( acs )
-library( RCurl )
+library( bitops )
+library( DT )
+library( dplyr )
+library( ggplot2 )
 library( lettercase )
+library( RCurl )
+library( scales )
+library( shiny )
+
 
 ####  UI  ####
-ui <- fluidPage(useShinyjs(),
-                
-                fluidRow(br()),
+ui <- fluidPage( fluidRow(br()),
                 
                 fluidRow(
                   
