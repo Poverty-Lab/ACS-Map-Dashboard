@@ -201,6 +201,7 @@ server <- shinyServer(function(input, output, session) {
                , caption = "Table 1. 2015 5-Year ACS statistics by CCA"
                , colnames = c("CCA", input$variable )
                , extensions = "Buttons"
+               , rownames = F
                , options = list( dom = "Blfrtip"
                                  , buttons = list( "csv" )
                                  , lengthMenu = list( c(15, 35, -1)
