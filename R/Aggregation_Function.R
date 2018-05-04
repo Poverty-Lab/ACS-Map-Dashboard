@@ -10,7 +10,7 @@ library(dplyr)
 ####  Aggregate Function  ####
 tractToCCA <- function(x, tractID
                        , type = c("Count", "Proportion", "Mean")
-                       , level = c("Individual", "Household")
+                       , level = c("Individual", "Household", "Housing Unit")
                        , transformation = NA, return_df = FALSE ) {
   
   #x: The statistic to aggregate. A vector of the same length as tractID.
@@ -30,7 +30,7 @@ tractToCCA <- function(x, tractID
   if(!type %in% c("Count", "Proportion", "Mean")) {
     stop("type must be one of Count, Proportion, or Mean")
   }
-  if(!level %in% c("Individual", "Household")) {
+  if(!level %in% c("Individual", "Household", "Housing Unit")) {
     stop("level must be one of Individual, Household")
   }
   
