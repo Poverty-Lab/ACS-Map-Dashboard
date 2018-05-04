@@ -61,7 +61,8 @@ ui <- fluidPage(useShinyjs(),
                                               column(width = 6,
                                                      
                                                      plotOutput("map"),
-                                                     actionButton("save", "Save Graphic")
+                                                     downloadButton( outputId = "dwnld.map"
+                                                                     , label = "Save Map" )
                                                      
                                               ),
                                               
@@ -85,7 +86,8 @@ ui <- fluidPage(useShinyjs(),
                                               column(width = 6,
                                                      
                                                      plotOutput("bar"),
-                                                     actionButton("save", "Save Graphic")
+                                                     downloadButton( outputId = "dwnld.bplot"
+                                                                     , label = "Save Plot" )
                                                      
                                               ),
                                               
@@ -116,8 +118,7 @@ ui <- fluidPage(useShinyjs(),
                                               
                                               column(width = 6,
                                                      
-                                                     tableOutput("table"),
-                                                     actionButton("save", "Save Data")
+                                                     dataTableOutput( outputId = "table" )
                                                      
                                               )
                                               
