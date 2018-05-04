@@ -165,7 +165,7 @@ server <- shinyServer(function(input, output, session) {
     # transfrom user.data()
     # to be dislayed on a DataTable
     datatable( data = user.data()
-               , caption = "Table 1. View the ACS statistics by CCA"
+               , caption = "Table 1. 2015 5-Year ACS statistics by CCA"
                , colnames = c("CCA", input$variable )
                , extensions = "Buttons"
                , options = list( dom = "Blfrtip"
