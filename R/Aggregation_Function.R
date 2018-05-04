@@ -49,14 +49,14 @@ tractToCCA <- function(x, tractID
   
   
   if(level == "Individual") {
-    df$pop <- df$tot.ind
-    df$prop <- df$pctPop
+    df$tot <- df$tot.ind
+    df$pct <- df$pctPop
   } else if(level == "Household") {
-    df$pop <- df$tot.hh
-    df$prop <- df$pctHH
+    df$tot <- df$tot.hh
+    df$pct <- df$pctHH
   } else if(level == "Housing Unit") {
-    df$pop <- df$tot.hu
-    df$prop <- df$pctHU
+    df$tot <- df$tot.hu
+    df$pct <- df$pctHU
   }
   
   
@@ -64,7 +64,7 @@ tractToCCA <- function(x, tractID
   if(type == "Count") {
     
     dfOut <- df %>%
-      dplyr::mutate(x.Count = x * popProp) %>% #calculate total income for each tract-CCA pairing
+      dplyr::mutate(x.Count = x * pct) %>% #calculate total income for each tract-CCA pairing
       dplyr::group_by(CCA) %>%
       dplyr::summarise(x = sum(x.Count, na.rm = T)) %>% #returns a count
       dplyr::filter(!is.na(CCA))
@@ -72,21 +72,21 @@ tractToCCA <- function(x, tractID
   } else if(type == "Proportion") {
     
     dfOut <- df %>%
-      dplyr::mutate(x.Count = x * pop) %>% #calculate total income for each tract-CCA pairing              ######### WHAT TO DO ABOUT MOE?
+      dplyr::mutate(x.Count = x * tot) %>% #calculate total income for each tract-CCA pairing              ######### WHAT TO DO ABOUT MOE?
       dplyr::group_by(CCA) %>%
       dplyr::summarise(x.Count = sum(x.Count, na.rm = T),
-                       pop = sum(pop, na.rm = T)) %>%
-      dplyr::mutate(x = x.Count / pop) %>% #returns a proportion
+                       tot = sum(tot, na.rm = T)) %>%
+      dplyr::mutate(x = x.Count / tot) %>% #returns a proportion
       dplyr::filter(!is.na(CCA))
     
   } else if(type == "Mean") {
     
     dfOut <- df %>%
-      dplyr::mutate(x.Count = x * pop) %>% #calculate total income for each tract-CCA pairing              ######### WHAT TO DO ABOUT MOE?
+      dplyr::mutate(x.Count = x * tot) %>% #calculate total income for each tract-CCA pairing              ######### WHAT TO DO ABOUT MOE?
       dplyr::group_by(CCA) %>%
       dplyr::summarise(x.Count = sum(x.Count, na.rm = T),
-                       pop = sum(pop, na.rm = T)) %>%
-      dplyr::mutate(x = x.Count / pop) %>% #returns a mean
+                       tot = sum(tot, na.rm = T)) %>%
+      dplyr::mutate(x = x.Count / tot) %>% #returns a mean
       dplyr::filter(!is.na(CCA))
     
   } 

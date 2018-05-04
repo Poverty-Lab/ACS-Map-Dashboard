@@ -23,9 +23,9 @@ names(lookup)[1:2] <- c("blockID", "tractID")
 lookup <- lookup %>%
   dplyr::group_by(tractID, CCA) %>%
   dplyr::summarise(blocks = n(),
-                   pctPop = sum(TR_POP_RAT),
-                   pctHH = sum(TR_HH_RAT),
-                   pctHU = sum(TR_HU_RAT))
+                   pct.ind = sum(TR_POP_RAT),
+                   pct.hh = sum(TR_HH_RAT),
+                   pct.hu = sum(TR_HU_RAT))
 
 
 ####  Prepare totals  ####
@@ -79,6 +79,17 @@ lookup <- dplyr::rename(lookup,
                         tot.ind = B01003_001,
                         tot.hh = B11016_001,
                         tot.hu = B25001_001)
+
+## Finally, adjust the totals so that they are split up when a tract is shared across CCAs (with before/after checks)
+lookup[lookup$tractID == "17031081403",]
+sum(lookup$tot.ind)
+
+lookup$tot.ind <- lookup$tot.ind * lookup$pct.ind
+lookup$tot.hh <- lookup$tot.hh * lookup$pct.hh
+lookup$tot.hu <- lookup$tot.hu * lookup$pct.hu
+
+lookup[lookup$tractID == "17031081403",]
+sum(lookup$tot.ind)
 
 ####  Save  ####
 saveRDS(lookup, file = "Data/Blocks_to_CCA_TR.rds")
