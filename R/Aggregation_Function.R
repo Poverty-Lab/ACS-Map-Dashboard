@@ -47,12 +47,16 @@ tractToCCA <- function(x, tractID
                        stringsAsFactors = F)
   df <- merge(lookup, inputs, by = "tractID")
   
+  
   if(level == "Individual") {
-    df$pop <- df$pop #FIX
-    df$popProp <- df$pctPop
+    df$pop <- df$tot.ind
+    df$prop <- df$pctPop
   } else if(level == "Household") {
-    df$pop <- df$HH #FIX
-    df$popProp <- df$pctHH
+    df$pop <- df$tot.hh
+    df$prop <- df$pctHH
+  } else if(level == "Housing Unit") {
+    df$pop <- df$tot.hu
+    df$prop <- df$pctHU
   }
   
   
