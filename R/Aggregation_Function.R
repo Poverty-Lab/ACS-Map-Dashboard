@@ -50,13 +50,13 @@ tractToCCA <- function(x, tractID
   
   if(level == "Individual") {
     df$tot <- df$tot.ind
-    df$pct <- df$pctPop
+    df$pct <- df$pct.ind
   } else if(level == "Household") {
     df$tot <- df$tot.hh
-    df$pct <- df$pctHH
+    df$pct <- df$pct.hh
   } else if(level == "Housing Unit") {
     df$tot <- df$tot.hu
-    df$pct <- df$pctHU
+    df$pct <- df$pct.hu
   }
   
   
