@@ -33,8 +33,8 @@ ui <- fluidPage( fluidRow(br()),
                                    shiny::uiOutput( outputId = "variableOptions" ),
                                    
                                    
-                                   radioButtons("customtype", "This custom statistic is a:", choices = c("Count", "Proportion", "Mean"), inline = T),
-                                   radioButtons("custompop", "This custom statistic is of which level:", choices = c("Individual", "Household", "Housing Unit"), inline = T),
+                                   radioButtons("customtype", "This variable is a:", choices = c("Count", "Proportion", "Mean"), inline = T),
+                                   radioButtons("custompop", "This variable is of which population:", choices = c("Individual", "Household", "Housing Unit"), inline = T),
                                    radioButtons("stat", "Statistic to show:", choices = statOptions)
                                    
                                    ################################
