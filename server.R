@@ -202,7 +202,7 @@ server <- shinyServer(function(input, output, session) {
                                  , lengthMenu = list( c(15, 35, -1)
                                                       , c(15, 35, "All 77") )
                                  , pageLength = 15 ) ) %>%
-      DT::formatRound(columns = x, digits = nDigits)
+      DT::formatRound(columns = "x", digits = nDigits)
 
   })
   
