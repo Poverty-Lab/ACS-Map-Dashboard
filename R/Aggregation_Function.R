@@ -49,10 +49,10 @@ tractToCCA <- function(x, tractID
   
   if(level == "Individual") {
     df$pop <- df$pop #FIX
-    df$popProp <- df$TR_POP_RAT
+    df$popProp <- df$pctPop
   } else if(level == "Household") {
     df$pop <- df$HH #FIX
-    df$popProp <- df$TR_HH_RAT
+    df$popProp <- df$pctHH
   }
   
   
