@@ -3,12 +3,6 @@
 ##      2. Aggregation Function      ##
 #######################################
 
-# load the pre-made CCA to CT lookup data frame
-# note: this as close to a census tract to chicago community area crosswalk
-#       that exists. Use data.frame( table( lookup$tractID ) ) to view
-#       the census tracts that exist within multiple CCAs.
-#       If a new source is found, this function will be updated.
-
 ####  Aggregate Function  ####
 tractToCCA <- function(x, tractID
                        , type = c("Count", "Proportion", "Mean")
