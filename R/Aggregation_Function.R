@@ -8,11 +8,6 @@
 #       that exists. Use data.frame( table( lookup$tractID ) ) to view
 #       the census tracts that exist within multiple CCAs.
 #       If a new source is found, this function will be updated.
-# note: the object `lookup` will now exist in the Global Environment
-lookup <- 
-  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Blocks_to_CCA_TR.rds?raw=true" ) %>%
-  gzcon() %>%
-  readRDS()
 
 ####  Aggregate Function  ####
 tractToCCA <- function(x, tractID
