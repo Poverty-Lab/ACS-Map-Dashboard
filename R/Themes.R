@@ -6,6 +6,7 @@
 
 # load necessary packages
 require( ggplot2 ) # just to be sure that ggplot2 is loaded in the Global Environment
+require( scales )
 
 ####  Plot Setup  ####
 themeMap <- theme(axis.line=element_blank(),
@@ -22,5 +23,10 @@ themeMap <- theme(axis.line=element_blank(),
 
 themeMOE <- theme(panel.background=element_blank(),
                   axis.text.x = element_text(angle = 45, hjust = 1))
+
+themeTot.100k <- scale_fill_gradient(labels = comma)
+  
+themePct <- scale_fill_gradient(labels = scales::percent)
+
 
 # end of script #

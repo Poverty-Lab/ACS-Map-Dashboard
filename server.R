@@ -17,8 +17,8 @@ library( shiny )
 
 
 #FOR TESTING
-#input <- c(); input$variable = variableList$stub[1]; input$customtype = "Count"; input$custompop = "Individual"
-#x = estimate(acs); tractID = acs@geography$tract; type = input$customtype; level = input$custompop; return_df = T
+#input <- c(); input$variable = variableList$stub[1]; input$varType = "Count"; input$varPop = "Individual"
+#x = estimate(acs); tractID = acs@geography$tract; type = input$varType; level = input$varPop; return_df = T
 
 ####  Server  ####
 server <- shinyServer(function(input, output, session) {
@@ -26,15 +26,14 @@ server <- shinyServer(function(input, output, session) {
   # store user data
   # in a reactive expression
   user.data <- reactive({
-    # require the the three inputs 
-    # needed to fetch ACS data are not NULL
+    # require that the three inputs needed to fetch ACS data are not NULL
     # note: used to hide initial error message when data is loading
     validate( need( expr = input$variable
                     , message = "Please select a variable. Note: data is being downloaded over the internet so please be patient." )
-              , need( expr = input$customtype
-                      , message = "Please select a custom type." )
-              , need( expr = input$custompop
-                       , message = "Please select a custom population." ) )
+              , need( expr = input$varType
+                      , message = "Please specify this variable's type." )
+              , need( expr = input$varPop
+                       , message = "Please specify this variable's population." ) )
     
     #download data
     var <- variableList$variableID[variableList$stub == input$variable]
@@ -45,14 +44,14 @@ server <- shinyServer(function(input, output, session) {
                           , variable = var )
     agg <- tractToCCA(x = estimate(acs)
                       , tractID = acs@geography$tract
-                      , type = input$customtype
-                      , level = input$custompop
+                      , type = input$varType
+                      , level = input$varPop
                       , return_df = T )
     
     #also grab a total population estimate for this variable, to be used for calculating percent & per 100k outputs,
     #by downloading the Bxxxxx_001 variant of whatever table
-    #Since we only need this when input$customtype != Total, let's only run it in those cases
-    if(input$customtype != "Total") {
+    #Since we only need this when input$varType != "Total", let's only run it in those cases
+    if(input$statToShow != "Total") {
     
     var.pop <- paste0(strsplit(var, "_")[[1]][1], "_001")
     acs.pop <- acs::acs.fetch(geography = geog
@@ -61,20 +60,20 @@ server <- shinyServer(function(input, output, session) {
                           , variable = var.pop )
     agg.pop <- tractToCCA(x = estimate(acs.pop)
                       , tractID = acs.pop@geography$tract
-                      , type = input$customtype
-                      , level = input$custompop
+                      , type = input$varType
+                      , level = input$varPop
                       , return_df = T )
     agg.pop <- dplyr::rename(agg.pop, x.pop = x)
     
     # merge on x.pop
-    if(input$customtype == "Percent") {
+    if(input$statToShow == "Percent") {
       
-      agg$x <- agg$x / agg$x.pop
+      agg$x <- agg$x / agg.pop$x.pop
       agg <- dplyr::select(agg, CCA, x)
       
-    } else if(input$customtype == "Per 100k") {
+    } else if(input$statToShow == "Per 100k") {
       
-      agg$x <- (agg$x / agg$x.pop) * 100000
+      agg$x <- (agg$x / agg.pop$x.pop) * 100000
       agg <- dplyr::select(agg, CCA, x)
       
     }
@@ -108,7 +107,7 @@ server <- shinyServer(function(input, output, session) {
   # store map created from fortified.data()
   user.map <- reactive({
     # create map using ggplot
-    ggplot() +
+    map <- ggplot() +
       geom_polygon(data = fortified.data()
                    , aes(x = long, y = lat, group = group, fill = x)
                    , color = NA, size = .25) +
@@ -123,6 +122,23 @@ server <- shinyServer(function(input, output, session) {
       
       theme(legend.title = element_blank()) +
       themeMap
+    
+    if(input$varPop %in% c("Count", "Mean")) {
+      
+      if(input$statToShow %in% c("Total", "Per 100k")) {
+        
+        map <- map + themeTot.100k
+        
+      } else if(input$statToShow == "Percent") {
+        
+        map <- map + themePct
+        
+      }
+      
+    }
+    
+    map
+    
   })
   
 
@@ -212,11 +228,11 @@ server <- shinyServer(function(input, output, session) {
     
     if(input$round == "Round") {
       
-      if(input$customtype == "Count") {
+      if(input$varType == "Count") {
         
         nDigits = 0
         
-      } else if(input$customtype %in% c("Proportion", "Mean")) {
+      } else if(input$varType %in% c("Proportion", "Mean")) {
         
         nDigits = 2
         
@@ -264,6 +280,22 @@ server <- shinyServer(function(input, output, session) {
     variables <- variableList$stub[variableList$tableID == selectedTable]
 
     selectizeInput("variable", "Variable from Table", choices = variables, multiple = FALSE, options = list(searchConjunction = "and"))
+    
+  })
+  
+  output$statToShow <- renderUI({
+    
+    if(input$varType == "Count") {
+      
+      statChoices <- c("Total", "Percent", "Per 100k")
+      
+    } else {
+      
+      statChoices <- "Total"
+      
+    }
+    
+    selectInput("statToShow", "Statistic to Show:", choices = statChoices, selected = "Total")
     
   })
   
