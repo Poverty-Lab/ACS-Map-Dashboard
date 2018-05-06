@@ -28,5 +28,9 @@ themeTot.100k <- scale_fill_gradient(labels = comma)
   
 themePct <- scale_fill_gradient(labels = scales::percent)
 
+themeTot.100k_bar <- scale_y_continuous(labels = comma)
+
+themePct_bar <- scale_y_continuous(labels = scales::percent)
+
 
 # end of script #

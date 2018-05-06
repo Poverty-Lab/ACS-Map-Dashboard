@@ -17,7 +17,7 @@ library( shiny )
 
 
 #FOR TESTING
-#input <- c(); input$variable = variableList$stub[1]; input$varType = "Count"; input$varPop = "Individual"
+#input <- c(); input$variable = variableList$stub[1]; input$varType = "Count"; input$varPop = "Individual"; input$round = "Round"
 #x = estimate(acs); tractID = acs@geography$tract; type = input$varType; level = input$varPop; return_df = T
 
 ####  Server  ####
@@ -123,7 +123,7 @@ server <- shinyServer(function(input, output, session) {
       theme(legend.title = element_blank()) +
       themeMap
     
-    if(input$varPop %in% c("Count", "Mean")) {
+    if(input$varType %in% c("Count", "Mean")) {
       
       if(input$statToShow %in% c("Total", "Per 100k")) {
         
@@ -154,7 +154,7 @@ server <- shinyServer(function(input, output, session) {
         head(input$nGeog)
       
 
-      ggplot() +
+      bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, desc(eval(data$x))), y = data$x)
                  , stat = "identity") + #, fill = "#8a0021") +
         
@@ -168,6 +168,22 @@ server <- shinyServer(function(input, output, session) {
         xlab("Community Area") + ylab(input$variable) +
         themeMOE
       
+      if(input$varType %in% c("Count", "Mean")) {
+        
+        if(input$statToShow %in% c("Total", "Per 100k")) {
+          
+          bar <- bar + themeTot.100k_bar
+          
+        } else if(input$statToShow == "Percent") {
+          
+          bar <- bar + themePct_bar
+          
+        }
+        
+      }
+      
+      bar
+      
     } else if(input$direction == "Ascending") {
       
       data <- 
@@ -176,7 +192,7 @@ server <- shinyServer(function(input, output, session) {
         head(input$nGeog)
       
 
-      ggplot() +
+      bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, eval(data$x)), y = data$x)
                  , stat = "identity") + #, fill = "#8a0021") +
 
@@ -190,6 +206,23 @@ server <- shinyServer(function(input, output, session) {
       scale_y_continuous(labels = comma) +
         xlab("Community Area") + ylab(input$variable) +
         themeMOE
+      
+      if(input$varType %in% c("Count", "Mean")) {
+        
+        if(input$statToShow %in% c("Total", "Per 100k")) {
+          
+          bar <- bar + themeTot.100k_bar
+          
+        } else if(input$statToShow == "Percent") {
+          
+          bar <- bar + themePct_bar
+          
+        }
+        
+      }
+      
+      bar
+      
     }
   })
   
