@@ -27,12 +27,10 @@ ui <- fluidPage( fluidRow(br()),
                          
                          wellPanel("Data",
                                    
-                                   selectizeInput("table", "ACS Table", choices = tableOptions, multiple = FALSE, options = list(searchConjunction = "and")),
+                                   selectizeInput("table", "ACS Table", selected = "Total Population", choices = tableOptions, multiple = FALSE, options = list(searchConjunction = "and")),
                                    textOutput("universe"),
-                                   
+                                   br(),
                                    shiny::uiOutput( outputId = "variableOptions" ),
-                                   
-                                   
                                    radioButtons("varType", "This variable is a:", choices = c("Count", "Proportion", "Mean"), inline = T),
                                    radioButtons("varPop", "This variable is of which population:", choices = c("Individual", "Household", "Housing Unit"), inline = T),
 

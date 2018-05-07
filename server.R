@@ -306,7 +306,7 @@ server <- shinyServer(function(input, output, session) {
 
   })
   
-  updateSelectizeInput(session, "table", choices = tableOptions, server = TRUE, selected = "UNWEIGHTED SAMPLE COUNT OF THE POPULATION")
+  updateSelectizeInput(session, "table", choices = tableOptions, server = F, selected = "Total Population")
 
   output$universe <- renderText(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])
   
@@ -315,7 +315,7 @@ server <- shinyServer(function(input, output, session) {
     selectedTable <- tableList$tableID[tableList$stub == input$table]
     variables <- variableList$stub[variableList$tableID == selectedTable]
 
-    selectizeInput("variable", "Variable from Table", choices = variables, multiple = FALSE, options = list(searchConjunction = "and"))
+    selectizeInput("variable", "Variable from Table", selected = "Total", choices = variables, multiple = FALSE, options = list(searchConjunction = "and"))
     
   })
   
