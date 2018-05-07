@@ -26,7 +26,7 @@ source_github <- function( url ) {
   eval(parse(text = script), envir=.GlobalEnv)
 }
 
-source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Aggregation_Function.R" )
+source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/dev_ia/R/Aggregation_Function.R" )
 source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Themes.R" )
 
 ####  Load data  ####
@@ -59,7 +59,7 @@ variableList <-
 
 #tract:CCA lookup
 lookup <- 
-  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Blocks_to_CCA_TR.rds?raw=true" ) %>%
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/dev_ia/Data/Blocks_to_CCA_TR.rds?raw=true" ) %>%
   gzcon() %>%
   readRDS()
 

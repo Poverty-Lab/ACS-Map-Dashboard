@@ -208,7 +208,7 @@ server <- shinyServer(function(input, output, session) {
       
         ggtitle(input$titleBar) +
         scale_y_continuous(labels = comma) +
-        xlab("Community Area") + ylab(input$variable) +
+        xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
         themeMOE
       
       if(input$varType %in% c("Count", "Mean")) {
@@ -312,7 +312,7 @@ server <- shinyServer(function(input, output, session) {
   output$variableOptions <- renderUI({
     
     selectedTable <- tableList$tableID[tableList$stub == input$table]
-    variables <- variableList$stub[variableList$tableID == selectedTable]
+    variables <- variableList$stubLong[variableList$tableID == selectedTable]
 
     selectizeInput("variable", label = "Variable from Table", choices = variables)
     
