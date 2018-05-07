@@ -6,7 +6,7 @@
 ####  Aggregate Function  ####
 tractToCCA <- function(x, tractID
                        , type = c("Count", "Proportion", "Mean")
-                       , level = c("Individual", "Household")
+                       , level = c("Individual", "Household", "Housing Unit")
                        , transformation = NA, return_df = FALSE ) {
   
   # require the dplyr package
@@ -29,7 +29,7 @@ tractToCCA <- function(x, tractID
   if(!type %in% c("Count", "Proportion", "Mean")) {
     stop("type must be one of Count, Proportion, or Mean")
   }
-  if(!level %in% c("Individual", "Household")) {
+  if(!level %in% c("Individual", "Household", "Housing Unit")) {
     stop("level must be one of Individual, Household")
   }
   
@@ -49,12 +49,16 @@ tractToCCA <- function(x, tractID
                        stringsAsFactors = F)
   df <- merge(lookup, inputs, by = "tractID")
   
+  
   if(level == "Individual") {
-    df$pop <- df$pop #FIX
-    df$popProp <- df$pctPop
+    df$tot <- df$tot.ind
+    df$pct <- df$pct.ind
   } else if(level == "Household") {
-    df$pop <- df$HH #FIX
-    df$popProp <- df$pctHH
+    df$tot <- df$tot.hh
+    df$pct <- df$pct.hh
+  } else if(level == "Housing Unit") {
+    df$tot <- df$tot.hu
+    df$pct <- df$pct.hu
   }
   
   
@@ -62,30 +66,33 @@ tractToCCA <- function(x, tractID
   if(type == "Count") {
     
     dfOut <- df %>%
-      dplyr::mutate(x.Count = x * popProp) %>% #calculate total income for each tract-CCA pairing
+      dplyr::mutate(x.Count = x * pct) %>% #calculate total income for each tract-CCA pairing
       dplyr::group_by(CCA) %>%
       dplyr::summarise(x = sum(x.Count, na.rm = T)) %>% #returns a count
-      dplyr::filter(!is.na(CCA))
+      dplyr::filter(!is.na(CCA)) %>%
+      dplyr::select(CCA, x)
     
   } else if(type == "Proportion") {
     
     dfOut <- df %>%
-      dplyr::mutate(x.Count = x * pop) %>% #calculate total income for each tract-CCA pairing              ######### WHAT TO DO ABOUT MOE?
+      dplyr::mutate(x.Count = x * tot) %>% #calculate total income for each tract-CCA pairing              ######### WHAT TO DO ABOUT MOE?
       dplyr::group_by(CCA) %>%
       dplyr::summarise(x.Count = sum(x.Count, na.rm = T),
-                       pop = sum(pop, na.rm = T)) %>%
-      dplyr::mutate(x = x.Count / pop) %>% #returns a proportion
-      dplyr::filter(!is.na(CCA))
+                       tot = sum(tot, na.rm = T)) %>%
+      dplyr::mutate(x = x.Count / tot) %>% #returns a proportion
+      dplyr::filter(!is.na(CCA)) %>%
+      dplyr::select(CCA, x)
     
   } else if(type == "Mean") {
     
     dfOut <- df %>%
-      dplyr::mutate(x.Count = x * pop) %>% #calculate total income for each tract-CCA pairing              ######### WHAT TO DO ABOUT MOE?
+      dplyr::mutate(x.Count = x * tot) %>% #calculate total income for each tract-CCA pairing              ######### WHAT TO DO ABOUT MOE?
       dplyr::group_by(CCA) %>%
       dplyr::summarise(x.Count = sum(x.Count, na.rm = T),
-                       pop = sum(pop, na.rm = T)) %>%
-      dplyr::mutate(x = x.Count / pop) %>% #returns a mean
-      dplyr::filter(!is.na(CCA))
+                       tot = sum(tot, na.rm = T)) %>%
+      dplyr::mutate(x = x.Count / tot) %>% #returns a mean
+      dplyr::filter(!is.na(CCA)) %>%
+      dplyr::select(CCA, x)
     
   } 
   

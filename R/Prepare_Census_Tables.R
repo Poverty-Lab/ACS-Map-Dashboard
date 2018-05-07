@@ -30,6 +30,9 @@ raw <- dplyr::select(raw,
                      variableID = UniqueID,
                      stub = Stub)
 
+## Filter to only loadable tables - IN FUTURE LET'S TRY TO MAKE MORE TABLES LOADABLE!
+raw <- raw[grepl(pattern = "B[0-9]{5}$", raw$tableID),]
+
 tableList <- raw[raw$rowType == "Table Name", c(2,4)]
 variableList <- raw[raw$rowType == "Variable Name", 2:4]
 universeList <- raw[raw$rowType == "Table Universe", c(2,4)]
