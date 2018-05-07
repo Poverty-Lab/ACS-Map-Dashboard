@@ -18,6 +18,7 @@ library( shiny )
 
 #FOR TESTING
 #input <- c(); input$variable = variableList$stub[1]; input$varType = "Count"; input$varPop = "Individual"; input$round = "Round"
+#input <- c(); input$table = "RACE"; input$variable = "Black or African American alone"; input$varType = "Count"; input$varPop = "Individual"; input$round = "Round"
 #x = estimate(acs); tractID = acs@geography$tract; type = input$varType; level = input$varPop; return_df = T
 
 ####  Server  ####
@@ -36,7 +37,8 @@ server <- shinyServer(function(input, output, session) {
                        , message = "Please specify this variable's population." ) )
     
     #download data
-    var <- variableList$variableID[variableList$stub == input$variable]
+    var <- variableList$variableID[variableList$stub == input$variable &
+                                   variableList$tableID == tableList$tableID[tableList$stub == input$table]]
     
     acs <- acs::acs.fetch(geography = geog
                           , endyear = 2015 # we should be using 2016 5-year ACS data
@@ -264,7 +266,15 @@ server <- shinyServer(function(input, output, session) {
       
       if(input$varType == "Count") {
         
-        nDigits = 0
+        if(input$statToShow %in% c("Total", "Per 100k")) {
+          
+          nDigits = 0
+          
+        } else if(input$statToShow == "Percent") {
+          
+          nDigits = 2
+          
+        }
         
       } else if(input$varType %in% c("Proportion", "Mean")) {
         
