@@ -1,9 +1,17 @@
+#
+# Author:   Isaac Ahuvia
+# Date:     May 7, 2018
+# Purpose:  Fortify CCA shapefile so that it may added as a geom for future ggplot style plots
+#
+
+# clean global environment
+rm(list = ls())
+
+# load necssary packages
 library( dplyr )
 library( magrittr )
 library( ggplot2 )
 library( rgdal )
-
-rm(list = ls())
 
 ## Load
 CCAs_Shape <- 
@@ -27,3 +35,5 @@ CCAsF <- merge(CCAsF, lookup, by = "id")
 ## Save
 saveRDS(CCAs, "Data/CCAs.rds")
 saveRDS(CCAsF, "Data/CCAsF.rds")
+
+# end of script #

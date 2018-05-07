@@ -4,6 +4,9 @@
 # Purpose:  Understand how to aggregate standard errors from ACS estimates
 #
 
+# clear global environment
+rm( list = ls() )
+
 # load necessary packages
 library( acs )
 library( bitops )
