@@ -42,14 +42,14 @@ Features included in each branch:
 |  Calculate by individual/household|x|x|x|
 |  Specify total/percent/per 100k|x|x|x|
 |**Map**| | | |
-|  Custom title| | |x|
+|  Custom title| |x|x|
 |  Geography labels| | |x|
 |  Show as percent of whole| | |x|
 |  Lab themes| | |x|
 |  Save graphic button|x|x|x|
 |  Show code button| | |x|
 |**Bar Plot**| | | |
-|  Custom title| | |x|
+|  Custom title| |x|x|
 |  Direction (desc/ascending)|x|x|x|
 |  Number of geographies to include|x|x|x|
 |  Lab themes| | |x|
