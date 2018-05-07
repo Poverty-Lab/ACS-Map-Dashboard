@@ -11,6 +11,7 @@ rm( list = ls())
 
 # load necessary packages
 library(dplyr)
+library(lettercase)
 
 # load necessary data
 raw <- read.csv("https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/ACS2016_Table_Shells.csv", stringsAsFactors = F)
@@ -39,10 +40,21 @@ raw <- dplyr::select(raw,
 ## Filter to only loadable tables - IN FUTURE LET'S TRY TO MAKE MORE TABLES LOADABLE!
 raw <- raw[grepl(pattern = "B[0-9]{5}$", raw$tableID),]
 
+## Remove fake variables (have stubs but not actual data)
+raw <- raw[!(raw$rowType == "Variable Name" & raw$variableID == ""),]
+
 tableList <- raw[raw$rowType == "Table Name", c(2,4)]
 variableList <- raw[raw$rowType == "Variable Name", 2:4]
 universeList <- raw[raw$rowType == "Table Universe", c(2,4)]
 
+## Add a flag for median variables, so we can produce a warning in the app (medians can't be aggregated)
+tableList$medianFlag <- grepl("^MEDIAN", tableList$stub)
+
+## Table stubs to title case
+tableList$stub <- lettercase::str_title_case(tolower(tableList$stub))
+
+## Variable IDs to stubs, so that all variables will show in the dropdown menu (even when there are two whose stubs would otherwise both be "Under 5" or something like that)
+variableList$stubLong <- paste0(variableList$stub, " (", variableList$variableID, ")")
 
 ####  Save  ####
 saveRDS(tableList, file = "Data/Census_tables.rds")

@@ -10,15 +10,13 @@ library( bitops )
 library( DT )
 library( dplyr )
 library( ggplot2 )
-library( lettercase )
 library( RCurl )
 library( scales )
 library( shiny )
 
 
 #FOR TESTING
-#input <- c(); input$variable = variableList$stub[1]; input$varType = "Count"; input$varPop = "Individual"; input$round = "Round"
-#input <- c(); input$table = "RACE"; input$variable = "Black or African American alone"; input$varType = "Count"; input$varPop = "Individual"; input$round = "Round"
+#input <- c(); input$table = "Sex By Age"; input$variable = "Under 5 years (B01001_003)"; input$varType = "Count"; input$varPop = "Individual"; input$round = "Round"
 #x = estimate(acs); tractID = acs@geography$tract; type = input$varType; level = input$varPop; return_df = T
 
 ####  Server  ####
@@ -37,7 +35,7 @@ server <- shinyServer(function(input, output, session) {
                        , message = "Please specify this variable's population." ) )
     
     #download data
-    var <- variableList$variableID[variableList$stub == input$variable &
+    var <- variableList$variableID[variableList$stubLong == input$variable &
                                    variableList$tableID == tableList$tableID[tableList$stub == input$table]]
     
     acs <- acs::acs.fetch(geography = geog
@@ -82,7 +80,9 @@ server <- shinyServer(function(input, output, session) {
     }
     
     }
-    
+
+    if(tableList$medianFlag[tableList$stub == input$table] == T) {showNotification("You have selected a median, but medians cannot be aggregated up from tract to neighborhood", duration = NULL)}
+ 
     # return agg to the Global Environment
     return( agg )
   })
@@ -119,8 +119,7 @@ server <- shinyServer(function(input, output, session) {
       
       ####################
       ## IN DEVELOPMENT ##
-      # scale_fill_gradient(low = "#ffcccc", high = "#ff0000",  ## IN DEVELOPMENT - make colors dependent on lab branding ##
-      #                     labels = comma) +
+      # scale_fill_gradient() + #lab theme
       ####################
       
       theme(legend.title = element_blank()) +
@@ -164,11 +163,11 @@ server <- shinyServer(function(input, output, session) {
       ####################
       ## IN DEVELOPMENT ##
       # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
-      # ggtitle(input$titleBar) +
       ####################
-      
-      scale_y_continuous(labels = comma) +
-        xlab("Community Area") + ylab(input$variable) +
+        
+        ggtitle(input$titleBar) +
+        scale_y_continuous(labels = comma) +
+        xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
         themeMOE
       
       if(input$varType %in% c("Count", "Mean")) {
@@ -198,16 +197,15 @@ server <- shinyServer(function(input, output, session) {
       bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, eval(data$x)), y = data$x)
                  , stat = "identity") + #, fill = "#8a0021") +
-
         
       ####################
       ## IN DEVELOPMENT ##
       # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
-      # ggtitle(input$titleBar) +
       ####################
       
-      scale_y_continuous(labels = comma) +
-        xlab("Community Area") + ylab(input$variable) +
+        ggtitle(input$titleBar) +
+        scale_y_continuous(labels = comma) +
+        xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
         themeMOE
       
       if(input$varType %in% c("Count", "Mean")) {
@@ -229,7 +227,6 @@ server <- shinyServer(function(input, output, session) {
     }
   })
   
-
   # display user.map() in the UI
   output$map <- renderPlot({
     user.map()
@@ -303,17 +300,17 @@ server <- shinyServer(function(input, output, session) {
       DT::formatRound(columns = "x", digits = nDigits)
 
   })
-  
-  updateSelectizeInput(session, "table", choices = tableOptions, server = TRUE, selected = "UNWEIGHTED SAMPLE COUNT OF THE POPULATION")
 
+  output$instructions <- renderText("Press backspace to enable searching")
+  
   output$universe <- renderText(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])
   
   output$variableOptions <- renderUI({
     
     selectedTable <- tableList$tableID[tableList$stub == input$table]
-    variables <- variableList$stub[variableList$tableID == selectedTable]
+    variables <- variableList$stubLong[variableList$tableID == selectedTable]
 
-    selectizeInput("variable", "Variable from Table", choices = variables, multiple = FALSE, options = list(searchConjunction = "and"))
+    selectizeInput("variable", label = "Variable from Table", choices = variables)
     
   })
   

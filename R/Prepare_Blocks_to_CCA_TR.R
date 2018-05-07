@@ -10,6 +10,7 @@ rm(list = ls())
 # load necessary packages
 library( acs )
 library( dplyr )
+library( lettercase )
 
 ####  Prepare lookup  ####
 ## Download block:CCA lookup
@@ -101,6 +102,9 @@ lookup$tot.hu <- lookup$tot.hu * lookup$pct.hu
 
 lookup[lookup$tractID == "17031081403",]
 sum(lookup$tot.ind)
+
+## CCA name to Title Case
+lookup$CCA <- lettercase::str_title_case(tolower(lookup$CCA))
 
 ####  Save  ####
 saveRDS(lookup, file = "Data/Blocks_to_CCA_TR.rds")

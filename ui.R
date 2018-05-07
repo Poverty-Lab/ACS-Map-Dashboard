@@ -10,7 +10,6 @@ library( bitops )
 library( DT )
 library( dplyr )
 library( ggplot2 )
-library( lettercase )
 library( RCurl )
 library( scales )
 library( shiny )
@@ -27,21 +26,15 @@ ui <- fluidPage( fluidRow(br()),
                          
                          wellPanel("Data",
                                    
-                                   selectizeInput("table", "ACS Table", choices = tableOptions, multiple = FALSE, options = list(searchConjunction = "and")),
+                                   textOutput("instructions"),
+                                   selectizeInput("table", label = "ACS Table", selected = "Total Population", choices = tableOptions), #selected = "Total Population",
                                    textOutput("universe"),
-                                   
+                                   br(),
                                    shiny::uiOutput( outputId = "variableOptions" ),
-                                   
-                                   
                                    radioButtons("varType", "This variable is a:", choices = c("Count", "Proportion", "Mean"), inline = T),
                                    radioButtons("varPop", "This variable is of which population:", choices = c("Individual", "Household", "Housing Unit"), inline = T),
 
                                    shiny::uiOutput( outputId = "statToShow" )
-                                   
-                                   ################################
-                                   ## IN DEVELOPMENT - WISH LIST ##
-                                   #radioButtons("geog", "Geography", choices = geogOptions)
-                                   ################################
                                    
                          )
                          
@@ -63,12 +56,12 @@ ui <- fluidPage( fluidRow(br()),
                                               
                                               column(width = 3, 
                                                      
-                                                     wellPanel("Map Options"#,
+                                                     wellPanel("Map Options",
+                                                               
+                                                               textInput(label = "Title", inputId = "titleMap")
                                                                
                                                                ####################
                                                                ## IN DEVELOPMENT ##
-                                                               # textInput(label = "Title", inputId = "titleMap"),
-                                                               # checkboxGroupInput(label = "Map Features", inputId = "mapfeatures", choices = c("Geography Labels", "Show as Percent"), inline = T, selected = NULL),
                                                                # radioButtons(label = "Lab Theme", inputId = "labMap", choices = c("Poverty", "Crime"), selected = "Poverty")
                                                                ####################
                                                                
@@ -90,11 +83,7 @@ ui <- fluidPage( fluidRow(br()),
                                                      
                                                      wellPanel("Bar Plot Options",
                                                                
-                                                               ####################
-                                                               ## IN DEVELOPMENT ##
-                                                               # textInput(label = "Title", inputId = "titleBar"),
-                                                               ####################
-                                                               
+                                                               textInput(label = "Title", inputId = "titleBar"),
                                                                radioButtons(label = "Direction", inputId = "direction", choices = c("Descending", "Ascending"), inline = T, selected = "Descending"),
                                                                sliderInput(label = "Number of Geographies", inputId = "nGeog", min = 0, max = 20, value = 15, round = T)#,
                                                                
