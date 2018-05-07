@@ -27,7 +27,8 @@ ui <- fluidPage( fluidRow(br()),
                          
                          wellPanel("Data",
                                    
-                                   selectizeInput("table", "ACS Table", selected = "Total Population", choices = tableOptions, multiple = FALSE, options = list(searchConjunction = "and")),
+                                   textOutput("instructions"),
+                                   selectizeInput("table", label = "ACS Table", selected = "Total Population", choices = tableOptions), #selected = "Total Population",
                                    textOutput("universe"),
                                    br(),
                                    shiny::uiOutput( outputId = "variableOptions" ),

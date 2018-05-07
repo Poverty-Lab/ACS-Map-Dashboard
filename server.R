@@ -83,7 +83,7 @@ server <- shinyServer(function(input, output, session) {
     
     }
 
-    if(tableList$medianFlag[tableList$stub == input$table] == T) {warning("You have selected a median, but medians cannot be aggregated up from tract to neighborhood")}
+    if(tableList$medianFlag[tableList$stub == input$table] == T) {showNotification("You have selected a median, but medians cannot be aggregated up from tract to neighborhood", duration = NULL)}
  
     # return agg to the Global Environment
     return( agg )
@@ -305,9 +305,9 @@ server <- shinyServer(function(input, output, session) {
       DT::formatRound(columns = "x", digits = nDigits)
 
   })
-  
-  updateSelectizeInput(session, "table", choices = tableOptions, server = F, selected = "Total Population")
 
+  output$instructions <- renderText("Press backspace to enable searching")
+  
   output$universe <- renderText(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])
   
   output$variableOptions <- renderUI({
@@ -315,7 +315,7 @@ server <- shinyServer(function(input, output, session) {
     selectedTable <- tableList$tableID[tableList$stub == input$table]
     variables <- variableList$stub[variableList$tableID == selectedTable]
 
-    selectizeInput("variable", "Variable from Table", selected = "Total", choices = variables, multiple = FALSE, options = list(searchConjunction = "and"))
+    selectizeInput("variable", label = "Variable from Table", choices = variables)
     
   })
   
