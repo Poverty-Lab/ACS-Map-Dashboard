@@ -53,6 +53,8 @@ tableList$medianFlag <- grepl("^MEDIAN", tableList$stub)
 ## Table stubs to title case
 tableList$stub <- lettercase::str_title_case(tolower(tableList$stub))
 
+## Variable IDs to stubs, so that all variables will show in the dropdown menu (even when there are two whose stubs would otherwise both be "Under 5" or something like that)
+variableList$stub <- paste0(variableList$stub, " (", variableList$variableID, ")")
 
 ####  Save  ####
 saveRDS(tableList, file = "Data/Census_tables.rds")
