@@ -35,20 +35,18 @@ Features included in each branch:
 |Feature|Current Master Branch|Launch Version|Wish-list Version|
 |---|---|---|---|
 |**General**| | | |
-|  Confirmed tract:CCA conversion table| |x|x|
+|  Confirmed tract:CCA conversion table|x|x|x|
 |**Data Options**| | | |
-|  Premade plots|x| | |
-|  Custom plot - enter manually|x| | |
-|  Custom plot - dropdown| |x|x|
+|  Dropdown menu|x|x|x|
 |  Calculate by count/proportion/mean|x|x|x|
 |  Calculate by individual/household|x|x|x|
-|  Specify total/percent/per 100k| |x|x|
+|  Specify total/percent/per 100k|x|x|x|
 |**Map**| | | |
 |  Custom title| | |x|
 |  Geography labels| | |x|
-|  Show as percent| | |x|
+|  Show as percent of whole| | |x|
 |  Lab themes| | |x|
-|  Save graphic button| |x|x|
+|  Save graphic button|x|x|x|
 |  Show code button| | |x|
 |**Bar Plot**| | | |
 |  Custom title| | |x|
@@ -56,10 +54,10 @@ Features included in each branch:
 |  Number of geographies to include|x|x|x|
 |  Lab themes| | |x|
 |  Error bars| |x|x|
-|  Save graphic button| |x|x|
+|  Save graphic button|x|x|x|
 |  Show code button| | |x|
 |**Table**| | | |
-|  Save table button| |x|x|
+|  Save table button|x|x|x|
 |**Misc**| | | |
 |  Leaflet plots| | |x|
 
