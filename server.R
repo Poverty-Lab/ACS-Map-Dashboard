@@ -294,16 +294,6 @@ server <- shinyServer(function(input, output, session) {
 
   })
   
-  ####################
-  ## IN DEVELOPMENT ##
-  output$save <- downloadHandler(
-    filename = "plot.png",
-    content = function(file) {
-      ggsave(file, plot = map, device = "png")
-    }
-  )
-  ####################
-  
   updateSelectizeInput(session, "table", choices = tableOptions, server = TRUE, selected = "UNWEIGHTED SAMPLE COUNT OF THE POPULATION")
 
   output$universe <- renderText(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])

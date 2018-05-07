@@ -1,4 +1,15 @@
+#
+# Author:   Isaac Ahuvia
+# Date:     May 7, 2018
+# Purpose:  Modify and Confirm Census Blocks for Census Tracts to Chicago Community Area aggregation
+#
+
+# Clear global environment
 rm(list = ls())
+
+# load necessary packages
+library( acs )
+library( dplyr )
 
 ####  Prepare lookup  ####
 ## Download block:CCA lookup
@@ -17,9 +28,9 @@ lookup$CCA[lookup$CCA == "O'HARE"] <- "OHARE"
 
 names(lookup)[1:2] <- c("blockID", "tractID")
 
-## Reformat looku
-#right now, each variable shows what proportion of each tract's population is found within a given block (e.g. 1%);
-#we want it to say what proportion of each tract's population belongs to a given CCA (e.g. 0%, 50%, or 100%)
+## Reformat lookup
+## right now, each variable shows what proportion of each tract's population is found within a given block (e.g. 1%);
+## we want it to say what proportion of each tract's population belongs to a given CCA (e.g. 0%, 50%, or 100%)
 lookup <- lookup %>%
   dplyr::group_by(tractID, CCA) %>%
   dplyr::summarise(blocks = n(),
@@ -93,3 +104,5 @@ sum(lookup$tot.ind)
 
 ####  Save  ####
 saveRDS(lookup, file = "Data/Blocks_to_CCA_TR.rds")
+
+# end of script #

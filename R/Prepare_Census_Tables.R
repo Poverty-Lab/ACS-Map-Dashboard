@@ -5,8 +5,14 @@
 #
 
 ####  Startup  ####
+
+# clea global environment
+rm( list = ls()) 
+
+# load necessary packages
 library(dplyr)
 
+# load necessary data
 raw <- read.csv("https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/ACS2016_Table_Shells.csv", stringsAsFactors = F)
 
 
@@ -42,3 +48,5 @@ universeList <- raw[raw$rowType == "Table Universe", c(2,4)]
 saveRDS(tableList, file = "Data/Census_tables.rds")
 saveRDS(variableList, file = "Data/Census_variables.rds")
 saveRDS(universeList, file = "Data/Census_universes.rds")
+
+# end of script #
