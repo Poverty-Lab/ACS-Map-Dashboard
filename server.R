@@ -42,8 +42,9 @@ server <- shinyServer(function(input, output, session) {
                           , endyear = 2015 # we should be using 2016 5-year ACS data
                           , span = 5
                           , variable = var )
+
     agg <- tractToCCA(x = estimate(acs)
-                      , tractID = acs@geography$tract
+                      , tractID = geography( acs )$tract
                       , type = input$varType
                       , level = input$varPop
                       , return_df = T )

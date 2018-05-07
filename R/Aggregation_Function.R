@@ -3,15 +3,14 @@
 ##      2. Aggregation Function      ##
 #######################################
 
-
-####  Setup  ####
-library(dplyr)
-
 ####  Aggregate Function  ####
 tractToCCA <- function(x, tractID
                        , type = c("Count", "Proportion", "Mean")
                        , level = c("Individual", "Household", "Housing Unit")
                        , transformation = NA, return_df = FALSE ) {
+  
+  # require the dplyr package
+  require( dplyr )
   
   #x: The statistic to aggregate. A vector of the same length as tractID.
   #tractID: A vector of tract IDs to aggregate. 
@@ -34,8 +33,11 @@ tractToCCA <- function(x, tractID
     stop("level must be one of Individual, Household")
   }
   
-  
   ## Reformat tract ID as necessary
+  ## to ensure each value is an 11-digit string (FIPS Code)
+  ## '17' for Illinois
+  ## '031' for Cook County
+  ## 'XXXXXX' 6 digits for the census tract
   tractID <- as.character(tractID)
   tractID[nchar(tractID) == 5] <- paste0("170310", tractID[nchar(tractID) == 5])
   tractID[nchar(tractID) == 6] <- paste0("17031", tractID[nchar(tractID) == 6])

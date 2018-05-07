@@ -6,11 +6,9 @@ Run the app yourself using the following lines of code:
 
 ```R
 # install necessary packages
-install.packages( pkgs = c("dplyr", "shiny", "shinyjs"
-                           , "ggplot2", "scales", "shinyBS"
-                           , "shinythemes", "dygraphs", "plotly"
-                           , "DT", "shinydashboard", "grDevices"
-                           , "acs", "RCurl" ) )
+install.packages( pkgs = c("acs", "bitops", "DT" 
+                           , "dplyr", "ggplot2", "lettercase" 
+                           , "RCurl", "scales", "shiny" ) )
                            
 # load the shiny packages
 library( shiny )
