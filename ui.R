@@ -10,7 +10,6 @@ library( bitops )
 library( DT )
 library( dplyr )
 library( ggplot2 )
-library( lettercase )
 library( RCurl )
 library( scales )
 library( shiny )
@@ -62,11 +61,12 @@ ui <- fluidPage( fluidRow(br()),
                                               
                                               column(width = 3, 
                                                      
-                                                     wellPanel("Map Options"#,
+                                                     wellPanel("Map Options",
+                                                               
+                                                               textInput(label = "Title", inputId = "titleMap")
                                                                
                                                                ####################
                                                                ## IN DEVELOPMENT ##
-                                                               # textInput(label = "Title", inputId = "titleMap"),
                                                                # checkboxGroupInput(label = "Map Features", inputId = "mapfeatures", choices = c("Geography Labels", "Show as Percent"), inline = T, selected = NULL),
                                                                # radioButtons(label = "Lab Theme", inputId = "labMap", choices = c("Poverty", "Crime"), selected = "Poverty")
                                                                ####################
@@ -89,11 +89,7 @@ ui <- fluidPage( fluidRow(br()),
                                                      
                                                      wellPanel("Bar Plot Options",
                                                                
-                                                               ####################
-                                                               ## IN DEVELOPMENT ##
-                                                               # textInput(label = "Title", inputId = "titleBar"),
-                                                               ####################
-                                                               
+                                                               textInput(label = "Title", inputId = "titleBar"),
                                                                radioButtons(label = "Direction", inputId = "direction", choices = c("Descending", "Ascending"), inline = T, selected = "Descending"),
                                                                sliderInput(label = "Number of Geographies", inputId = "nGeog", min = 0, max = 20, value = 15, round = T)#,
                                                                

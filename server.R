@@ -10,7 +10,6 @@ library( bitops )
 library( DT )
 library( dplyr )
 library( ggplot2 )
-library( lettercase )
 library( RCurl )
 library( scales )
 library( shiny )
@@ -166,10 +165,10 @@ server <- shinyServer(function(input, output, session) {
       ####################
       ## IN DEVELOPMENT ##
       # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
-      # ggtitle(input$titleBar) +
       ####################
-      
-      scale_y_continuous(labels = comma) +
+        
+        ggtitle(input$titleBar) +
+        scale_y_continuous(labels = comma) +
         xlab("Community Area") + ylab(input$variable) +
         themeMOE
       
@@ -205,10 +204,10 @@ server <- shinyServer(function(input, output, session) {
       ####################
       ## IN DEVELOPMENT ##
       # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
-      # ggtitle(input$titleBar) +
       ####################
       
-      scale_y_continuous(labels = comma) +
+        ggtitle(input$titleBar) +
+        scale_y_continuous(labels = comma) +
         xlab("Community Area") + ylab(input$variable) +
         themeMOE
       

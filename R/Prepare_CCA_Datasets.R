@@ -12,6 +12,7 @@ library( dplyr )
 library( magrittr )
 library( ggplot2 )
 library( rgdal )
+library( lettercase )
 
 ## Load
 CCAs_Shape <- 
@@ -31,6 +32,10 @@ lookup <- data.frame(id = as.character(seq(0, 76)),
                      CCANum = CCAs$CCANum,
                      stringsAsFactors = F)
 CCAsF <- merge(CCAsF, lookup, by = "id")
+
+## Change CCA names to Title Case
+CCAs$CCA <- lettercase::str_title_case(tolower(CCAs$CCA))
+CCAsF$CCA <- lettercase::str_title_case(tolower(CCAsF$CCA))
 
 ## Save
 saveRDS(CCAs, "Data/CCAs.rds")

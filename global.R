@@ -10,7 +10,6 @@ library( bitops )
 library( DT )
 library( dplyr )
 library( ggplot2 )
-library( lettercase )
 library( RCurl )
 library( scales )
 library( shiny )
@@ -33,12 +32,12 @@ source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dash
 ####  Load data  ####
 ## Load CCA lists to append data onto
 CCAs <- 
-  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/CCAs.rds?raw=true" ) %>%
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/dev_ia/Data/CCAs.rds?raw=true" ) %>%
   gzcon() %>%
   readRDS()
 
 CCAsF <-  # a fortified version compatible with ggplot
-  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/CCAsF.rds?raw=true" ) %>%
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/dev_ia/Data/CCAsF.rds?raw=true" ) %>%
   gzcon() %>%
   readRDS()
 
