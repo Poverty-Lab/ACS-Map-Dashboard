@@ -44,17 +44,17 @@ CCAsF <-  # a fortified version compatible with ggplot
 
 #lists of census variables, tables, universes of data for each table
 tableList <- 
-  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Census_tables.rds?raw=true" ) %>%
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/dev_ia/Data/Census_tables.rds?raw=true" ) %>%
   gzcon() %>%
   readRDS()
 
 universeList <- 
-  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Census_universes.rds?raw=true" ) %>%
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/dev_ia/Data/Census_universes.rds?raw=true" ) %>%
   gzcon() %>%
   readRDS()
 
 variableList <- 
-  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Census_variables.rds?raw=true" ) %>%
+  url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/dev_ia/Data/Census_variables.rds?raw=true" ) %>%
   gzcon() %>%
   readRDS()
 
