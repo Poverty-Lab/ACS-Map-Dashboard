@@ -35,7 +35,7 @@ server <- shinyServer(function(input, output, session) {
                        , message = "Please specify this variable's population." ) )
     
     #download data
-    var <- variableList$variableID[variableList$stub == input$variable &
+    var <- variableList$variableID[variableList$stubLong == input$variable &
                                    variableList$tableID == tableList$tableID[tableList$stub == input$table]]
     
     acs <- acs::acs.fetch(geography = geog
