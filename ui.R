@@ -36,11 +36,6 @@ ui <- fluidPage( fluidRow(br()),
 
                                    shiny::uiOutput( outputId = "statToShow" )
                                    
-                                   ################################
-                                   ## IN DEVELOPMENT - WISH LIST ##
-                                   #radioButtons("geog", "Geography", choices = geogOptions)
-                                   ################################
-                                   
                          )
                          
                   ),
@@ -67,7 +62,6 @@ ui <- fluidPage( fluidRow(br()),
                                                                
                                                                ####################
                                                                ## IN DEVELOPMENT ##
-                                                               # checkboxGroupInput(label = "Map Features", inputId = "mapfeatures", choices = c("Geography Labels", "Show as Percent"), inline = T, selected = NULL),
                                                                # radioButtons(label = "Lab Theme", inputId = "labMap", choices = c("Poverty", "Crime"), selected = "Poverty")
                                                                ####################
                                                                

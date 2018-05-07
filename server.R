@@ -119,8 +119,7 @@ server <- shinyServer(function(input, output, session) {
       
       ####################
       ## IN DEVELOPMENT ##
-      # scale_fill_gradient(low = "#ffcccc", high = "#ff0000",  ## IN DEVELOPMENT - make colors dependent on lab branding ##
-      #                     labels = comma) +
+      # scale_fill_gradient() + #lab theme
       ####################
       
       theme(legend.title = element_blank()) +
@@ -198,7 +197,6 @@ server <- shinyServer(function(input, output, session) {
       bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, eval(data$x)), y = data$x)
                  , stat = "identity") + #, fill = "#8a0021") +
-
         
       ####################
       ## IN DEVELOPMENT ##
@@ -229,7 +227,6 @@ server <- shinyServer(function(input, output, session) {
     }
   })
   
-
   # display user.map() in the UI
   output$map <- renderPlot({
     user.map()
