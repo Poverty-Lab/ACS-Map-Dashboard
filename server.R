@@ -16,8 +16,7 @@ library( shiny )
 
 
 #FOR TESTING
-#input <- c(); input$variable = variableList$stub[1]; input$varType = "Count"; input$varPop = "Individual"; input$round = "Round"
-#input <- c(); input$table = "RACE"; input$variable = "Black or African American alone"; input$varType = "Count"; input$varPop = "Individual"; input$round = "Round"
+#input <- c(); input$table = "Sex By Age"; input$variable = "Under 5 years (B01001_003)"; input$varType = "Count"; input$varPop = "Individual"; input$round = "Round"
 #x = estimate(acs); tractID = acs@geography$tract; type = input$varType; level = input$varPop; return_df = T
 
 ####  Server  ####
@@ -169,7 +168,7 @@ server <- shinyServer(function(input, output, session) {
         
         ggtitle(input$titleBar) +
         scale_y_continuous(labels = comma) +
-        xlab("Community Area") + ylab(input$variable) +
+        xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
         themeMOE
       
       if(input$varType %in% c("Count", "Mean")) {
