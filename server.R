@@ -84,6 +84,8 @@ server <- shinyServer(function(input, output, session) {
     }
     
     # return agg to the Global Environment
+    if(tableList$medianFlag[tableList$stub == input$table] == T) {warning("You have selected a median, but medians cannot be aggregated up from tract to neighborhood")}
+    
     return( agg )
   })
   

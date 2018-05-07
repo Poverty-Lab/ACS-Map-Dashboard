@@ -43,6 +43,9 @@ tableList <- raw[raw$rowType == "Table Name", c(2,4)]
 variableList <- raw[raw$rowType == "Variable Name", 2:4]
 universeList <- raw[raw$rowType == "Table Universe", c(2,4)]
 
+## Add a flag for median variables, so we can produce a warning in the app (medians can't be aggregated)
+tableList$medianFlag <- grepl("^MEDIAN", tableList$stub)
+
 
 ####  Save  ####
 saveRDS(tableList, file = "Data/Census_tables.rds")
