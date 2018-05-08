@@ -50,21 +50,21 @@ geog <-
 ## Individuals
 var.ind <- "B01003_001"
 ind <- acs::acs.fetch(geography = geog
-                      , endyear = 2015 # we should be using 2016 5-year ACS data
+                      , endyear = 2016
                       , span = 5
                       , variable = var.ind )
 
 ## Households
 var.hh <- "B11016_001"
 hh <- acs::acs.fetch(geography = geog
-                      , endyear = 2015 # we should be using 2016 5-year ACS data
+                      , endyear = 2016
                       , span = 5
                       , variable = var.hh )
 
 ## Housing units
 var.hu <- "B25001_001"
 hu <- acs::acs.fetch(geography = geog
-                      , endyear = 2015 # we should be using 2016 5-year ACS data
+                      , endyear = 2016
                       , span = 5
                       , variable = var.hu )
 

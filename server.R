@@ -27,8 +27,9 @@ server <- shinyServer(function(input, output, session) {
   user.data <- reactive({
     # require that the three inputs needed to fetch ACS data are not NULL
     # note: used to hide initial error message when data is loading
-    validate( need( expr = input$variable
-                    , message = "Please select a variable. Note: data is being downloaded over the internet so please be patient." )
+    validate( need( expr = variableList$stubLong == input$variable &
+                        variableList$tableID == tableList$tableID[tableList$stub == input$table]
+                      , message = "Loading. If no data loads, make sure you have selected a table and variable" )
               , need( expr = input$varType
                       , message = "Please specify this variable's type." )
               , need( expr = input$varPop
@@ -37,9 +38,9 @@ server <- shinyServer(function(input, output, session) {
     #download data
     var <- variableList$variableID[variableList$stubLong == input$variable &
                                    variableList$tableID == tableList$tableID[tableList$stub == input$table]]
-    
+
     acs <- acs::acs.fetch(geography = geog
-                          , endyear = 2015 # we should be using 2016 5-year ACS data
+                          , endyear = 2016
                           , span = 5
                           , variable = var )
 
@@ -56,7 +57,7 @@ server <- shinyServer(function(input, output, session) {
     
     var.pop <- paste0(strsplit(var, "_")[[1]][1], "_001")
     acs.pop <- acs::acs.fetch(geography = geog
-                          , endyear = 2015 # we should be using 2016 5-year ACS data
+                          , endyear = 2016
                           , span = 5
                           , variable = var.pop )
     agg.pop <- tractToCCA(x = estimate(acs.pop)
@@ -116,13 +117,7 @@ server <- shinyServer(function(input, output, session) {
                    , color = NA, size = .25) +
       coord_map() +
       ggtitle(input$titleMap) + 
-      
-      ####################
-      ## IN DEVELOPMENT ##
-      # scale_fill_gradient() + #lab theme
-      ####################
-      
-      theme(legend.title = element_blank()) +
+      themeTitle +
       themeMap
     
     if(input$varType %in% c("Count", "Mean")) {
@@ -158,14 +153,14 @@ server <- shinyServer(function(input, output, session) {
 
       bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, desc(eval(data$x))), y = data$x)
-                 , stat = "identity") + #, fill = "#8a0021") +
+                 , stat = "identity", fill = "#8a0021") +
         
       ####################
       ## IN DEVELOPMENT ##
       # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
       ####################
         
-        ggtitle(input$titleBar) +
+        ggtitle(input$titleBar) + theme(plot.title = element_text(hjust = 0.5, size = 20)) +
         scale_y_continuous(labels = comma) +
         xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
         themeMOE
@@ -196,14 +191,14 @@ server <- shinyServer(function(input, output, session) {
 
       bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, eval(data$x)), y = data$x)
-                 , stat = "identity") + #, fill = "#8a0021") +
+                 , stat = "identity", fill = "#8a0021") +
         
       ####################
       ## IN DEVELOPMENT ##
       # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
       ####################
       
-        ggtitle(input$titleBar) +
+        ggtitle(input$titleBar) + theme(plot.title = element_text(hjust = 0.5, size = 20)) +
         scale_y_continuous(labels = comma) +
         xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
         themeMOE
@@ -288,7 +283,7 @@ server <- shinyServer(function(input, output, session) {
     # transfrom user.data()
     # to be dislayed on a DataTable
     datatable( data = user.data()
-               , caption = "Table 1. 2015 5-Year ACS statistics by CCA"
+               , caption = "Table 1. 2016 5-Year ACS statistics by CCA"
                , colnames = c("CCA", input$variable )
                , extensions = "Buttons"
                , rownames = F

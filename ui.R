@@ -102,6 +102,7 @@ ui <- fluidPage( fluidRow(br()),
                                               
                                               column(width = 6,
                                                      
+                                                     br(),
                                                      dataTableOutput( outputId = "table" )
                                                      
                                               ),
