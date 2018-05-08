@@ -40,7 +40,7 @@ server <- shinyServer(function(input, output, session) {
                                    variableList$tableID == tableList$tableID[tableList$stub == input$table]]
 
     acs <- acs::acs.fetch(geography = geog
-                          , endyear = 2015 # we should be using 2016 5-year ACS data
+                          , endyear = 2016
                           , span = 5
                           , variable = var )
 
@@ -57,7 +57,7 @@ server <- shinyServer(function(input, output, session) {
     
     var.pop <- paste0(strsplit(var, "_")[[1]][1], "_001")
     acs.pop <- acs::acs.fetch(geography = geog
-                          , endyear = 2015 # we should be using 2016 5-year ACS data
+                          , endyear = 2016
                           , span = 5
                           , variable = var.pop )
     agg.pop <- tractToCCA(x = estimate(acs.pop)
@@ -283,7 +283,7 @@ server <- shinyServer(function(input, output, session) {
     # transfrom user.data()
     # to be dislayed on a DataTable
     datatable( data = user.data()
-               , caption = "Table 1. 2015 5-Year ACS statistics by CCA"
+               , caption = "Table 1. 2016 5-Year ACS statistics by CCA"
                , colnames = c("CCA", input$variable )
                , extensions = "Buttons"
                , rownames = F
