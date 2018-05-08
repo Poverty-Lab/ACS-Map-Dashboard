@@ -27,11 +27,9 @@ themeTitle <- theme(legend.title = element_blank(),
 themeMOE <- theme(panel.background=element_blank(),
                   axis.text.x = element_text(angle = 45, hjust = 1))
 
-themeTot.100k <- scale_fill_gradient(labels = comma,
-                                     low = "#ffcccc", high = "#8a0021") #color
+themeTot.100k <- scale_fill_gradient(labels = comma)
 
-themePct <- scale_fill_gradient(labels = scales::percent,
-                                low = "#ffcccc", high = "#8a0021") #color
+themePct <- scale_fill_gradient(labels = scales::percent)
 
 themeTot.100k_bar <- scale_y_continuous(labels = comma)
 

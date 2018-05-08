@@ -116,13 +116,7 @@ server <- shinyServer(function(input, output, session) {
                    , color = NA, size = .25) +
       coord_map() +
       ggtitle(input$titleMap) + 
-      
-      ####################
-      ## IN DEVELOPMENT ##
-      # scale_fill_gradient() + #lab theme
-      ####################
-      
-      theme(legend.title = element_blank()) +
+      themeTitle +
       themeMap
     
     if(input$varType %in% c("Count", "Mean")) {
@@ -158,14 +152,14 @@ server <- shinyServer(function(input, output, session) {
 
       bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, desc(eval(data$x))), y = data$x)
-                 , stat = "identity") + #, fill = "#8a0021") +
+                 , stat = "identity", fill = "#8a0021") +
         
       ####################
       ## IN DEVELOPMENT ##
       # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
       ####################
         
-        ggtitle(input$titleBar) +
+        ggtitle(input$titleBar) + theme(plot.title = element_text(hjust = 0.5, size = 20)) +
         scale_y_continuous(labels = comma) +
         xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
         themeMOE
@@ -196,14 +190,14 @@ server <- shinyServer(function(input, output, session) {
 
       bar <- ggplot() +
         geom_bar(aes(x = reorder(data$CCA, eval(data$x)), y = data$x)
-                 , stat = "identity") + #, fill = "#8a0021") +
+                 , stat = "identity", fill = "#8a0021") +
         
       ####################
       ## IN DEVELOPMENT ##
       # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
       ####################
       
-        ggtitle(input$titleBar) +
+        ggtitle(input$titleBar) + theme(plot.title = element_text(hjust = 0.5, size = 20)) +
         scale_y_continuous(labels = comma) +
         xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
         themeMOE
