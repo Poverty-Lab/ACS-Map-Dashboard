@@ -27,8 +27,9 @@ server <- shinyServer(function(input, output, session) {
   user.data <- reactive({
     # require that the three inputs needed to fetch ACS data are not NULL
     # note: used to hide initial error message when data is loading
-    validate( need( expr = input$variable
-                    , message = "Please select a variable. Note: data is being downloaded over the internet so please be patient." )
+    validate( need( expr = variableList$stubLong == input$variable &
+                        variableList$tableID == tableList$tableID[tableList$stub == input$table]
+                      , message = "Loading. If no data loads, make sure you have selected a table and variable" )
               , need( expr = input$varType
                       , message = "Please specify this variable's type." )
               , need( expr = input$varPop
@@ -37,7 +38,7 @@ server <- shinyServer(function(input, output, session) {
     #download data
     var <- variableList$variableID[variableList$stubLong == input$variable &
                                    variableList$tableID == tableList$tableID[tableList$stub == input$table]]
-    
+
     acs <- acs::acs.fetch(geography = geog
                           , endyear = 2015 # we should be using 2016 5-year ACS data
                           , span = 5
