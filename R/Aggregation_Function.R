@@ -12,11 +12,10 @@ tractToCCA <- function(acs
                        , level = c("Individual", "Household", "Housing Unit")) {
   
   ####  Readme  ####
-  #acs: 
-  #est
-  #se
-  #OLD:  x: The ACS object to aggregate. estimate(x) should be the estimate and standard.error(x) should be the standard error.
-  #tractID: A vector of tract IDs to aggregate. 
+  #acs: An ACS object from which to draw the estimate in question, its standard error, and the tractIDs for each value
+  #est: A vector of estimates to aggregate. If you supply an acs object, est will automatically populate from that.
+  #se: A vector of standard errors to aggregate. If you supply an acs object, se will automatically populate from that.
+  #tractID: A vector of tract IDs to aggregate. If you supply an acs object, tractID will automatically populate from that.
   #type: The type of statistic to aggregate. Count, proportion, or ratio.
   #level: The level of analysis. Individual or household.
   
