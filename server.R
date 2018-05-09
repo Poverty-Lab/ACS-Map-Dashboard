@@ -44,11 +44,9 @@ server <- shinyServer(function(input, output, session) {
                           , span = 5
                           , variable = var )
 
-    agg <- tractToCCA(x = estimate(acs)
-                      , tractID = geography( acs )$tract
+    agg <- tractToCCA(acs = acs
                       , type = input$varType
-                      , level = input$varPop
-                      , return_df = T )
+                      , level = input$varPop)
     
     #also grab a total population estimate for this variable, to be used for calculating percent & per 100k outputs,
     #by downloading the Bxxxxx_001 variant of whatever table
@@ -60,25 +58,36 @@ server <- shinyServer(function(input, output, session) {
                           , endyear = 2016
                           , span = 5
                           , variable = var.pop )
-    agg.pop <- tractToCCA(x = estimate(acs.pop)
-                      , tractID = acs.pop@geography$tract
-                      , type = input$varType
-                      , level = input$varPop
-                      , return_df = T )
-    agg.pop <- dplyr::rename(agg.pop, x.pop = x)
-    
+    agg.pop <- tractToCCA(acs = acs.pop 
+                          , type = input$varType
+                          , level = input$varPop)
+
     # merge on x.pop
     if(input$statToShow == "Percent") {
       
-      agg$x <- agg$x / agg.pop$x.pop
-      agg <- dplyr::select(agg, CCA, x)
+      #calculate estimate as percent
+      agg$est <- agg$est / agg.pop$est
       
+      #calculate margin of error as percent - see A-14 of https://www.census.gov/content/dam/Census/library/publications/2009/acs/ACSResearch.pdf
+      agg$moe <- sqrt(agg$moe^2 - ((agg$est^2) * (agg.pop$moe^2))) / agg.pop$est
+            
+      agg <- dplyr::select(agg, CCA, est)
+
     } else if(input$statToShow == "Per 100k") {
       
-      agg$x <- (agg$x / agg.pop$x.pop) * 100000
-      agg <- dplyr::select(agg, CCA, x)
+      #calculate estimate as percent
+      agg$est <- agg$est / agg.pop$est
       
-    }
+      #calculate margin of error as percent - see A-14 of https://www.census.gov/content/dam/Census/library/publications/2009/acs/ACSResearch.pdf
+      agg$moe <- sqrt(agg$moe^2 - ((agg$est^2) * (agg.pop$moe^2))) / agg.pop$est
+      
+      #multiply both by 100,000
+      agg$est <- agg$est * 100000
+      agg$moe <- agg$moe * 100000
+      
+      agg <- dplyr::select(agg, CCA, est)
+    
+      }
     
     }
 

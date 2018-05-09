@@ -4,40 +4,67 @@
 #######################################
 
 ####  Aggregate Function  ####
-tractToCCA <- function(x, tractID
+tractToCCA <- function(acs
+                       , est = NULL
+                       , se = NULL
+                       , tractID = NULL
                        , type = c("Count", "Proportion", "Mean")
-                       , level = c("Individual", "Household", "Housing Unit")
-                       , transformation = NA, return_df = FALSE ) {
+                       , level = c("Individual", "Household", "Housing Unit")) {
   
-  # require the dplyr package
-  require( dplyr )
-  
-  #x: The statistic to aggregate. A vector of the same length as tractID.
+  ####  Readme  ####
+  #acs: 
+  #est
+  #se
+  #OLD:  x: The ACS object to aggregate. estimate(x) should be the estimate and standard.error(x) should be the standard error.
   #tractID: A vector of tract IDs to aggregate. 
   #type: The type of statistic to aggregate. Count, proportion, or ratio.
   #level: The level of analysis. Individual or household.
-  #transformation: If you want to take a count and turn it into a proportion by CCA (not really sure how to do this - will have to ID pop variables for each var) 
-  #return_df: If TRUE, returns df with CCA & statistic, otherwise a named vector of the statistic.
+  
+  
+  
+  ####  Setup  ####
+  ## Package requirements
+  require( dplyr )
+  
   
   ## Requirements
-  if(!length(x) > 1 & length(x) == length(tractID)) {
-    stop("x must be a vector corresponding to statistics for each tract; x and tractID must be the same length")
+  if(!is.null(acs) & (!is.null(est) | !is.null(se) | !is.null(tractID))) {
+    warning("'acs' is not null; 'est', 'se', and 'tractID' will be calculated from this object and overwritten")
   }
-  if(!length(tractID) > 1 & length(x) == length(tractID)) {
-    stop("tractID must be a vector corresponding to each tract; x and tractID must be the same length")
+  
+  if(is.null(acs) & (is.null(est) | is.null(se) | is.null(tractID))) {
+    stop("must supply either 'acs' or all of 'est', 'se', and 'tractID'")
   }
+  
+  if(is.null(acs) & (length(est) != length(se) | length(est) != length(tractID))) {
+    stop("'est', 'se', and 'tractID' must be of the same length")
+  }
+  
   if(!type %in% c("Count", "Proportion", "Mean")) {
     stop("type must be one of Count, Proportion, or Mean")
   }
+  
   if(!level %in% c("Individual", "Household", "Housing Unit")) {
-    stop("level must be one of Individual, Household")
+    stop("level must be one of Individual, Household, Housing Unit")
   }
   
+  
+  ## If supplied acs, break down into est, se, and tractID
+  if(!is.null(acs)) {
+    
+    est <- acs::estimate(acs)
+    se <- acs::standard.error(acs)
+    tractID <- acs::geography(acs)$tract
+    
+  }
+  
+  
+  ####  Merge Inputs  ####
   ## Reformat tract ID as necessary
-  ## to ensure each value is an 11-digit string (FIPS Code)
-  ## '17' for Illinois
-  ## '031' for Cook County
-  ## 'XXXXXX' 6 digits for the census tract
+  #to ensure each value is an 11-digit string (FIPS Code)
+  #'17' for Illinois
+  #'031' for Cook County
+  #'XXXXXX' 6 digits for the census tract
   tractID <- as.character(tractID)
   tractID[nchar(tractID) == 5] <- paste0("170310", tractID[nchar(tractID) == 5])
   tractID[nchar(tractID) == 6] <- paste0("17031", tractID[nchar(tractID) == 6])
@@ -45,11 +72,14 @@ tractToCCA <- function(x, tractID
   
   ## Merge inputs to lookup dataframe for aggregation
   inputs <- data.frame(tractID = as.character(tractID),
-                       x = as.numeric(x),
+                       est = as.numeric(est),
+                       se = as.numeric(se),
                        stringsAsFactors = F)
   df <- merge(lookup, inputs, by = "tractID")
   
   
+  
+  ####  Aggregate Estimate  ####
   if(level == "Individual") {
     df$tot <- df$tot.ind
     df$pct <- df$pct.ind
@@ -65,45 +95,62 @@ tractToCCA <- function(x, tractID
   ## Aggregate
   if(type == "Count") {
     
-    dfOut <- df %>%
-      dplyr::mutate(x.Count = x * pct) %>% #calculate total income for each tract-CCA pairing
+    df.aggEst <- df %>%
+      dplyr::mutate(est = est * pct) %>% #calculate estimate, split by tract:CCA pair (e.g. males per tract:CCA pair)
       dplyr::group_by(CCA) %>%
-      dplyr::summarise(x = sum(x.Count, na.rm = T)) %>% #returns a count
+      dplyr::summarise(est = sum(est, na.rm = T)) %>% #calculate estimate, totalled for each CCA (e.g. males per CCA)
       dplyr::filter(!is.na(CCA)) %>%
-      dplyr::select(CCA, x)
+      dplyr::select(CCA, est)
     
-  } else if(type == "Proportion") {
+  } else if(type %in% c("Mean", "Proportion")) {
     
-    dfOut <- df %>%
-      dplyr::mutate(x.Count = x * tot) %>% #calculate total income for each tract-CCA pairing              ######### WHAT TO DO ABOUT MOE?
+    df.aggEst <- df %>%
+      dplyr::mutate(est.num = est * tot) %>% #calculate total estimate for each tract-CCA pairing (e.g. total income for a tract:CCA pair)
       dplyr::group_by(CCA) %>%
-      dplyr::summarise(x.Count = sum(x.Count, na.rm = T),
-                       tot = sum(tot, na.rm = T)) %>%
-      dplyr::mutate(x = x.Count / tot) %>% #returns a proportion
+      dplyr::summarise(est.num = sum(est.num, na.rm = T), #calculate total estimate for each CCA (e.g. total income for a CCA); the numerator
+                       est.denom = sum(tot, na.rm = T)) %>% #calculate total population for each CCA (e.g. total individuals over 25); the denomenator
+      dplyr::mutate(est = est.num / est.denom) %>% #calculate the original mean or proportion for the statistic
       dplyr::filter(!is.na(CCA)) %>%
-      dplyr::select(CCA, x)
-    
-  } else if(type == "Mean") {
-    
-    dfOut <- df %>%
-      dplyr::mutate(x.Count = x * tot) %>% #calculate total income for each tract-CCA pairing              ######### WHAT TO DO ABOUT MOE?
-      dplyr::group_by(CCA) %>%
-      dplyr::summarise(x.Count = sum(x.Count, na.rm = T),
-                       tot = sum(tot, na.rm = T)) %>%
-      dplyr::mutate(x = x.Count / tot) %>% #returns a mean
-      dplyr::filter(!is.na(CCA)) %>%
-      dplyr::select(CCA, x)
+      dplyr::select(CCA, est)
     
   } 
   
-  out <- dfOut$x
-  names(out) <- dfOut$CCA
   
-  if(return_df == T) {
-    return(dfOut)
-  } else {
-    return(out) #returns a named vector of CCA-level statistics 
+  
+  ####  Aggregate Standard Errors  ####
+  
+  #for aggregation math, see page A-14 in https://www.census.gov/content/dam/Census/library/publications/2009/acs/ACSResearch.pdf
+  
+  #for tracts with a split of 90/10 or more severe, just assign all error to the CCA that includes >90% of the tract's population
+  #otherwise, we assign the standard error to both CCAs (this is the most conservative way to estimate the new standard error)
+  #we're only splitting these by more than 10% df[which(df$pct.ind > .1 & df$pct.ind < .9),]
+  df$pct.ind[df$pct.ind >= .9] <- 1
+  df <- df[!df$pct.ind < .1,]
+  
+  if(type == "Count") {
+    
+    df.aggSE <- df %>%
+      dplyr::mutate(moe = se * 1.645) %>% #calculate 90% margin of error from standard error
+      dplyr::mutate(moe.sq = moe ^ 2) %>% #sqare margin of error
+      dplyr::group_by(CCA) %>%
+      dplyr::summarise(moe = sqrt(sum(moe.sq))) %>% #take root of sum of squares
+      dplyr::filter(!is.na(CCA)) %>%
+      dplyr::select(CCA, moe)
+    
+  } else if(type %in% c("Mean", "Proportion")) {
+    
+    showNotification("This version does not support margins of error for non-count variables", duration = 10)
+    
   }
+  
+  ## For later...
+  #Aggregating medians:  http://www.dof.ca.gov/Forecasting/Demographics/Census_Data_Center_Network/documents/How_to_Recalculate_a_Median.pdf
+  #See also https://en.wikipedia.org/wiki/Pareto_interpolation
+  
+  df.out <- merge(df.aggEst, df.aggSE, by = "CCA")
+  
+  ####  Return  ####
+  return(df.out)
   
 }
 
