@@ -279,9 +279,13 @@ server <- shinyServer(function(input, output, session) {
       
     }
     
+    data = user.data()
+    data[,c(2,3)] <- round(data[,c(2,3)], digits = nDigits)
+    data$moe <- paste0("+/- ", data$moe)
+    
     # transfrom user.data()
     # to be dislayed on a DataTable
-    datatable( data = user.data()
+    datatable( data = data
                , caption = "Table 1. 2016 5-Year ACS statistics by CCA"
                , colnames = c("CCA", input$variable, "90% Margin of Error" )
                , extensions = "Buttons"
@@ -290,8 +294,7 @@ server <- shinyServer(function(input, output, session) {
                                  , buttons = list( "csv" )
                                  , lengthMenu = list( c(15, 35, -1)
                                                       , c(15, 35, "All 77") )
-                                 , pageLength = 15 ) ) %>%
-      DT::formatRound(columns = c("est", "moe"), digits = nDigits)
+                                 , pageLength = 15 ) ) 
 
   })
 
