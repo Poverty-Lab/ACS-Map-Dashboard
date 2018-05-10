@@ -53,7 +53,7 @@ Features included in each branch:
 |  Direction (desc/ascending)|x|x|x|
 |  Number of geographies to include|x|x|x|
 |  Lab themes| | |x|
-|  Error bars| |x|x|
+|  Error bars|x|x|x|
 |  Save graphic button|x|x|x|
 |  Show code button| | |x|
 |**Table**| | | |
