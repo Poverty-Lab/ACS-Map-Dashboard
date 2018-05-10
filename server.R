@@ -44,11 +44,9 @@ server <- shinyServer(function(input, output, session) {
                           , span = 5
                           , variable = var )
 
-    agg <- tractToCCA(x = estimate(acs)
-                      , tractID = geography( acs )$tract
+    agg <- tractToCCA(acs = acs
                       , type = input$varType
-                      , level = input$varPop
-                      , return_df = T )
+                      , level = input$varPop)
     
     #also grab a total population estimate for this variable, to be used for calculating percent & per 100k outputs,
     #by downloading the Bxxxxx_001 variant of whatever table
@@ -60,25 +58,36 @@ server <- shinyServer(function(input, output, session) {
                           , endyear = 2016
                           , span = 5
                           , variable = var.pop )
-    agg.pop <- tractToCCA(x = estimate(acs.pop)
-                      , tractID = acs.pop@geography$tract
-                      , type = input$varType
-                      , level = input$varPop
-                      , return_df = T )
-    agg.pop <- dplyr::rename(agg.pop, x.pop = x)
-    
-    # merge on x.pop
+    agg.pop <- tractToCCA(acs = acs.pop 
+                          , type = input$varType
+                          , level = input$varPop)
+
+    # tack on population estimate
     if(input$statToShow == "Percent") {
       
-      agg$x <- agg$x / agg.pop$x.pop
-      agg <- dplyr::select(agg, CCA, x)
+      #calculate estimate as percent
+      agg$est <- agg$est / agg.pop$est
       
+      #calculate margin of error as percent - see A-14 of https://www.census.gov/content/dam/Census/library/publications/2009/acs/ACSResearch.pdf
+      agg$moe <- sqrt(agg$moe^2 - ((agg$est^2) * (agg.pop$moe^2))) / agg.pop$est
+            
+      agg <- dplyr::select(agg, CCA, est, moe)
+
     } else if(input$statToShow == "Per 100k") {
       
-      agg$x <- (agg$x / agg.pop$x.pop) * 100000
-      agg <- dplyr::select(agg, CCA, x)
+      #calculate estimate as percent
+      agg$est <- agg$est / agg.pop$est
       
-    }
+      #calculate margin of error as percent - see A-14 of https://www.census.gov/content/dam/Census/library/publications/2009/acs/ACSResearch.pdf
+      agg$moe <- sqrt(agg$moe^2 - ((agg$est^2) * (agg.pop$moe^2))) / agg.pop$est
+      
+      #multiply both by 100,000
+      agg$est <- agg$est * 100000
+      agg$moe <- agg$moe * 100000
+      
+      agg <- dplyr::select(agg, CCA, est, moe)
+    
+      }
     
     }
 
@@ -113,7 +122,7 @@ server <- shinyServer(function(input, output, session) {
     # create map using ggplot
     map <- ggplot() +
       geom_polygon(data = fortified.data()
-                   , aes(x = long, y = lat, group = group, fill = x)
+                   , aes(x = long, y = lat, group = group, fill = est)
                    , color = NA, size = .25) +
       coord_map() +
       ggtitle(input$titleMap) + 
@@ -147,19 +156,14 @@ server <- shinyServer(function(input, output, session) {
       
       data <- 
         cca.ct.data() %>%
-        dplyr::arrange(desc(x)) %>%
+        dplyr::arrange(desc(est)) %>%
         head(input$nGeog)
       
 
       bar <- ggplot() +
-        geom_bar(aes(x = reorder(data$CCA, desc(eval(data$x))), y = data$x)
+        geom_bar(aes(x = reorder(data$CCA, desc(eval(data$est))), y = data$est)
                  , stat = "identity", fill = "#8a0021") +
-        
-      ####################
-      ## IN DEVELOPMENT ##
-      # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
-      ####################
-        
+        geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data$est))), ymin = data$est - data$moe, ymax = data$est + data$moe), color = "#f8a429", size = 1.25, width = .5) +
         ggtitle(input$titleBar) + theme(plot.title = element_text(hjust = 0.5, size = 20)) +
         scale_y_continuous(labels = comma) +
         xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
@@ -185,19 +189,14 @@ server <- shinyServer(function(input, output, session) {
       
       data <- 
         cca.ct.data() %>%
-        dplyr::arrange(x) %>%
+        dplyr::arrange(est) %>%
         head(input$nGeog)
       
 
       bar <- ggplot() +
-        geom_bar(aes(x = reorder(data$CCA, eval(data$x)), y = data$x)
+        geom_bar(aes(x = reorder(data$CCA, eval(data$est)), y = data$est)
                  , stat = "identity", fill = "#8a0021") +
-        
-      ####################
-      ## IN DEVELOPMENT ##
-      # geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data[[var]]))), ymin = data[[varmin]], ymax = data[[varmax]]), color = "#f8a429", size = 1.25, width = .5) +
-      ####################
-      
+        geom_errorbar(aes(x = reorder(data$CCA, eval(data$est)), ymin = data$est - data$moe, ymax = data$est + data$moe), color = "#f8a429", size = 1.25, width = .5) +
         ggtitle(input$titleBar) + theme(plot.title = element_text(hjust = 0.5, size = 20)) +
         scale_y_continuous(labels = comma) +
         xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
@@ -284,7 +283,7 @@ server <- shinyServer(function(input, output, session) {
     # to be dislayed on a DataTable
     datatable( data = user.data()
                , caption = "Table 1. 2016 5-Year ACS statistics by CCA"
-               , colnames = c("CCA", input$variable )
+               , colnames = c("CCA", input$variable, "90% Margin of Error" )
                , extensions = "Buttons"
                , rownames = F
                , options = list( dom = "Blfrtip"
@@ -292,7 +291,7 @@ server <- shinyServer(function(input, output, session) {
                                  , lengthMenu = list( c(15, 35, -1)
                                                       , c(15, 35, "All 77") )
                                  , pageLength = 15 ) ) %>%
-      DT::formatRound(columns = "x", digits = nDigits)
+      DT::formatRound(columns = c("est", "moe"), digits = nDigits)
 
   })
 
