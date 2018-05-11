@@ -8,7 +8,8 @@ Run the app yourself using the following lines of code:
 # install necessary packages
 install.packages( pkgs = c("acs", "bitops", "DT" 
                            , "dplyr", "ggplot2", "lettercase" 
-                           , "RCurl", "scales", "shiny" ) )
+                           , "RCurl", "scales", "shiny"
+                           , "viridisLite", "viridis" ) )
                            
 # load the shiny packages
 library( shiny )
