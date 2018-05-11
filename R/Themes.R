@@ -22,18 +22,10 @@ themeMap <- theme(axis.line=element_blank(),
                   plot.background=element_blank())
 
 themeTitle <- theme(legend.title = element_blank(),
-                    plot.title = element_text(hjust = 0.5, size = 20))
+                    plot.title = element_text( hjust = 0.5, size = 20 ) )
 
 themeMOE <- theme(panel.background=element_blank(),
-                  axis.text.x = element_text(angle = 45, hjust = 1))
-
-themeTot.100k <- scale_fill_gradient(labels = comma)
-
-themePct <- scale_fill_gradient(labels = scales::percent)
-
-themeTot.100k_bar <- scale_y_continuous(labels = comma)
-
-themePct_bar <- scale_y_continuous(labels = scales::percent)
+                  axis.text.x = element_text( angle = 45, hjust = 1 ) )
 
 
 # end of script #
