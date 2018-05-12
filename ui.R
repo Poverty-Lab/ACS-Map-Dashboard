@@ -13,6 +13,8 @@ library( ggplot2 )
 library( RCurl )
 library( scales )
 library( shiny )
+library( viridisLite )
+library( viridis )
 
 
 ####  UI  ####
@@ -58,12 +60,17 @@ ui <- fluidPage( fluidRow(br()),
                                                      
                                                      wellPanel("Map Options",
                                                                
-                                                               textInput(label = "Title", inputId = "titleMap")
+                                                               textInput(label = "Title", inputId = "titleMap"),
                                                                
-                                                               ####################
-                                                               ## IN DEVELOPMENT ##
-                                                               # radioButtons(label = "Lab Theme", inputId = "labMap", choices = c("Poverty", "Crime"), selected = "Poverty")
-                                                               ####################
+                                                               radioButtons(label = "Choose a color palette:"
+                                                                            , inputId = "map.color.palette"
+                                                                            , choices = c("Default"
+                                                                                          , "Crime Lab"
+                                                                                          , "Education Lab"
+                                                                                          , "Energy & Environment Lab"
+                                                                                          , "Health Lab"
+                                                                                          , "Poverty Lab" )
+                                                                            , selected = "Default" )
                                                                
                                                      )
                                               )
@@ -84,13 +91,26 @@ ui <- fluidPage( fluidRow(br()),
                                                      wellPanel("Bar Plot Options",
                                                                
                                                                textInput(label = "Title", inputId = "titleBar"),
-                                                               radioButtons(label = "Direction", inputId = "direction", choices = c("Descending", "Ascending"), inline = T, selected = "Descending"),
-                                                               sliderInput(label = "Number of Geographies", inputId = "nGeog", min = 0, max = 20, value = 15, round = T)#,
-                                                               
-                                                               ####################
-                                                               ## IN DEVELOPMENT ##
-                                                               # radioButtons(label = "Lab Theme", inputId = "labBar", choices = c("Poverty", "Crime"), selected = "Poverty")
-                                                               ####################
+                                                               radioButtons(label = "Direction"
+                                                                            , inputId = "direction"
+                                                                            , choices = c("Descending", "Ascending")
+                                                                            , inline = T
+                                                                            , selected = "Descending"),
+                                                               sliderInput(label = "Number of Geographies"
+                                                                           , inputId = "nGeog"
+                                                                           , min = 0
+                                                                           , max = 77
+                                                                           , value = 15
+                                                                           , round = T),
+                                                               radioButtons(label = "Choose a color palette:"
+                                                                            , inputId = "bplot.color.palette"
+                                                                            , choices = c("Default"
+                                                                                          , "Crime Lab"
+                                                                                          , "Education Lab"
+                                                                                          , "Energy & Environment Lab"
+                                                                                          , "Health Lab"
+                                                                                          , "Poverty Lab" )
+                                                                            , selected = "Default" )
                                                                
                                                      )
                                                      

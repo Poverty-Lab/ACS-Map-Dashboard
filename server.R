@@ -13,7 +13,8 @@ library( ggplot2 )
 library( RCurl )
 library( scales )
 library( shiny )
-
+library( viridisLite )
+library( viridis )
 
 #FOR TESTING
 #input <- c(); input$table = "Sex By Age"; input$variable = "Under 5 years (B01001_003)"; input$varType = "Count"; input$varPop = "Individual"; input$round = "Round"
@@ -21,6 +22,72 @@ library( shiny )
 
 ####  Server  ####
 server <- shinyServer(function(input, output, session) {
+  
+  # store labels based on user input
+  user.labels <- reactive({
+
+      if(input$varType %in% c("Count", "Mean")) {
+
+        if(input$statToShow %in% c("Total", "Per 100k")) {
+
+          scales::comma_format()
+
+        } else if(input$statToShow == "Percent") {
+
+          scales::percent_format()
+        }
+      }
+    })
+  
+  # store user color for map
+  user.map.color <- reactive({
+  
+    switch( EXPR = input$map.color.palette
+            , Default                    = scale_fill_viridis( direction = -1
+                                                               , option = "magma"
+                                                               , labels = user.labels() ) 
+            , `Crime Lab`                = scale_fill_gradient( low = "#F1F1F1"
+                                                                , high = "#350E20"
+                                                                , labels = user.labels() )
+            , `Education Lab`            = scale_fill_gradient( low = "#F1F1F1"
+                                                                , high = "#C16622"
+                                                                , labels = user.labels() )
+            , `Energy & Environment Lab` = scale_fill_gradient( low = "#F1F1F1"
+                                                                , high = "#8A9045"
+                                                                , labels = user.labels() )
+            , `Health Lab`               = scale_fill_gradient( low = "#F1F1F1"
+                                                                , high = "#155F83"
+                                                                , labels = user.labels() )
+            , `Poverty Lab`              = scale_fill_gradient( low = "#F1F1F1"
+                                                                , high = "#FFA319"
+                                                                , labels = user.labels() ) )
+  })
+  
+  # store user color for barplot
+  user.bplot.color <- reactive({
+    
+    switch( EXPR = input$bplot.color.palette
+            , Default                    = "#01010E"
+            , `Crime Lab`                = "#350E20"
+            , `Education Lab`            = "#C16622"
+            , `Energy & Environment Lab` = "#8A9045"
+            , `Health Lab`               = "#155F83"
+            , `Poverty Lab`              = "#FFA319" )
+  })
+  
+  # store user color for MOE color
+  # which is the complimentary color
+  # based on user.bplot.color()
+  user.moe.color <- reactive({
+    
+    switch( EXPR = input$bplot.color.palette
+            , Default                    = "#F8A429"
+            , `Crime Lab`                = "#F8A429"
+            , `Education Lab`            = "#227DC1"
+            , `Energy & Environment Lab` = "#01010E"
+            , `Health Lab`               = "#F8A429"
+            , `Poverty Lab`              = "#1975FF" )
+  })
   
   # store user data
   # in a reactive expression
@@ -120,30 +187,15 @@ server <- shinyServer(function(input, output, session) {
   # store map created from fortified.data()
   user.map <- reactive({
     # create map using ggplot
-    map <- ggplot() +
+    ggplot() +
       geom_polygon(data = fortified.data()
                    , aes(x = long, y = lat, group = group, fill = est)
-                   , color = NA, size = .25) +
+                   , color = "#D2C2C2", size = .25) +
       coord_map() +
       ggtitle(input$titleMap) + 
       themeTitle +
-      themeMap
-    
-    if(input$varType %in% c("Count", "Mean")) {
-      
-      if(input$statToShow %in% c("Total", "Per 100k")) {
-        
-        map <- map + themeTot.100k
-        
-      } else if(input$statToShow == "Percent") {
-        
-        map <- map + themePct
-        
-      }
-      
-    }
-    
-    map
+      themeMap +
+      user.map.color()
     
   })
   
@@ -159,31 +211,26 @@ server <- shinyServer(function(input, output, session) {
         dplyr::arrange(desc(est)) %>%
         head(input$nGeog)
       
-
-      bar <- ggplot() +
-        geom_bar(aes(x = reorder(data$CCA, desc(eval(data$est))), y = data$est)
-                 , stat = "identity", fill = "#8a0021") +
-        geom_errorbar(aes(x = reorder(data$CCA, desc(eval(data$est))), ymin = data$est - data$moe, ymax = data$est + data$moe), color = "#f8a429", size = 1.25, width = .5) +
-        ggtitle(input$titleBar) + theme(plot.title = element_text(hjust = 0.5, size = 20)) +
-        scale_y_continuous(labels = comma) +
-        xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
-        themeMOE
+      # visualize
+      ggplot() +
+        geom_bar( aes(x = reorder(data$CCA, desc( eval( data$est ) ) )
+                      , y = data$est)
+                 , stat = "identity"
+                 , fill = user.bplot.color() ) +
+        geom_errorbar(aes(x = reorder(data$CCA
+                                      , desc(eval(data$est)))
+                          , ymin = data$est - data$moe
+                          , ymax = data$est + data$moe )
+                      , color = user.moe.color()
+                      , size = 1.25
+                      , width = .5 ) +
+        ggtitle(input$titleBar) +
+        theme(plot.title = element_text( hjust = 0.5, size = 20 ) ) +
+        xlab("Community Area") + 
+        ylab( variableList$stub[variableList$stubLong == input$variable] ) +
+        themeMOE +
+        scale_y_continuous( labels = user.labels() )
       
-      if(input$varType %in% c("Count", "Mean")) {
-        
-        if(input$statToShow %in% c("Total", "Per 100k")) {
-          
-          bar <- bar + themeTot.100k_bar
-          
-        } else if(input$statToShow == "Percent") {
-          
-          bar <- bar + themePct_bar
-          
-        }
-        
-      }
-      
-      bar
       
     } else if(input$direction == "Ascending") {
       
@@ -193,30 +240,24 @@ server <- shinyServer(function(input, output, session) {
         head(input$nGeog)
       
 
-      bar <- ggplot() +
-        geom_bar(aes(x = reorder(data$CCA, eval(data$est)), y = data$est)
-                 , stat = "identity", fill = "#8a0021") +
-        geom_errorbar(aes(x = reorder(data$CCA, eval(data$est)), ymin = data$est - data$moe, ymax = data$est + data$moe), color = "#f8a429", size = 1.25, width = .5) +
-        ggtitle(input$titleBar) + theme(plot.title = element_text(hjust = 0.5, size = 20)) +
-        scale_y_continuous(labels = comma) +
-        xlab("Community Area") + ylab(variableList$stub[variableList$stubLong == input$variable]) +
-        themeMOE
-      
-      if(input$varType %in% c("Count", "Mean")) {
-        
-        if(input$statToShow %in% c("Total", "Per 100k")) {
-          
-          bar <- bar + themeTot.100k_bar
-          
-        } else if(input$statToShow == "Percent") {
-          
-          bar <- bar + themePct_bar
-          
-        }
-        
-      }
-      
-      bar
+      ggplot() +
+        geom_bar(aes(x = reorder(data$CCA, eval( data$est ) )
+                     , y = data$est )
+                 , stat = "identity"
+                 , fill = user.bplot.color() ) +
+        geom_errorbar(aes(x = reorder(data$CCA
+                                      , eval( data$est ) )
+                          , ymin = data$est - data$moe
+                          , ymax = data$est + data$moe )
+                      , color = user.moe.color()
+                      , size = 1.25
+                      , width = .5 ) +
+        ggtitle(input$titleBar) + 
+        theme(plot.title = element_text(hjust = 0.5, size = 20)) +
+        xlab("Community Area") + 
+        ylab( variableList$stub[variableList$stubLong == input$variable] ) +
+        themeMOE +
+        scale_y_continuous( labels = user.labels() )
       
     }
   })

@@ -13,6 +13,8 @@ library( ggplot2 )
 library( RCurl )
 library( scales )
 library( shiny )
+library( viridisLite )
+library( viridis )
 
 
 ## Source aggregation function and plot themes
