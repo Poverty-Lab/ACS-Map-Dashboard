@@ -96,7 +96,7 @@ The app is organized around three `.R` scripts:
 
 ## Workflow
 
-![Workflow](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/workflow.png)
+![Workflow](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/ACS_Map_Dashboard_Workflow_V1.png)
 
 Click here to return to the [Outline](README.md#outline).
 
