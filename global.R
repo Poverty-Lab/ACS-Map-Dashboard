@@ -15,6 +15,7 @@ library( scales )
 library( shiny )
 library( viridisLite )
 library( viridis )
+library( mapproj )
 
 
 ## Source aggregation function and plot themes
@@ -75,8 +76,5 @@ geog <-
   url( description = "https://raw.github.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/Cook_County_GeoSet.rds" ) %>%
   gzcon() %>%
   readRDS()
-
-# allows the users to access API of the Census
-acs::api.key.install( key = Sys.getenv( x = "CENSUS_KEY" ) )
 
 # end of script #
