@@ -342,8 +342,6 @@ server <- shinyServer(function(input, output, session) {
                                  , pageLength = 15 ) ) 
 
   })
-
-  output$instructions <- renderText("Press backspace to enable searching")
   
   output$universe <- renderText(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])
   
