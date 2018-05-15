@@ -81,6 +81,8 @@ ui <- fluidPage(theme = "style.css",
                                                                
                                                      ), 
                                                      
+                                                     a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/README.md"), br(),
+                                                     a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                               )
                                      ),
@@ -123,6 +125,8 @@ ui <- fluidPage(theme = "style.css",
                                                                
                                                      ), 
                                                      
+                                                     a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/README.md"), br(),
+                                                     a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                                      
                                               )
@@ -146,6 +150,8 @@ ui <- fluidPage(theme = "style.css",
 
                                                      ), 
                                                      
+                                                     a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/README.md"), br(),
+                                                     a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                                      
                                               )
