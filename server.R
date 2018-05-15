@@ -109,7 +109,8 @@ server <- shinyServer(function(input, output, session) {
     acs <- acs::acs.fetch(geography = geog
                           , endyear = 2016
                           , span = 5
-                          , variable = var )
+                          , variable = var 
+                          , key = "90f2c983812307e03ba93d853cb345269222db13")
 
     agg <- tractToCCA(acs = acs
                       , type = input$varType

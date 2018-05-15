@@ -1,0 +1,10 @@
+name: ACS-Map-Dashboard
+title:
+account: povertylab
+server: shinyapps.io
+appId: 340658
+bundleId: 1375094
+url: https://povertylab.shinyapps.io/ACS-Map-Dashboard/
+when: 1526398431.85221
+asMultiple: FALSE
+asStatic: FALSE
