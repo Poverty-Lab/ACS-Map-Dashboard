@@ -44,7 +44,7 @@ Click to skip ahead to other sections:
 
 This app produces customizable visualizations of 2012-2016 5 year ACS estimates by CCA. To do this, it requires that the user [select one of the countless tables](https://www.census.gov/programs-surveys/acs/technical-documentation/table-shells.html). Depending on the table, the user may also filter the table by one variable.
 
-![Purpose](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_purpose.png)
+![Purpose](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/input_output.png)
 
 ## Data
 
@@ -74,11 +74,11 @@ Click here to return to the [Outline](README.md#outline).
 
 The user selects the data to be represented on the left-hand pane. The graphic can be customized in the right-hand pane. The graphic is presented in the middle pane.
 
-![Map Tab](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_ss1.png)
+![Map Tab](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/ACS_MD_Map.png)
 
-![Bar Plot Tab](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_ss2.png)
+![Bar Plot Tab](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/ACS_MD_BP.png)
 
-![Table Tab](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_ss3.png)
+![Table Tab](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/ACS_MD_TB.png)
 
 Click here to return to the [Outline](README.md#outline).
 
@@ -96,7 +96,7 @@ The app is organized around three `.R` scripts:
 
 ## Workflow
 
-![Workflow](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_workflow.png)
+![Workflow](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/workflow.png)
 
 Click here to return to the [Outline](README.md#outline).
 
