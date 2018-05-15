@@ -15,6 +15,7 @@ library( scales )
 library( shiny )
 library( viridisLite )
 library( viridis )
+library( mapproj )
 
 
 ####  UI  ####
