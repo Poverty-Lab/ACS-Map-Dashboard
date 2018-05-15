@@ -81,7 +81,7 @@ ui <- fluidPage(theme = "style.css",
                                                                
                                                      ), 
                                                      
-                                                     a("How aggregation works", target = "_blank", href = "Tract-to-Neighborhood aggregation.pdf"),
+                                                     a("How aggregation works", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                               )
                                      ),
@@ -124,7 +124,7 @@ ui <- fluidPage(theme = "style.css",
                                                                
                                                      ), 
                                                      
-                                                     a("How aggregation works", target = "_blank", href = "Tract-to-Neighborhood aggregation.pdf"),
+                                                     a("How aggregation works", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                                      
                                               )
@@ -148,7 +148,7 @@ ui <- fluidPage(theme = "style.css",
 
                                                      ), 
                                                      
-                                                     a("How aggregation works", target = "_blank", href = "Tract-to-Neighborhood aggregation.pdf"),
+                                                     a("How aggregation works", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                                      
                                               )
