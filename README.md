@@ -31,13 +31,13 @@ shiny::runUrl( url = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/archive/m
 Click to skip ahead to other sections: 
 
 * [Overview](README.md#overview)
-* Data
-* Census Tract to Chicago Community Areas Aggregation
+* [Data](README.md#Data)
+* [Census Tract to Chicago Community Areas Aggregation](README.md#census-tract-to-chicago-community-areas-aggregation)
 * [User Interface (UI)](README.md#user-interface-ui)
 * [Code](README.md#code)
 * [Current Limitations](README.md#current-limitations)
 * [To Do Before Launch](README.md#to-do-before-launch)
-* List of Features
+* [List of Features](README.md#list-of-features)
 
 
 ## Overview
@@ -116,14 +116,14 @@ Click here to return to the [Outline](README.md#outline).
 |  Custom title|x|x|x|
 |  Geography labels| | |x|
 |  Show as percent of whole| | |x|
-|  Lab themes| |x|x|
+|  Lab themes|x|x|x|
 |  Save graphic button|x|x|x|
 |  Show code button| | |x|
 |**Bar Plot**| | | |
 |  Custom title|x|x|x|
 |  Direction (desc/ascending)|x|x|x|
 |  Number of geographies to include|x|x|x|
-|  Lab themes| |x|x|
+|  Lab themes|x|x|x|
 |  Error bars|x|x|x|
 |  Save graphic button|x|x|x|
 |  Show code button| | |x|
