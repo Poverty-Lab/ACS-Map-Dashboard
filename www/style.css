@@ -1,0 +1,35 @@
+div.well {
+	background-color: #EFEDEE;
+}
+
+p.name {
+	font-weight: bold;
+	margin-bottom: 0px;
+}
+
+label[for=table] {
+	font-weight: normal;
+	font-style: italic;
+}
+
+h1 {
+	font-size: 24px;
+	font-weight: bold;
+	color: #8b0021;
+}
+
+a {
+	color: #8b0021;
+}
+
+a:hover {
+	color: #008B6A;
+}
+
+.irs-from, .irs-to, .irs-single, .irs-bar-edge, .irs-bar {
+	background: #008B6A;
+}
+
+.btn {
+	border-color: #8b0021;
+}

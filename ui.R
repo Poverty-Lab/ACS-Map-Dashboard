@@ -19,24 +19,30 @@ library( mapproj )
 
 
 ####  UI  ####
-ui <- fluidPage( fluidRow(br()),
-                
+ui <- fluidPage(theme = "style.css",
                 fluidRow(
                   
                   column(width = 3,
                          
                          br(), br(),
                          
-                         wellPanel("Data",
-                                   
-                                   textOutput("instructions"),
-                                   selectizeInput("table", label = "ACS Table", selected = "Total Population", choices = tableOptions), #selected = "Total Population",
+                         wellPanel(
+                                   h1("Step 1: Select a table and variable", class = "step"),
+                                   p("ACS Table", class = "name"),
+                                   selectizeInput("table", label = "Press backspace to enable searching", selected = "Total Population", choices = tableOptions), #selected = "Total Population",
                                    textOutput("universe"),
                                    br(),
-                                   shiny::uiOutput( outputId = "variableOptions" ),
+                                   shiny::uiOutput( outputId = "variableOptions" )
+                         ), 
+                         
+                         wellPanel(
+                                   h1("Step 2: Confirm the variable type and population", class = "step"),
                                    radioButtons("varType", "This variable is a:", choices = c("Count", "Proportion", "Mean"), inline = T),
-                                   radioButtons("varPop", "This variable is of which population:", choices = c("Individual", "Household", "Housing Unit"), inline = T),
-
+                                   radioButtons("varPop", "This variable is of which population:", choices = c("Individual", "Household", "Housing Unit"), inline = T)
+                         ),
+                         
+                         wellPanel(
+                                   h1("Step 3: Choose a statistic to show", class = "step"),
                                    shiny::uiOutput( outputId = "statToShow" )
                                    
                          )
@@ -59,7 +65,7 @@ ui <- fluidPage( fluidRow(br()),
                                               
                                               column(width = 3, 
                                                      
-                                                     wellPanel("Map Options",
+                                                     wellPanel(h1("Map Options"),
                                                                
                                                                textInput(label = "Title", inputId = "titleMap"),
                                                                
@@ -73,7 +79,9 @@ ui <- fluidPage( fluidRow(br()),
                                                                                           , "Poverty Lab" )
                                                                             , selected = "Default" )
                                                                
-                                                     )
+                                                     ), 
+                                                     
+                                                     img(src = "pl_logo_150x.png", align = "right")
                                               )
                                      ),
                                      
@@ -89,7 +97,7 @@ ui <- fluidPage( fluidRow(br()),
                                               
                                               column(width = 3,
                                                      
-                                                     wellPanel("Bar Plot Options",
+                                                     wellPanel(h1("Bar Plot Options"),
                                                                
                                                                textInput(label = "Title", inputId = "titleBar"),
                                                                radioButtons(label = "Direction"
@@ -113,7 +121,9 @@ ui <- fluidPage( fluidRow(br()),
                                                                                           , "Poverty Lab" )
                                                                             , selected = "Default" )
                                                                
-                                                     )
+                                                     ), 
+                                                     
+                                                     img(src = "pl_logo_150x.png", align = "right")
                                                      
                                               )
                                               
@@ -130,11 +140,13 @@ ui <- fluidPage( fluidRow(br()),
                                               
                                               column(width = 3,
                                                      
-                                                     wellPanel("Table Options",
+                                                     wellPanel(h1("Table Options"),
                                                                
                                                                radioButtons(label = "Round", inputId = "round", choices = c("Round", "Don't Round"), inline = T, selected = "Round")
 
-                                                     )
+                                                     ), 
+                                                     
+                                                     img(src = "pl_logo_150x.png", align = "right")
                                                      
                                               )
                                               
