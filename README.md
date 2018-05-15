@@ -1,4 +1,9 @@
-# ACS Dashboard
+# ACS Map Dashboard
+
+The [ACS Map Dashboard](https://povertylab.shinyapps.io/ACS-Map-Dashboard/) produces customizable visualizations using the 2012-2016 5-year [American Community Survey (ACS)](https://www.census.gov/programs-surveys/acs/about.html) estimates [Chicago community areas (CCA)](http://www.encyclopedia.chicagohistory.org/pages/1760.html). 
+
+The map, bar plot, and tables produced are all exportable, allowing users to save graphics and data with the click of a button.
+
 
 ## Run App
 
@@ -7,7 +12,7 @@ Run the app yourself using the following lines of code:
 ```R
 # install necessary packages
 install.packages( pkgs = c("acs", "bitops", "DT" 
-                           , "dplyr", "ggplot2", "lettercase" 
+                           , "dplyr", "ggplot2", "mapproj" 
                            , "RCurl", "scales", "shiny"
                            , "viridisLite", "viridis" ) )
                            
@@ -26,49 +31,42 @@ shiny::runUrl( url = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/archive/m
 Click to skip ahead to other sections: 
 
 * [Overview](README.md#overview)
+* Data
+* Census Tract to Chicago Community Areas Aggregation
 * [User Interface (UI)](README.md#user-interface-ui)
 * [Code](README.md#code)
 * [Current Limitations](README.md#current-limitations)
 * [To Do Before Launch](README.md#to-do-before-launch)
+* List of Features
 
-Features included in each branch:
-
-|Feature|Current Master Branch|Launch Version|Wish-list Version|
-|---|---|---|---|
-|**General**| | | |
-|  Confirmed tract:CCA conversion table|x|x|x|
-|**Data Options**| | | |
-|  Dropdown menu|x|x|x|
-|  Calculate by count/proportion/mean|x|x|x|
-|  Calculate by individual/household|x|x|x|
-|  Specify total/percent/per 100k|x|x|x|
-|**Map**| | | |
-|  Custom title|x|x|x|
-|  Geography labels| | |x|
-|  Show as percent of whole| | |x|
-|  Lab themes| | |x|
-|  Save graphic button|x|x|x|
-|  Show code button| | |x|
-|**Bar Plot**| | | |
-|  Custom title|x|x|x|
-|  Direction (desc/ascending)|x|x|x|
-|  Number of geographies to include|x|x|x|
-|  Lab themes| | |x|
-|  Error bars|x|x|x|
-|  Save graphic button|x|x|x|
-|  Show code button| | |x|
-|**Table**| | | |
-|  Save table button|x|x|x|
-|**Misc**| | | |
-|  Leaflet plots| | |x|
-
-*************
 
 ## Overview
 
-This app produces customizable visualizations of ACS statistics by CCA. The app can produce maps, bar plots, and tables of most ACS variables by CCA. To do this, it takes one of two types of inputs: pre-loaded and aggregated data from a file, or ACS data downloaded in the app via a census API.  
+This app produces customizable visualizations of 2012-2016 5 year ACS estimates by CCA. To do this, it requires that the user [select one of the countless tables](https://www.census.gov/programs-surveys/acs/technical-documentation/table-shells.html). Depending on the table, the user may also filter the table by one variable.
 
 ![Purpose](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_purpose.png)
+
+## Data
+
+The ACS Map Dashboard retrives its data from the [Census Data Application Programming Interface (API)](https://www.census.gov/data/developers/guidance/api-user-guide.html), which requests data from the [U.S. Census Bureau](https://www.census.gov/en.htmldatasets).
+
+To access the API, we use the [`acs`](https://cran.r-project.org/web/packages/acs/acs.pdf) package to download and manipulate ACS estimate data from the U.S. Census Bureau. At the moment, we only use the data from the 2012-2016 5 year ACS estimates.
+
+## Census Tract to Chicago Community Area Aggregation
+
+*Background* 
+
+[Census tract boundaries](https://www.census.gov/geo/reference/gtc/gtc_ct.html) are small geogrpahies that typically contain anywhere from 1,200 to 8,000 people. [Cook County, IL](https://www2.census.gov/geo/maps/dc10map/tract/st17_il/c17031_cook/DC10CT_C17031_000.pdf) contains 1,319 census tracts.
+
+Around [800 of these census tracts](https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Census-Tracts-2010/5jrd-6zik/data) reside in Chicago. However, census tracts do not always share borders with the city's 77 community areas (i.e. neighborhoods).
+
+*Methodology*
+
+We allocate census tract statistics to their corresponding neighborhoods based on the proportion of individuals and households in a tract that belong to that neighborhood. This is done by leveraging [block-level information published by the census](https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Census-Blocks-2010/mfzt-js4n/data). 
+
+[Census blocks](https://www.census.gov/newsroom/blogs/random-samplings/2011/07/what-are-census-blocks.html) are the smallest geographic unit with data published by the census. The census does not provide any demographic statistics at the block-level for privacy reasons, but they do provide the number of individuals and households within each block. 
+
+With this information, we are able to calculate the number of individuals and households from a given tract that belong to each neighborhood. We then allocate a tracts’ statistics, e.g. the number of individuals employed, or the mean household income, into the corresponding neighborhood in proportion to the neighborhood’s actual population  not a proxy.  
 
 Click here to return to the [Outline](README.md#outline).
 
@@ -87,66 +85,52 @@ Click here to return to the [Outline](README.md#outline).
 
 ## Code
 
-The app is organized according to the table 1, operating on two “tracks” depending on the input given. 
+The app is organized around three `.R` scripts:
 
-When a user selects a premade plot (the top left-most menu in the UI example above), the app simply draws a graphic of this variable from a preexisting dataset that includes the CCA and the statistic. When a user inputs an ACS variable to produce a custom plot from (the text entry box in the upper-left), the app downloads that data via a census API, aggregates it to CCA, and then draws a graphic.
-
-Ultimately, the following files are loaded by the app:
-
-* For premade plots 
-    + CCA Statistics.csv: Preselected statistics by CCA.
-    + CCA Statistics Fortified.RData: The above statistics in a format that can be read by ggplot2.
-    + Preselected Variables.csv: Only the names of the above variables, for labeling purposes.
-
-* For custom plots 
-    + 2_Aggregation Function.R: The function that aggregates tract-level data downloaded via the census API to CCA level. This code uses the file Tract to CCA Aggregation Lookup.csv to do this.
-
-* Miscellaneous
-    + Themes.R: Includes ggplot themes for maps and barplots. 
+| **Script Name** | **Description** |
+| :-------------: | :-------------: |
+| `global.R` | Imports all necessary objects into the global environment. Specifically, this scripts does two things: 1) sources custom [ggplot2](http://ggplot2.tidyverse.org/index.html) themes and [census tract](https://www.census.gov/geo/reference/gtc/gtc_ct.html) to CCA aggregation function found in [/Poverty-Lab/ACS-Map-Dasboard/R](https://github.com/Poverty-Lab/ACS-Map-Dashboard/tree/master/R); and 2) imports `.rds` objects that are found in [/Poverty-Lab/ACS-Map-Dasboard/Data](https://github.com/Poverty-Lab/ACS-Map-Dashboard/tree/master/Data). |
+| `ui.R` | Creates the [user-interface elements](https://www.usability.gov/how-to-and-tools/methods/user-interface-elements.html) that allow users to select data and navigate across the `Map`, `Bar Plot`, and `Table` tabs on the page. |
+| `server.R` | Stores the data and logic used to render the map, barplot, and table that the user observers in the user-interface. This script uses [reactive programming](https://shiny.rstudio.com/articles/reactivity-overview.html) to [provide the recipes that should be used to update the outputs](https://www.rstudio.com/resources/webinars/shiny-developer-conference/). |
 
 
-### Figure 1. Code Workflow
+## Workflow
+
 ![Workflow](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/2018-01-05-acs_dashboard_workflow.png)
 
 Click here to return to the [Outline](README.md#outline).
 
-## Current Limitations
 
-1.	The census API for downloading ACS data, the R package acs, cannot load variables unless they conform to a specific 9-character format. Not all variables conform to this format, even if they are available at the tract level.
-2.	Margins of error cannot be aggregated accurately without individual-level data. We will have to use an approximation, but have not come up with one yet. 
-3.	Cannot transform variables in current version 
-4.	Various incomplete functionalities (see below)
+## Features
 
-Click here to return to the [Outline](README.md#outline).
+|Feature|Current Master Branch|Launch Version|Wish-list Version|
+|---|---|---|---|
+|**General**| | | |
+|  Confirmed tract:CCA conversion table|x|x|x|
+|**Data Options**| | | |
+|  Dropdown menu|x|x|x|
+|  Calculate by count/proportion/mean|x|x|x|
+|  Calculate by individual/household|x|x|x|
+|  Specify total/percent/per 100k|x|x|x|
+|**Map**| | | |
+|  Custom title|x|x|x|
+|  Geography labels| | |x|
+|  Show as percent of whole| | |x|
+|  Lab themes| |x|x|
+|  Save graphic button|x|x|x|
+|  Show code button| | |x|
+|**Bar Plot**| | | |
+|  Custom title|x|x|x|
+|  Direction (desc/ascending)|x|x|x|
+|  Number of geographies to include|x|x|x|
+|  Lab themes| |x|x|
+|  Error bars|x|x|x|
+|  Save graphic button|x|x|x|
+|  Show code button| | |x|
+|**Table**| | | |
+|  Save table button|x|x|x|
+|**Misc**| | | |
+|  Leaflet plots| | |x|
 
-## To Do Before Launch
-
-*This was last updated on January 5, 2018*
-
-### Required
-- [x] Get this thing on gitlab: 1 hour, Isaac
-- [ ] Host online: 1 hour
-- [x] Write a one-page readme on use: 1 hour, Isaac
-- [x] Write a supplemental one- or two-pager explaining our aggregation method and link to it in the app: 1-2 hours, Isaac
-- [ ] Address margin of error calculation: 5-10 hours, statistical and programming expertise
-- [ ] Add ability to transform statistics from a total to a percent/per-capita number: 5-10 hours, R and ACS expertise 
-- [ ] Fix save button (otherwise plots can be saved by right-clicking): 1 hour, R expertise
-
-### Wish List
-- [ ] Improve plot customization options, functionality (titles, axis labels, showing statistic as a percent, etc.): 10 hours, R Shiny expertise
-- [ ] Add a colorbrewer pallet for each lab: 2-3 hours, R expertise 
-- [ ] Clean UI text, warnings: 2-3 hours, R Shiny expertise 
-- [ ] Improve and validate the Show Code functionality: 2-3 hours, R expertise 
-- [ ] Others - see table at top of readme
-
-Click here to return to the [Outline](README.md#outline).
-
-
-
-
-
-
-
-
-
+*************
 

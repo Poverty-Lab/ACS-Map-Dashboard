@@ -49,24 +49,27 @@ geog <-
 
 ## Individuals
 var.ind <- "B01003_001"
-ind <- acs::acs.fetch(geography = geog
+ind <- acs::acs.fetch( geography = geog
                       , endyear = 2016
                       , span = 5
-                      , variable = var.ind )
+                      , variable = var.ind
+                      , key = "90f2c983812307e03ba93d853cb345269222db13" )
 
 ## Households
 var.hh <- "B11016_001"
-hh <- acs::acs.fetch(geography = geog
-                      , endyear = 2016
-                      , span = 5
-                      , variable = var.hh )
+hh <- acs::acs.fetch( geography = geog
+                     , endyear = 2016
+                     , span = 5
+                     , variable = var.hh
+                     , key = "90f2c983812307e03ba93d853cb345269222db13" )
 
 ## Housing units
 var.hu <- "B25001_001"
-hu <- acs::acs.fetch(geography = geog
-                      , endyear = 2016
-                      , span = 5
-                      , variable = var.hu )
+hu <- acs::acs.fetch( geography = geog
+                     , endyear = 2016
+                     , span = 5
+                     , variable = var.hu
+                     , key = "90f2c983812307e03ba93d853cb345269222db13" )
 
 
 ####  Merge on totals  ####

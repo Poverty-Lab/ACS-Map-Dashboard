@@ -10,12 +10,12 @@ library( bitops )
 library( DT )
 library( dplyr )
 library( ggplot2 )
+library( mapproj )
 library( RCurl )
 library( scales )
 library( shiny )
 library( viridisLite )
 library( viridis )
-library( mapproj )
 
 
 ####  UI  ####
