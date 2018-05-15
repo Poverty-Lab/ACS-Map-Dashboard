@@ -1,6 +1,6 @@
 # ACS Map Dashboard
 
-The [ACS Map Dashboard](https://povertylab.shinyapps.io/ACS-Map-Dashboard/) produces customizable visualizations using the 2012-2016 5-year [American Community Survey (ACS)](https://www.census.gov/programs-surveys/acs/about.html) estimates [Chicago community areas (CCA)](http://www.encyclopedia.chicagohistory.org/pages/1760.html). 
+The [ACS Map Dashboard](https://povertylab.shinyapps.io/ACS-Map-Dashboard/) produces customizable visualizations using the 2012-2016 5-year [American Community Survey (ACS)](https://www.census.gov/programs-surveys/acs/about.html) estimates across the [Chicago community areas (CCA)](http://www.encyclopedia.chicagohistory.org/pages/1760.html). 
 
 The map, bar plot, and tables produced are all exportable, allowing users to save graphics and data with the click of a button.
 
