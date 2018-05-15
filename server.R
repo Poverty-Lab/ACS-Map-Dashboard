@@ -10,12 +10,12 @@ library( bitops )
 library( DT )
 library( dplyr )
 library( ggplot2 )
+library( mapproj )
 library( RCurl )
 library( scales )
 library( shiny )
 library( viridisLite )
 library( viridis )
-library( mapproj )
 
 
 #FOR TESTING
@@ -108,11 +108,11 @@ server <- shinyServer(function(input, output, session) {
     var <- variableList$variableID[variableList$stubLong == input$variable &
                                    variableList$tableID == tableList$tableID[tableList$stub == input$table]]
 
-    acs <- acs::acs.fetch(geography = geog
-                          , endyear = 2016
-                          , span = 5
-                          , variable = var 
-                          , key = "90f2c983812307e03ba93d853cb345269222db13")
+    acs <- acs::acs.fetch( geography = geog
+                           , endyear = 2016
+                           , span = 5
+                           , variable = var 
+                           , key = "90f2c983812307e03ba93d853cb345269222db13" )
 
     agg <- tractToCCA(acs = acs
                       , type = input$varType
@@ -128,7 +128,7 @@ server <- shinyServer(function(input, output, session) {
                           , endyear = 2016
                           , span = 5
                           , variable = var.pop 
-                          , key = "90f2c983812307e03ba93d853cb345269222db13")
+                          , key = "90f2c983812307e03ba93d853cb345269222db13" )
     agg.pop <- tractToCCA(acs = acs.pop 
                           , type = input$varType
                           , level = input$varPop)

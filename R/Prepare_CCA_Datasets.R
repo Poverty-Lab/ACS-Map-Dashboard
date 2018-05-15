@@ -1,5 +1,5 @@
 #
-# Author:   Isaac Ahuvia
+# Author:   Isaac Ahuvia & Cristian Nuno
 # Date:     May 7, 2018
 # Purpose:  Fortify CCA shapefile so that it may added as a geom for future ggplot style plots
 #
@@ -9,9 +9,7 @@ rm(list = ls())
 
 # load necssary packages
 library( dplyr )
-library( magrittr )
 library( ggplot2 )
-library( rgdal )
 library( lettercase )
 
 ## Load

@@ -10,17 +10,17 @@ library( bitops )
 library( DT )
 library( dplyr )
 library( ggplot2 )
+library( mapproj )
 library( RCurl )
 library( scales )
 library( shiny )
 library( viridisLite )
 library( viridis )
-library( mapproj )
 
 
 ## Source aggregation function and plot themes
 # create function to source scripts from GitHub
-source_github <- function( url ) {
+SourceGithub <- function( url ) {
   # load package
   require(RCurl)
   
@@ -29,8 +29,8 @@ source_github <- function( url ) {
   eval(parse(text = script), envir=.GlobalEnv)
 }
 
-source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Aggregation_Function.R" )
-source_github( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Themes.R" )
+SourceGithub( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Aggregation_Function.R" )
+SourceGithub( url = "https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/R/Themes.R" )
 
 ####  Load data  ####
 ## Load CCA lists to append data onto
