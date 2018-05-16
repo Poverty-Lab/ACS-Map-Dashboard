@@ -30,8 +30,8 @@ shiny::runUrl( url = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/archive/m
 
 Click to skip ahead to other sections: 
 
-* [Overview](README.md#overview)
-* [Data](README.md#Data)
+* [Overview](#Overview)
+* [Data](#Data)
 * [Census Tract to Chicago Community Areas Aggregation](README.md#census-tract-to-chicago-community-areas-aggregation)
 * [User Interface (UI)](README.md#user-interface-ui)
 * [Code](README.md#code)
@@ -42,7 +42,7 @@ Click to skip ahead to other sections:
 
 ## Overview
 
-This app produces customizable visualizations of 2012-2016 5 year ACS estimates by CCA. To do this, it requires that the user [select one of the countless tables](https://www.census.gov/programs-surveys/acs/technical-documentation/table-shells.html). Depending on the table, the user may also filter the table by one variable.
+This app produces customizable visualizations of 2012-2016 5 year ACS estimates by CCA. To do this, it requires that the user [select one of the countless tables](https://www.census.gov/programs-surveys/acs/technical-documentation/table-shells.html) from the ACS. Depending on the table, the user may also filter the table by one variable.
 
 ![Purpose](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/input_output.png)
 
@@ -58,7 +58,7 @@ To access the API, we use the [`acs`](https://cran.r-project.org/web/packages/ac
 
 [Census tract boundaries](https://www.census.gov/geo/reference/gtc/gtc_ct.html) are small geogrpahies that typically contain anywhere from 1,200 to 8,000 people. [Cook County, IL](https://www2.census.gov/geo/maps/dc10map/tract/st17_il/c17031_cook/DC10CT_C17031_000.pdf) contains 1,319 census tracts.
 
-Around [800 of these census tracts](https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Census-Tracts-2010/5jrd-6zik/data) reside in Chicago. However, census tracts do not always share borders with the city's 77 community areas (i.e. neighborhoods).
+Around [800 of those census tracts](https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Census-Tracts-2010/5jrd-6zik/data) reside in the city of Chicago. However, census tracts do not always share borders with the city's 77 community areas (i.e. neighborhoods).
 
 *Methodology*
 
@@ -90,7 +90,7 @@ The app is organized around three `.R` scripts:
 | **Script Name** | **Description** |
 | :-------------: | :-------------: |
 | `global.R` | Imports all necessary objects into the global environment. Specifically, this scripts does two things: 1) sources custom [ggplot2](http://ggplot2.tidyverse.org/index.html) themes and [census tract](https://www.census.gov/geo/reference/gtc/gtc_ct.html) to CCA aggregation function found in [/Poverty-Lab/ACS-Map-Dasboard/R](https://github.com/Poverty-Lab/ACS-Map-Dashboard/tree/master/R); and 2) imports `.rds` objects that are found in [/Poverty-Lab/ACS-Map-Dasboard/Data](https://github.com/Poverty-Lab/ACS-Map-Dashboard/tree/master/Data). |
-| `ui.R` | Creates the [user-interface elements](https://www.usability.gov/how-to-and-tools/methods/user-interface-elements.html) that allow users to select data and navigate across the `Map`, `Bar Plot`, and `Table` tabs on the page. |
+| `ui.R` | Creates the [user-interface elements](https://www.usability.gov/how-to-and-tools/methods/user-interface-elements.html) that allow users to select data and navigate across the Map, Bar Plot, and Table tabs on the page. |
 | `server.R` | Stores the data and logic used to render the map, barplot, and table that the user observers in the user-interface. This script uses [reactive programming](https://shiny.rstudio.com/articles/reactivity-overview.html) to [provide the recipes that should be used to update the outputs](https://www.rstudio.com/resources/webinars/shiny-developer-conference/). |
 
 
