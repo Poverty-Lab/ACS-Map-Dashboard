@@ -1,6 +1,6 @@
 # ACS Map Dashboard
 
-The [ACS Map Dashboard](https://povertylab.shinyapps.io/ACS-Map-Dashboard/) produces customizable visualizations using the 2012-2016 5-year [American Community Survey (ACS)](https://www.census.gov/programs-surveys/acs/about.html) estimates across the [Chicago community areas (CCA)](http://www.encyclopedia.chicagohistory.org/pages/1760.html). 
+The [ACS Map Dashboard](https://povertylab.shinyapps.io/ACS-Map-Dashboard/) produces customizable visualizations using the 2012-2016 5-year [American Community Survey (ACS)](https://www.census.gov/programs-surveys/acs/about.html) estimates across the 77 [Chicago community areas (CCA)](http://www.encyclopedia.chicagohistory.org/pages/1760.html).
 
 The map, bar plot, and tables produced are all exportable, allowing users to save graphics and data with the click of a button.
 
@@ -30,14 +30,14 @@ shiny::runUrl( url = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/archive/m
 
 Click to skip ahead to other sections: 
 
-* [Overview](#Overview)
-* [Data](#Data)
-* [Census Tract to Chicago Community Areas Aggregation](README.md#census-tract-to-chicago-community-areas-aggregation)
-* [User Interface (UI)](README.md#user-interface-ui)
-* [Code](README.md#code)
-* [Current Limitations](README.md#current-limitations)
-* [To Do Before Launch](README.md#to-do-before-launch)
-* [List of Features](README.md#list-of-features)
+* [Overview](#overview)
+* [Data](#data)
+* [Census Tract to Chicago Community Areas Aggregation](#census-tract-to-chicago-community-area-aggregation)
+* [User Interface (UI)](#user-interface-ui)
+* [Code](#code)
+* [Current Limitations](#current-limitations)
+* [To Do Before Launch](#to-do-before-launch)
+* [List of Features](#list-of-features)
 
 
 ## Overview
@@ -46,21 +46,25 @@ This app produces customizable visualizations of 2012-2016 5 year ACS estimates 
 
 ![Purpose](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/input_output.png)
 
+*Click here to return to the [Outline](#outline).*
+
 ## Data
 
 The ACS Map Dashboard retrives its data from the [Census Data Application Programming Interface (API)](https://www.census.gov/data/developers/guidance/api-user-guide.html), which requests data from the [U.S. Census Bureau](https://www.census.gov/en.htmldatasets).
 
 To access the API, we use the [`acs`](https://cran.r-project.org/web/packages/acs/acs.pdf) package to download and manipulate ACS estimate data from the U.S. Census Bureau. At the moment, we only use the data from the 2012-2016 5 year ACS estimates.
 
+*Click here to return to the [Outline](#outline).*
+
 ## Census Tract to Chicago Community Area Aggregation
 
-*Background* 
+### Background
 
 [Census tract boundaries](https://www.census.gov/geo/reference/gtc/gtc_ct.html) are small geogrpahies that typically contain anywhere from 1,200 to 8,000 people. [Cook County, IL](https://www2.census.gov/geo/maps/dc10map/tract/st17_il/c17031_cook/DC10CT_C17031_000.pdf) contains 1,319 census tracts.
 
 Around [800 of those census tracts](https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Census-Tracts-2010/5jrd-6zik/data) reside in the city of Chicago. However, census tracts do not always share borders with the city's 77 community areas (i.e. neighborhoods).
 
-*Methodology*
+### Methodology
 
 We allocate census tract statistics to their corresponding neighborhoods based on the proportion of individuals and households in a tract that belong to that neighborhood. This is done by leveraging [block-level information published by the census](https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Census-Blocks-2010/mfzt-js4n/data). 
 
@@ -68,7 +72,7 @@ We allocate census tract statistics to their corresponding neighborhoods based o
 
 With this information, we are able to calculate the number of individuals and households from a given tract that belong to each neighborhood. We then allocate a tracts’ statistics, e.g. the number of individuals employed, or the mean household income, into the corresponding neighborhood in proportion to the neighborhood’s actual population  not a proxy.  
 
-Click here to return to the [Outline](README.md#outline).
+*Click here to return to the [Outline](#outline).*
 
 ## User Interface (UI)
 
@@ -80,7 +84,7 @@ The user selects the data to be represented on the left-hand pane. The graphic c
 
 ![Table Tab](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/ACS_MD_TB.png)
 
-Click here to return to the [Outline](README.md#outline).
+*Click here to return to the [Outline](#outline).*
 
 
 ## Code
@@ -93,13 +97,16 @@ The app is organized around three `.R` scripts:
 | `ui.R` | Creates the [user-interface elements](https://www.usability.gov/how-to-and-tools/methods/user-interface-elements.html) that allow users to select data and navigate across the Map, Bar Plot, and Table tabs on the page. |
 | `server.R` | Stores the data and logic used to render the map, barplot, and table that the user observers in the user-interface. This script uses [reactive programming](https://shiny.rstudio.com/articles/reactivity-overview.html) to [provide the recipes that should be used to update the outputs](https://www.rstudio.com/resources/webinars/shiny-developer-conference/). |
 
+*Click here to return to the [Outline](#outline).*
+
 
 ## Workflow
 
+Below is a visual representation of how the `global.R`, `ui.R`, and `server.R` script work together to produce the ACS Map Dashboard:
+
 ![Workflow](https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Visuals/ACS_Map_Dashboard_Workflow_V1.png)
 
-Click here to return to the [Outline](README.md#outline).
-
+*Click here to return to the [Outline](#outline).*
 
 ## Features
 
@@ -131,6 +138,8 @@ Click here to return to the [Outline](README.md#outline).
 |  Save table button|x|x|x|
 |**Misc**| | | |
 |  Leaflet plots| | |x|
+
+*Click here to return to the [Outline](#outline).*
 
 *************
 
