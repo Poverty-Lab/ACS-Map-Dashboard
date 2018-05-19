@@ -1,6 +1,6 @@
 #
 # Author:   Isaac Ahuvia and Cristian Nuno
-# Date:     May 1, 2018
+# Date:     May 18, 2018
 # Purpose:  Create UI
 #
 
@@ -29,16 +29,28 @@ ui <- fluidPage(theme = "style.css",
                          wellPanel(
                                    h1("Step 1: Select a table and variable", class = "step"),
                                    p("ACS Table", class = "name"),
-                                   selectizeInput("table", label = "Press backspace to enable searching", selected = "Total Population", choices = tableOptions), #selected = "Total Population",
-                                   textOutput("universe"),
+                                   
+                                   selectizeInput( inputId = "select.table"
+                                                   , label = "Press backspace to enable searching"
+                                                   , selected = "Total Population"
+                                                   , choices = tableOptions ), 
+                                   
+                                   textOutput( outputId = "universe"),
                                    br(),
                                    shiny::uiOutput( outputId = "variableOptions" )
                          ), 
                          
                          wellPanel(
                                    h1("Step 2: Confirm the variable type and population", class = "step"),
-                                   radioButtons("varType", "This variable is a:", choices = c("Count", "Proportion", "Mean"), inline = T),
-                                   radioButtons("varPop", "This variable is of which population:", choices = c("Individual", "Household", "Housing Unit"), inline = T)
+                                   radioButtons( inputId = "varType"
+                                                , "This variable is a:"
+                                                , choices = c("Count", "Proportion", "Mean")
+                                                , inline = TRUE ),
+                                   
+                                   radioButtons( inputId = "varPop"
+                                                 , "This variable is of which population:"
+                                                 , choices = c("Individual", "Household", "Housing Unit")
+                                                 , inline = TRUE )
                          ),
                          
                          wellPanel(
@@ -81,7 +93,7 @@ ui <- fluidPage(theme = "style.css",
                                                                
                                                      ), 
                                                      
-                                                     a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/README.md"), br(),
+                                                     a("README", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
                                                      a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                               )
@@ -91,7 +103,7 @@ ui <- fluidPage(theme = "style.css",
                                               
                                               column(width = 6,
                                                      
-                                                     plotOutput("bar"),
+                                                     plotOutput( outputId = "bar"),
                                                      downloadButton( outputId = "dwnld.bplot"
                                                                      , label = "Save Plot" )
                                                      
@@ -102,17 +114,20 @@ ui <- fluidPage(theme = "style.css",
                                                      wellPanel(h1("Bar Plot Options"),
                                                                
                                                                textInput(label = "Title", inputId = "titleBar"),
+                                                               
                                                                radioButtons(label = "Direction"
                                                                             , inputId = "direction"
                                                                             , choices = c("Descending", "Ascending")
-                                                                            , inline = T
+                                                                            , inline = TRUE
                                                                             , selected = "Descending"),
+                                                               
                                                                sliderInput(label = "Number of Geographies"
                                                                            , inputId = "nGeog"
                                                                            , min = 0
                                                                            , max = 77
                                                                            , value = 15
-                                                                           , round = T),
+                                                                           , round = TRUE ),
+                                                               
                                                                radioButtons(label = "Choose a color palette:"
                                                                             , inputId = "bplot.color.palette"
                                                                             , choices = c("Default"
@@ -125,10 +140,9 @@ ui <- fluidPage(theme = "style.css",
                                                                
                                                      ), 
                                                      
-                                                     a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/README.md"), br(),
+                                                     a("README", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
                                                      a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
                                                      img(src = "pl_logo_150x.png", align = "right")
-                                                     
                                               )
                                               
                                      ),
@@ -138,7 +152,7 @@ ui <- fluidPage(theme = "style.css",
                                               column(width = 6,
                                                      
                                                      br(),
-                                                     dataTableOutput( outputId = "table" )
+                                                     dataTableOutput( outputId = "dwnld.table" )
                                                      
                                               ),
                                               
@@ -146,11 +160,15 @@ ui <- fluidPage(theme = "style.css",
                                                      
                                                      wellPanel(h1("Table Options"),
                                                                
-                                                               radioButtons(label = "Round", inputId = "round", choices = c("Round", "Don't Round"), inline = T, selected = "Round")
+                                                               radioButtons( label = "Round"
+                                                                            , inputId = "round"
+                                                                            , choices = c("Round", "Don't Round")
+                                                                            , inline = TRUE
+                                                                            , selected = "Round" )
 
                                                      ), 
                                                      
-                                                     a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/README.md"), br(),
+                                                     a("README", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
                                                      a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                                      
