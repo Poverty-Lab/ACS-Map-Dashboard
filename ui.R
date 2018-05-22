@@ -20,7 +20,6 @@ library( viridis )
 
 ####  UI  ####
 ui <- fluidPage(theme = "style.css",
-                tags$head(tags$link(rel="shortcut icon", href="favicon.ico")),                          
                 fluidRow(
                   
                   column(width = 3,
