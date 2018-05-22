@@ -28,7 +28,7 @@ server <- shinyServer(function(input, output, session) {
   # store labels based on user input
   user.labels <- reactive({
   
-      if(input$statToShow %in% c("Total", "Per 100k")) {
+      if(input$statToShow %in% c("Total", "Per 100k", "Per Individual Unit")) {
 
         scales::comma_format()
 
