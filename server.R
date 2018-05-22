@@ -19,7 +19,7 @@ library( viridis )
 
 
 #FOR TESTING
-#input <- c(); input$table = "Sex By Age"; input$variable = "Under 5 years (B01001_003)"; input$varType = "Count"; input$varPop = "Individual"; input$round = "Round"
+#input <- c(); input$table = "Sex By Age"; input$variable = "Under 5 years (B01001_003)"; input$varType = "Count";  input$round = "Round"
 #x = estimate(acs); tractID = acs@geography$tract; type = input$varType; level = input$varPop; return_df = T
 
 ####  Server  ####
@@ -100,13 +100,14 @@ server <- shinyServer(function(input, output, session) {
                         variableList$tableID == tableList$tableID[tableList$stub == input$table]
                       , message = "Loading. If no data loads, make sure you have selected a table and variable" )
               , need( expr = input$varType
-                      , message = "Please specify this variable's type." )
-              , need( expr = input$varPop
-                       , message = "Please specify this variable's population." ) )
+                      , message = "Please specify this variable's type." ))
     
     #download data
+    table.selected <- tableList$tableID[tableList$stub == input$table]
+    
     var <- variableList$variableID[variableList$stubLong == input$variable &
-                                   variableList$tableID == tableList$tableID[tableList$stub == input$table]]
+                                   variableList$tableID == table.selected]
+    level <- universeList$type[universeList$tableID == table.selected]
 
     acs <- acs::acs.fetch( geography = geog
                            , endyear = 2016
@@ -116,7 +117,7 @@ server <- shinyServer(function(input, output, session) {
 
     agg <- tractToCCA(acs = acs
                       , type = input$varType
-                      , level = input$varPop)
+                      , level = level)
     
     #also grab a total population estimate for this variable, to be used for calculating percent & per 100k outputs,
     #by downloading the Bxxxxx_001 variant of whatever table
@@ -131,7 +132,7 @@ server <- shinyServer(function(input, output, session) {
                           , key = "90f2c983812307e03ba93d853cb345269222db13" )
     agg.pop <- tractToCCA(acs = acs.pop 
                           , type = input$varType
-                          , level = input$varPop)
+                          , level = level)
 
     # tack on population estimate
     if(input$statToShow == "Percent") {

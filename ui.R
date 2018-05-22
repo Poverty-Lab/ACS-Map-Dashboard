@@ -20,6 +20,7 @@ library( viridis )
 
 ####  UI  ####
 ui <- fluidPage(theme = "style.css",
+                tags$head(tags$link(rel="shortcut icon", href="favicon.ico")),                          
                 fluidRow(
                   
                   column(width = 3,
@@ -37,8 +38,7 @@ ui <- fluidPage(theme = "style.css",
                          
                          wellPanel(
                                    h1("Step 2: Confirm the variable type and population", class = "step"),
-                                   radioButtons("varType", "This variable is a:", choices = c("Count", "Proportion", "Mean"), inline = T),
-                                   radioButtons("varPop", "This variable is of which population:", choices = c("Individual", "Household", "Housing Unit"), inline = T)
+                                   radioButtons("varType", "This variable is a:", choices = c("Count", "Proportion", "Mean"), inline = T)
                          ),
                          
                          wellPanel(

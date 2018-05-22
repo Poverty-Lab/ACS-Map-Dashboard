@@ -17,6 +17,7 @@ library(lettercase)
 raw <- read.csv("https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/ACS2016_Table_Shells.csv", stringsAsFactors = F)
 
 
+
 ####  Data Prep  ####
 ## Remove extraneous rows
 raw <- raw[2:nrow(raw),]
@@ -55,6 +56,36 @@ tableList$stub <- lettercase::str_title_case(tolower(tableList$stub))
 
 ## Variable IDs to stubs, so that all variables will show in the dropdown menu (even when there are two whose stubs would otherwise both be "Under 5" or something like that)
 variableList$stubLong <- paste0(variableList$stub, " (", variableList$variableID, ")")
+
+
+
+####  Classify, Filter Tables  ####
+## Classify variable type: count, proportion, mean, median, or ratio
+
+
+
+
+
+## Filter by variable type: Only include counts
+
+
+## Classify variable population: individual, household, or household unit
+#default is individual
+universeList$type <- "Individual"
+
+#pick out households
+universeList$type[universeList$stub %in% c("Universe: Households", "Universe:  Households", "Universe:  Nonfamily households", "Universe:  Total households")] <- "Household"
+
+#pick out housing units
+universeList$type[grepl("housing unit", universeList$stub, ignore.case = T)] <- "Housing Unit"
+
+
+
+####  Categorize Tables  ####
+## For ease of selection, categorize tables into: housing, income, poverty, flag (to delete)
+
+
+## Filter out flagged tables
 
 ####  Save  ####
 saveRDS(tableList, file = "Data/Census_tables.rds")
