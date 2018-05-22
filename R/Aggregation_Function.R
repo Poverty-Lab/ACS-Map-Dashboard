@@ -37,10 +37,6 @@ tractToCCA <- function(acs
     stop("'est', 'se', and 'tractID' must be of the same length")
   }
   
-  if(!type %in% c("Count", "Proportion", "Mean")) {
-    stop("type must be one of Count, Proportion, or Mean")
-  }
-  
   if(!level %in% c("Individual", "Household", "Housing Unit")) {
     stop("level must be one of Individual, Household, Housing Unit")
   }
