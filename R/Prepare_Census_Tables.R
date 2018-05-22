@@ -60,13 +60,24 @@ variableList$stubLong <- paste0(variableList$stub, " (", variableList$variableID
 
 
 ####  Classify, Filter Tables  ####
-## Classify variable type: count, proportion, mean, median, or ratio
+## Establish a flag variable to track tables to drop
+tableList$flag <- F
 
+## Classify variable type: count, mean, median, or ratio
+#default is count
+tableList$type <- "Count"
 
+#mean 
+tableList$type[grepl("^Mean ", tableList$stub)] <- "Mean"
 
+#median
+tableList$type[grepl("^Median ", tableList$stub)] <- "Median"
 
+#ratio
+tableList$type[grepl("^Ratio ", tableList$stub)] <- "Ratio"
 
 ## Filter by variable type: Only include counts
+tableList$flag[tableList$type != "Count"] <- T
 
 
 ## Classify variable population: individual, household, or household unit
@@ -82,10 +93,33 @@ universeList$type[grepl("housing unit", universeList$stub, ignore.case = T)] <- 
 
 
 ####  Categorize Tables  ####
-## For ease of selection, categorize tables into: housing, income, poverty, flag (to delete)
+## For ease of selection, categorize tables into: housing, income, poverty, health, tenure
 
 
-## Filter out flagged tables
+
+## Flag additional tables
+#allocation variables (https://www.census.gov/programs-surveys/acs/methodology/sample-size-and-data-quality/item-allocation-rates-definitions.html)
+tableList$flag[grepl("allocat", tableList$stub, ignore.case = T)] <- T
+
+#Response rate information
+tableList$flag[grepl("response rate", tableList$stub, ignore.case = T)] <- T
+
+#coverage rate information
+tableList$flag[grepl("coverage rate", tableList$stub, ignore.case = T)] <- T
+
+#unweighted sample sizes
+tableList$flag[grepl("^Unweighted", tableList$stub, ignore.case = T)] <- T
+
+
+
+## Filter out flagged tables from each dataset
+drop <- tableList$tableID[tableList$flag == T]
+
+tableList <- tableList[!tableList$tableID %in% drop,]
+variableList <- variableList[!variableList$tableID %in% drop,]
+universeList <- universeList[!universeList$tableID %in% drop,]
+
+
 
 ####  Save  ####
 saveRDS(tableList, file = "Data/Census_tables.rds")
