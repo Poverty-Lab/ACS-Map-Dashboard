@@ -37,7 +37,7 @@ ui <- fluidPage(theme = "style.css",
                                    
                                    textOutput( outputId = "universe"),
                                    br(),
-                                   shiny::uiOutput( outputId = "variableOptions" )
+                                   uiOutput( outputId = "variableOptions" )
                          ), 
                          
                          wellPanel(
@@ -67,7 +67,7 @@ ui <- fluidPage(theme = "style.css",
                                                      
                                                      wellPanel(h1("Map Options"),
                                                                
-                                                               textInput(label = "Title", inputId = "titleMap"),
+                                                               uiOutput( outputId = "maptitle" ),
                                                                
                                                                radioButtons(label = "Choose a color palette:"
                                                                             , inputId = "map.color.palette"
@@ -101,7 +101,7 @@ ui <- fluidPage(theme = "style.css",
                                                      
                                                      wellPanel(h1("Bar Plot Options"),
                                                                
-                                                               textInput(label = "Title", inputId = "titleBar"),
+                                                               uiOutput( outputId = "bartitle" ),
                                                                
                                                                radioButtons(label = "Direction"
                                                                             , inputId = "direction"

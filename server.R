@@ -252,7 +252,7 @@ server <- function( input, output, session ) {
       geom_polygon( aes(x = long, y = lat, group = group, fill = est)
                     , color = "#D2C2C2", size = .25) +
       coord_map() +
-      ggtitle( label = input$titleMap ) + 
+      ggtitle( label = input$maptitle ) + 
       theme_void() +
       themeTitle +
       user.map.color() +
@@ -275,7 +275,7 @@ server <- function( input, output, session ) {
                      , color = user.moe.color()
                      , size = 1.25
                      , width = .5 ) +
-      ggtitle( input$titleBar ) +
+      ggtitle( input$bartitle ) +
       theme( plot.title = element_text( hjust = 0.5, size = 20 ) ) +
       xlab( label = "Community Area" ) + 
       ylab( label = variableList$stub[variableList$stubLong == input$variable] ) +
@@ -337,8 +337,10 @@ server <- function( input, output, session ) {
   # render text to identify
   # the universe documented in the ACS Table
   output$universe <- renderText({
+    
     universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$select.table]]
-    })
+    
+  })
   
   # create drop down menu
   # of variables associated in the ACS Table
@@ -350,6 +352,25 @@ server <- function( input, output, session ) {
     selectizeInput("variable", label = "Variable from Table", choices = variables)
     
   })
+  
+  # set default map title
+  output$maptitle <- renderUI({
+    
+    default <- "default.map"
+    
+    textInput("title.map", label = "Title", value = default)
+    
+  })
+  
+  # set default barplot title
+  output$bartitle <- renderUI({
+    
+    default <- "default.bar"
+    
+    textInput("title.bar", label = "Title", value = default)
+    
+  })
+  
   
 } # end of server
 
