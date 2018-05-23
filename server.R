@@ -1,6 +1,6 @@
 #
 # Author:   Isaac Ahuvia and Cristian Nuno
-# Date:     May 1, 2018
+# Date:     May 18, 2018
 # Purpose:  Create Server
 #
 
@@ -18,12 +18,8 @@ library( viridisLite )
 library( viridis )
 
 
-#FOR TESTING
-#input <- c(); input$table = "Sex By Age"; input$variable = "Under 5 years (B01001_003)"; input$round = "Round"
-#x = estimate(acs); tractID = acs@geography$tract; type = input$varType; level = input$varPop; return_df = T
-
 ####  Server  ####
-server <- shinyServer(function(input, output, session) {
+server <- function( input, output, session ) {
   
   # store labels based on user input
   user.labels <- reactive({
@@ -90,14 +86,48 @@ server <- shinyServer(function(input, output, session) {
             , `Poverty Lab`              = "#1975FF" )
   })
   
-  # store user data
-  # in a reactive expression
+  # store digit to be used when 
+  # the user rounds the data
+  # seen in the "Table" tab
+  user.digit <- reactive({
+    if(input$round == "Round") {
+      
+      if(input$varType == "Count") {
+        
+        if(input$statToShow %in% c("Total", "Per 100k")) {
+          
+          # return zero
+          0
+          
+        } else if(input$statToShow == "Percent") {
+          
+          # return two
+          2
+        }
+        
+      } else if(input$varType %in% c("Proportion", "Mean")) {
+        
+        # return two 
+        2
+      }
+      
+    } else if(input$round == "Don't Round") {
+      
+      # return 12
+      # note: this is a safe number since we don't plan on having estimates in the trillions
+      12
+    }
+  })
+  
+  # query the ACS API
+  # based on the ACS Table and store the results
   user.data <- reactive({
     # require that the three inputs needed to fetch ACS data are not NULL
     # note: used to hide initial error message when data is loading
     validate( need( expr = variableList$stubLong == input$variable &
                         variableList$tableID == tableList$tableID[tableList$stub == input$table]
                       , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
+
     
     #download data
     table.selected <- tableList$tableID[tableList$stub == input$table]
@@ -106,6 +136,7 @@ server <- shinyServer(function(input, output, session) {
                                    variableList$tableID == table.selected]
     
     level <- universeList$type[universeList$tableID == table.selected]
+
 
     acs <- acs::acs.fetch( geography = geog
                            , endyear = 2016
@@ -169,7 +200,10 @@ server <- shinyServer(function(input, output, session) {
     
     }
 
-    if(tableList$medianFlag[tableList$stub == input$table] == T) {showNotification("You have selected a median, but medians cannot be aggregated up from tract to neighborhood", duration = NULL)}
+    if( tableList$medianFlag[tableList$stub == input$select.table] == TRUE ) {
+      showNotification( ui = "You have selected a median, but medians cannot be aggregated up from tract to neighborhood"
+                       , duration = NULL ) 
+      }
  
     # return agg to the Global Environment
     return( agg )
@@ -195,82 +229,64 @@ server <- shinyServer(function(input, output, session) {
            , all = FALSE )
   })
   
+  # store data frame
+  # that manipulates cca.ct.data() based on 
+  # the slider input$nGeog
+  # and rearranges the data based on the
+  # users' interaction with the input$direction radio button
+  bplot.data <- reactive({
+ 
+      switch( EXPR = input$direction
+              , "Ascending" = cca.ct.data() %>%
+                dplyr::arrange( est ) %>%
+                dplyr::mutate( CCA = stats::reorder( x = CCA, X = est ) ) %>%
+                head( n = input$nGeog )
+              
+              , "Descending" = cca.ct.data() %>% 
+                dplyr::arrange( dplyr::desc( est ) ) %>%
+                dplyr::mutate( CCA = stats::reorder( x = CCA, X = dplyr::desc( est ) ) ) %>%
+                head( n = input$nGeog ) )
+    
+  })
+  
+  
   # store map created from fortified.data()
   user.map <- reactive({
-    # create map using ggplot
-    ggplot() +
-      geom_polygon(data = fortified.data()
-                   , aes(x = long, y = lat, group = group, fill = est)
-                   , color = "#D2C2C2", size = .25) +
+    
+    ggplot( data = fortified.data() ) +
+      geom_polygon( aes(x = long, y = lat, group = group, fill = est)
+                    , color = "#D2C2C2", size = .25) +
       coord_map() +
-      ggtitle(input$titleMap) + 
+      ggtitle( label = input$titleMap ) + 
+      theme_void() +
       themeTitle +
-      themeMap +
-      user.map.color()
+      user.map.color() +
+      labs( caption = "Source: ACS 2016 5 Year Estimates" )
     
   })
   
 
-  # store barplot created from cca.ct.data()
+  # store barplot created from bplot.data()
   user.bplot <- reactive({
-    # create barplot using ggplot
-
-    if(input$direction == "Descending") {
-      
-      data <- 
-        cca.ct.data() %>%
-        dplyr::arrange(desc(est)) %>%
-        head(input$nGeog)
-      
-      # visualize
-      ggplot() +
-        geom_bar( aes(x = reorder(data$CCA, desc( eval( data$est ) ) )
-                      , y = data$est)
-                 , stat = "identity"
-                 , fill = user.bplot.color() ) +
-        geom_errorbar(aes(x = reorder(data$CCA
-                                      , desc(eval(data$est)))
-                          , ymin = data$est - data$moe
-                          , ymax = data$est + data$moe )
-                      , color = user.moe.color()
-                      , size = 1.25
-                      , width = .5 ) +
-        ggtitle(input$titleBar) +
-        theme(plot.title = element_text( hjust = 0.5, size = 20 ) ) +
-        xlab("Community Area") + 
-        ylab( variableList$stub[variableList$stubLong == input$variable] ) +
-        themeMOE +
-        scale_y_continuous( labels = user.labels() )
-      
-      
-    } else if(input$direction == "Ascending") {
-      
-      data <- 
-        cca.ct.data() %>%
-        dplyr::arrange(est) %>%
-        head(input$nGeog)
-      
-
-      ggplot() +
-        geom_bar(aes(x = reorder(data$CCA, eval( data$est ) )
-                     , y = data$est )
-                 , stat = "identity"
-                 , fill = user.bplot.color() ) +
-        geom_errorbar(aes(x = reorder(data$CCA
-                                      , eval( data$est ) )
-                          , ymin = data$est - data$moe
-                          , ymax = data$est + data$moe )
-                      , color = user.moe.color()
-                      , size = 1.25
-                      , width = .5 ) +
-        ggtitle(input$titleBar) + 
-        theme(plot.title = element_text(hjust = 0.5, size = 20)) +
-        xlab("Community Area") + 
-        ylab( variableList$stub[variableList$stubLong == input$variable] ) +
-        themeMOE +
-        scale_y_continuous( labels = user.labels() )
-      
-    }
+    
+    ggplot( data = bplot.data() ) +
+      geom_bar( aes( x  = CCA
+                     , y = est )
+                , stat = "identity"
+                , fill = user.bplot.color() ) +
+      geom_errorbar( aes( x = CCA
+                          , ymin = est - moe
+                          , ymax = est + moe )
+                     , color = user.moe.color()
+                     , size = 1.25
+                     , width = .5 ) +
+      ggtitle( input$titleBar ) +
+      theme( plot.title = element_text( hjust = 0.5, size = 20 ) ) +
+      xlab( label = "Community Area" ) + 
+      ylab( label = variableList$stub[variableList$stubLong == input$variable] ) +
+      themeMOE +
+      scale_y_continuous( labels = user.labels() ) +
+      labs( caption = "Source: ACS 2016 5 Year Estimates" )
   })
   
   # display user.map() in the UI
@@ -280,7 +296,7 @@ server <- shinyServer(function(input, output, session) {
   
   # save the user.map()
   output$dwnld.map <- downloadHandler(
-    filename = "ACS_Map_Dashboard_map.png"
+    filename = paste0( Sys.Date(), "-ACS_Map_Dashboard_map.png" )
     , content = function( file ){
       ggsave( filename = file
               , plot = user.map()
@@ -295,7 +311,7 @@ server <- shinyServer(function(input, output, session) {
   
   # save the user.bplot()
   output$dwnld.bplot <- downloadHandler(
-    filename = "ACS_Map_Dashboard_plot.png"
+    filename = paste0( Sys.Date(), "-ACS_Map_Dashboard_plot.png" )
     , content = function( file ){
       ggsave( filename = file
               , plot = user.bplot()
@@ -303,57 +319,43 @@ server <- shinyServer(function(input, output, session) {
     }
   )
   
-  output$table <- renderDataTable({
+
+  # transfrom user.data()
+  # to be dislayed on a DataTable
+  output$dwnld.table <- renderDataTable({
+
+    table.data <- user.data()
+    table.data[, c("est", "moe") ] <- round( x = table.data[, c("est", "moe") ], digits = user.digit() )
+    table.data$moe <- paste0( "+/- ", table.data$moe )
     
-    if(input$round == "Round") {
-      
-        if(input$statToShow %in% c("Total", "Per 100k")) {
-          
-          nDigits = 0
-          
-        } else if(input$statToShow == "Percent") {
-          
-          nDigits = 2
-          
-        }
-      
-    } else if(input$round == "Don't Round") {
-      
-      nDigits = 12
-      
-    }
-    
-    data = user.data()
-    data[,c(2,3)] <- round(data[,c(2,3)], digits = nDigits)
-    data$moe <- paste0("+/- ", data$moe)
-    
-    # transfrom user.data()
-    # to be dislayed on a DataTable
-    datatable( data = data
+    datatable( data = table.data
                , caption = "Table 1. 2016 5-Year ACS statistics by CCA"
                , colnames = c("CCA", input$variable, "90% Margin of Error" )
                , extensions = "Buttons"
-               , rownames = F
+               , rownames = FALSE
                , options = list( dom = "Blfrtip"
                                  , buttons = list( "csv" )
-                                 , lengthMenu = list( c(15, 35, -1)
-                                                      , c(15, 35, "All 77") )
-                                 , pageLength = 15 ) ) 
+                                 , paging = FALSE ) ) 
 
   })
   
-  output$universe <- renderText(universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$table]])
+  # render text to identify
+  # the universe documented in the ACS Table
+  output$universe <- renderText({
+    universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$select.table]]
+    })
   
+  # create drop down menu
+  # of variables associated in the ACS Table
   output$variableOptions <- renderUI({
     
-    selectedTable <- tableList$tableID[tableList$stub == input$table]
+    selectedTable <- tableList$tableID[tableList$stub == input$select.table]
     variables <- variableList$stubLong[variableList$tableID == selectedTable]
 
     selectizeInput("variable", label = "Variable from Table", choices = variables)
     
   })
   
-})
-
+} # end of server
 
 # end of script #
