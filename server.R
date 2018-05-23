@@ -124,18 +124,18 @@ server <- function( input, output, session ) {
   user.data <- reactive({
     # require that the three inputs needed to fetch ACS data are not NULL
     # note: used to hide initial error message when data is loading
-    validate( need( expr = variableList$stubLong == input$variable &
-                        variableList$tableID == tableList$tableID[tableList$stub == input$select.table]
+    validate( need( expr = variables$variableName == input$variable &
+                      variables$tableStub == input$select.table
                       , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
 
     
     #download data
-    table.selected <- tableList$tableID[tableList$stub == input$select.table]
+    table.selected <- variables$tableID[variables$tableStub == input$select.table]
     
-    var <- variableList$variableID[variableList$stubLong == input$variable &
-                                   variableList$tableID == table.selected]
+    var <- variables$variableID[variables$variableName == input$variable &
+                                   variables$tableID == table.selected]
     
-    level <- universeList$type[universeList$tableID == table.selected]
+    level <- variables$pop[variables$tableID == table.selected]
 
 
     acs <- acs::acs.fetch( geography = geog
@@ -152,6 +152,9 @@ server <- function( input, output, session ) {
     #Since we only need this when input$statToShow != "Total", let's only run it in those cases
     if(input$statToShow != "Total") {
     
+      
+      ####### REVISE THIS - ALLOW OPTION TO USE DIFFERENT PARENTS AS DENOMENATOR ######
+      
     var.pop <- paste0(strsplit(var, "_")[[1]][1], "_001")
     acs.pop <- acs::acs.fetch(geography = geog
                           , endyear = 2016
@@ -338,7 +341,7 @@ server <- function( input, output, session ) {
   # the universe documented in the ACS Table
   output$universe <- renderText({
     
-    universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$select.table]]
+    variables$universeStub[variables$tableID == variables$tableID[variables$tableStub == input$select.table]]
     
   })
   
@@ -346,8 +349,8 @@ server <- function( input, output, session ) {
   # of variables associated in the ACS Table
   output$variableOptions <- renderUI({
     
-    selectedTable <- tableList$tableID[tableList$stub == input$select.table]
-    variables <- variableList$stubLong[variableList$tableID == selectedTable]
+    selectedTable <- variables$tableID[variables$tableStub == input$select.table]
+    variables <- variables$variableName[variables$tableID == selectedTable]
 
     selectizeInput("variable", label = "Variable from Table", choices = variables)
     
@@ -356,7 +359,7 @@ server <- function( input, output, session ) {
   # set default map title
   output$maptitle <- renderUI({
     
-    default <- "default.map"
+    default <- variables$plotTitle[variables$variableID == variables$variableID[variables$variableName == input$variable]]
     
     textInput("title.map", label = "Title", value = default)
     
@@ -365,7 +368,7 @@ server <- function( input, output, session ) {
   # set default barplot title
   output$bartitle <- renderUI({
     
-    default <- "default.bar"
+    default <- variables$plotTitle[variables$variableID == variables$variableID[variables$variableName == input$variable]]
     
     textInput("title.bar", label = "Title", value = default)
     

@@ -14,7 +14,7 @@ library(dplyr)
 library(lettercase)
 
 # load necessary data
-raw <- read.csv("https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/ACS2016_Table_Shells_With Indexing.csv", stringsAsFactors = F)
+raw <- read.csv("https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/rename/Data/ACS2016_Table_Shells_With Indexing.csv", stringsAsFactors = F)
 
 
 
@@ -34,7 +34,8 @@ raw <- dplyr::select(raw,
                      rowType,
                      tableID = Table.ID,
                      variableID = UniqueID,
-                     stub = Stub)
+                     stub = Stub,
+                     indent = Index)
 
 #stubs to Title Case
 raw$stub <- lettercase::str_title_case(tolower(raw$stub))
@@ -50,7 +51,7 @@ raw <- raw[!(raw$rowType == "Variable Name" & raw$variableID == ""),]
 ####  Reformat With One Variable per Row  ####
 ## Separate...
 tables <- raw[raw$rowType == "Table Name", c(2,4)]
-variables <- raw[raw$rowType == "Variable Name", 2:4]
+variables <- raw[raw$rowType == "Variable Name", 2:5]
 universes <- raw[raw$rowType == "Table Universe", c(2,4)]
 
 #rename certain variables
@@ -69,45 +70,112 @@ variables <- merge(variables, universes, by = "tableID")
 ## Some variables have only one (e.g. "Total" is a parent variable of "Male" in B01001),
 ## while others have more than one (e.g. "Total" and "Male" are both parent variables of "Under 5 Years" in B01001).
 ## In these cases the highest-level parent is "Parent 1" and subsequent parents are "Parent 2," "Parent 3," etc.
-variables$parentFlag <- grepl(":$", variables$variableStub, perl = T)
+variables <- dplyr::group_by(variables, tableID) %>% dplyr::mutate(indentMax = max(indent))
 
-parentIndex <- variables %>%
-  dplyr::filter(parentFlag == T) %>%
-  dplyr::group_by(tableID) %>%
-  dplyr::mutate(parentIndex = row_number())
-variables <- variables %>% dplyr::group_by(tableID) %>% dplyr::mutate(tableIndex = row_number())
+## A variable is a child if it is a subpopulation of a parent variable above it
+## NOTE: A variable can be a child and not be the most indented variable in its table (see B02003, where "White Alone" is not a parent but is less indented than "White; Asian")
+variables$childFlag <- variables$indent >= lag(variables$indent)
+variables$parentFlag <- variables$indent < lead(variables$indent)
+variables$parentFlag[nrow(variables)] <- F
+
+variables$parentIndex <- NA
+variables$parentIndex[variables$parentFlag == T] <- variables$indent[variables$parentFlag == T]
+
+
+
+
+
+
+
+
+
+
+
+
+##############               TO FIX                   #########################
+
+
+
+
+
+
+
+
+
+
+
+## Create new variables for each parent of a certain variable. Parent 0: highest-level parent
+for(level in c(0,1,2,3,4,5)) {
+  
+  varname <- paste0("parent", level)
+  varnameStub <- paste0("parent", level, "Stub")
+  
+  variables[[varname]] <- NA
+  variables[[varname]][1] <- "temp"
+  variables[[varname]][variables$indent == level & variables$parentFlag == T] <- variables$variableID[variables$indent == level & variables$parentFlag == T]
+  variables[[varname]] <- zoo::na.locf(variables[[varname]])
+  variables[[varname]][variables$indent <= level] <- NA
+  
+  variables[[varnameStub]] <- NA
+  variables[[varnameStub]][1] <- "temp"
+  variables[[varnameStub]][variables$indent == level & variables$parentFlag == T] <- variables$variableStub[variables$indent == level & variables$parentFlag == T]
+  variables[[varnameStub]] <- zoo::na.locf(variables[[varnameStub]])
+  variables[[varnameStub]][variables$indent <= level] <- NA
+  
+}
+
+
+
+
+####  Produce User-friendly Variable Names  ####
+## Including a variable name that includes parents, a default plot name
+variables$variableName <- NA
+variables$variableName[variables$indent %in% c(0, 1)] <- gsub(":", "", variables$variableStub[variables$indent %in% c(0, 1)])
+variables$variableName[variables$indent >= 2] <- paste(variables$parent1Stub[variables$indent >= 2]
+                                                       , variables$parent2Stub[variables$indent >= 2]
+                                                       , variables$parent3Stub[variables$indent >= 2]
+                                                       , variables$parent4Stub[variables$indent >= 2]
+                                                       , variables$parent5Stub[variables$indent >= 2]
+                                                       , variables$variableStub[variables$indent >= 2]
+                                                       , sep = ": ")
+variables$variableName <- gsub("NA: ", "", variables$variableName)
+variables$variableName <- gsub("::", ":", variables$variableName)
+
+#plot title
+variables$plotTitle <- paste(variables$tableStub, variables$variableName, sep = " - ")
+
 
 
 ####  Classify, Filter Tables  ####
 ## Establish a flag variable to track tables to drop
-tableList$flag <- F
+variables$flag <- F
 
 ## Classify variable type: count, mean, median, or ratio
 #default is count
-tableList$type <- "Count"
+variables$varType <- "Count"
 
 #mean 
-tableList$type[grepl("^Mean ", tableList$stub)] <- "Mean"
+variables$varType[grepl("^Mean ", variables$tableStub)] <- "Mean"
 
 #median
-tableList$type[grepl("^Median ", tableList$stub)] <- "Median"
+variables$varType[grepl("^Median ", variables$tableStub)] <- "Median"
 
 #ratio
-tableList$type[grepl("^Ratio ", tableList$stub)] <- "Ratio"
+variables$varType[grepl("^Ratio ", variables$tableStub)] <- "Ratio"
 
 ## Filter by variable type: Only include counts
-tableList$flag[tableList$type != "Count"] <- T
+variables$flag[variables$varType != "Count"] <- T
 
 
 ## Classify variable population: individual, household, or household unit
 #default is individual
-universeList$type <- "Individual"
+variables$pop <- "Individual"
 
 #pick out households
-universeList$type[universeList$stub %in% c("Universe: Households", "Universe:  Households", "Universe:  Nonfamily households", "Universe:  Total households")] <- "Household"
+variables$pop[variables$universeStub %in% c("Universe: Households", "Universe:  Households", "Universe:  Nonfamily households", "Universe:  Total households")] <- "Household"
 
 #pick out housing units
-universeList$type[grepl("housing unit", universeList$stub, ignore.case = T)] <- "Housing Unit"
+variables$pop[grepl("housing unit", variables$universeStub, ignore.case = T)] <- "Housing Unit"
 
 
 
@@ -118,31 +186,24 @@ universeList$type[grepl("housing unit", universeList$stub, ignore.case = T)] <- 
 
 ## Flag additional tables
 #allocation variables (https://www.census.gov/programs-surveys/acs/methodology/sample-size-and-data-quality/item-allocation-rates-definitions.html)
-tableList$flag[grepl("allocat", tableList$stub, ignore.case = T)] <- T
+variables$flag[grepl("allocat", variables$tableStub, ignore.case = T)] <- T
 
 #Response rate information
-tableList$flag[grepl("response rate", tableList$stub, ignore.case = T)] <- T
+variables$flag[grepl("response rate", variables$tableStub, ignore.case = T)] <- T
 
 #coverage rate information
-tableList$flag[grepl("coverage rate", tableList$stub, ignore.case = T)] <- T
+variables$flag[grepl("coverage rate", variables$tableStub, ignore.case = T)] <- T
 
 #unweighted sample sizes
-tableList$flag[grepl("^Unweighted", tableList$stub, ignore.case = T)] <- T
-
+variables$flag[grepl("^Unweighted", variables$tableStub, ignore.case = T)] <- T
 
 
 ## Filter out flagged tables from each dataset
-drop <- tableList$tableID[tableList$flag == T]
-
-tableList <- tableList[!tableList$tableID %in% drop,]
-variableList <- variableList[!variableList$tableID %in% drop,]
-universeList <- universeList[!universeList$tableID %in% drop,]
+variables <- variables[variables$flag == F,]
 
 
 
 ####  Save  ####
-saveRDS(tableList, file = "Data/Census_tables.rds")
-saveRDS(variableList, file = "Data/Census_variables.rds")
-saveRDS(universeList, file = "Data/Census_universes.rds")
+saveRDS(variables, file = "Data/Census_variables.rds")
 
 # end of script #
