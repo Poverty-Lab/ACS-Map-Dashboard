@@ -21,6 +21,16 @@ library( viridis )
 ####  Server  ####
 server <- function( input, output, session ) {
   
+  # store selected variable
+  user.variable <- reactive({
+    
+    var <- variables$variableID[variables$variableName == input$variable &
+                                variables$tableStub == input$select.table]
+    
+    return(var)
+    
+  })
+  
   # store labels based on user input
   user.labels <- reactive({
   
