@@ -68,7 +68,6 @@ lookup <-
 
 #Set options for dataframes
 tableOptions <- tableList$stub
-statOptions <- c("Total", "Percent", "Per 100k")
 
 
 ####  Prime ACS Download Capabilities  ####

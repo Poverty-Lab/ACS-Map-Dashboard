@@ -17,23 +17,23 @@ library( shiny )
 library( viridisLite )
 library( viridis )
 
+
 ####  Server  ####
 server <- function( input, output, session ) {
   
   # store labels based on user input
   user.labels <- reactive({
+  
+      if(input$statToShow %in% c("Total", "Per 100k", "Per Individual Unit")) {
 
-      if(input$varType %in% c("Count", "Mean")) {
+        scales::comma_format()
 
-        if(input$statToShow %in% c("Total", "Per 100k")) {
+      } else if(input$statToShow == "Percent") {
 
-          scales::comma_format()
-
-        } else if(input$statToShow == "Percent") {
-
-          scales::percent_format()
-        }
+        scales::percent_format()
+      
       }
+
     })
   
   # store user color for map
@@ -126,15 +126,17 @@ server <- function( input, output, session ) {
     # note: used to hide initial error message when data is loading
     validate( need( expr = variableList$stubLong == input$variable &
                         variableList$tableID == tableList$tableID[tableList$stub == input$select.table]
-                      , message = "Loading. If no data loads, make sure you have selected a table and variable" )
-              , need( expr = input$varType
-                      , message = "Please specify this variable's type." )
-              , need( expr = input$varPop
-                       , message = "Please specify this variable's population." ) )
+                      , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
+
     
     #download data
+    table.selected <- tableList$tableID[tableList$stub == input$select.table]
+    
     var <- variableList$variableID[variableList$stubLong == input$variable &
-                                   variableList$tableID == tableList$tableID[tableList$stub == input$select.table]]
+                                   variableList$tableID == table.selected]
+    
+    level <- universeList$type[universeList$tableID == table.selected]
+
 
     acs <- acs::acs.fetch( geography = geog
                            , endyear = 2016
@@ -143,12 +145,11 @@ server <- function( input, output, session ) {
                            , key = "90f2c983812307e03ba93d853cb345269222db13" )
 
     agg <- tractToCCA(acs = acs
-                      , type = input$varType
-                      , level = input$varPop)
+                      , level = level)
     
     #also grab a total population estimate for this variable, to be used for calculating percent & per 100k outputs,
     #by downloading the Bxxxxx_001 variant of whatever table
-    #Since we only need this when input$varType != "Total", let's only run it in those cases
+    #Since we only need this when input$statToShow != "Total", let's only run it in those cases
     if(input$statToShow != "Total") {
     
     var.pop <- paste0(strsplit(var, "_")[[1]][1], "_001")
@@ -158,8 +159,7 @@ server <- function( input, output, session ) {
                           , variable = var.pop 
                           , key = "90f2c983812307e03ba93d853cb345269222db13" )
     agg.pop <- tractToCCA(acs = acs.pop 
-                          , type = input$varType
-                          , level = input$varPop)
+                          , level = level)
 
     # tack on population estimate
     if(input$statToShow == "Percent") {
@@ -186,14 +186,19 @@ server <- function( input, output, session ) {
       
       agg <- dplyr::select(agg, CCA, est, moe)
     
-      }
+    } else if(input$statToShow == "Per Individual Unit") {
+      
+      #calculate estimate as percent - this works the same as the "Percent" condition above
+      agg$est <- agg$est / agg.pop$est
+      
+      #calculate margin of error as percent - see A-14 of https://www.census.gov/content/dam/Census/library/publications/2009/acs/ACSResearch.pdf
+      agg$moe <- sqrt(agg$moe^2 - ((agg$est^2) * (agg.pop$moe^2))) / agg.pop$est
+      
+      agg <- dplyr::select(agg, CCA, est, moe)
+      
+    }
     
     }
-
-    if( tableList$medianFlag[tableList$stub == input$select.table] == TRUE ) {
-      showNotification( ui = "You have selected a median, but medians cannot be aggregated up from tract to neighborhood"
-                       , duration = NULL ) 
-      }
  
     # return agg to the Global Environment
     return( agg )
@@ -309,10 +314,11 @@ server <- function( input, output, session ) {
     }
   )
   
+
   # transfrom user.data()
   # to be dislayed on a DataTable
   output$dwnld.table <- renderDataTable({
-    
+
     table.data <- user.data()
     table.data[, c("est", "moe") ] <- round( x = table.data[, c("est", "moe") ], digits = user.digit() )
     table.data$moe <- paste0( "+/- ", table.data$moe )
@@ -342,24 +348,6 @@ server <- function( input, output, session ) {
     variables <- variableList$stubLong[variableList$tableID == selectedTable]
 
     selectizeInput("variable", label = "Variable from Table", choices = variables)
-    
-  })
-  
-  # create drop down menu of 
-  # statistic to be shown
-  output$statToShow <- renderUI({
-    
-    if(input$varType == "Count") {
-      
-      statChoices <- c("Total", "Percent", "Per 100k")
-      
-    } else {
-      
-      statChoices <- "Total"
-      
-    }
-    
-    selectInput("statToShow", "Statistic to Show:", choices = statChoices, selected = "Total")
     
   })
   

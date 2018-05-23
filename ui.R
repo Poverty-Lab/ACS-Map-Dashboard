@@ -41,22 +41,10 @@ ui <- fluidPage(theme = "style.css",
                          ), 
                          
                          wellPanel(
-                                   h1("Step 2: Confirm the variable type and population", class = "step"),
-                                   radioButtons( inputId = "varType"
-                                                , "This variable is a:"
-                                                , choices = c("Count", "Proportion", "Mean")
-                                                , inline = TRUE ),
-                                   
-                                   radioButtons( inputId = "varPop"
-                                                 , "This variable is of which population:"
-                                                 , choices = c("Individual", "Household", "Housing Unit")
-                                                 , inline = TRUE )
-                         ),
-                         
-                         wellPanel(
-                                   h1("Step 3: Choose a statistic to show", class = "step"),
-                                   shiny::uiOutput( outputId = "statToShow" )
-                                   
+
+                                   h1("Step 2: Choose a statistic to show", class = "step"),
+                                   selectInput("statToShow", "Statistic to Show:", choices = c("Total", "Percent", "Per 100k", "Per Individual Unit"), selected = "Total")
+
                          )
                          
                   ),

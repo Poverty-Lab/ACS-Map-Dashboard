@@ -17,6 +17,7 @@ library(lettercase)
 raw <- read.csv("https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/ACS2016_Table_Shells.csv", stringsAsFactors = F)
 
 
+
 ####  Data Prep  ####
 ## Remove extraneous rows
 raw <- raw[2:nrow(raw),]
@@ -55,6 +56,70 @@ tableList$stub <- lettercase::str_title_case(tolower(tableList$stub))
 
 ## Variable IDs to stubs, so that all variables will show in the dropdown menu (even when there are two whose stubs would otherwise both be "Under 5" or something like that)
 variableList$stubLong <- paste0(variableList$stub, " (", variableList$variableID, ")")
+
+
+
+####  Classify, Filter Tables  ####
+## Establish a flag variable to track tables to drop
+tableList$flag <- F
+
+## Classify variable type: count, mean, median, or ratio
+#default is count
+tableList$type <- "Count"
+
+#mean 
+tableList$type[grepl("^Mean ", tableList$stub)] <- "Mean"
+
+#median
+tableList$type[grepl("^Median ", tableList$stub)] <- "Median"
+
+#ratio
+tableList$type[grepl("^Ratio ", tableList$stub)] <- "Ratio"
+
+## Filter by variable type: Only include counts
+tableList$flag[tableList$type != "Count"] <- T
+
+
+## Classify variable population: individual, household, or household unit
+#default is individual
+universeList$type <- "Individual"
+
+#pick out households
+universeList$type[universeList$stub %in% c("Universe: Households", "Universe:  Households", "Universe:  Nonfamily households", "Universe:  Total households")] <- "Household"
+
+#pick out housing units
+universeList$type[grepl("housing unit", universeList$stub, ignore.case = T)] <- "Housing Unit"
+
+
+
+####  Categorize Tables  ####
+## For ease of selection, categorize tables into: housing, income, poverty, health, tenure
+
+
+
+## Flag additional tables
+#allocation variables (https://www.census.gov/programs-surveys/acs/methodology/sample-size-and-data-quality/item-allocation-rates-definitions.html)
+tableList$flag[grepl("allocat", tableList$stub, ignore.case = T)] <- T
+
+#Response rate information
+tableList$flag[grepl("response rate", tableList$stub, ignore.case = T)] <- T
+
+#coverage rate information
+tableList$flag[grepl("coverage rate", tableList$stub, ignore.case = T)] <- T
+
+#unweighted sample sizes
+tableList$flag[grepl("^Unweighted", tableList$stub, ignore.case = T)] <- T
+
+
+
+## Filter out flagged tables from each dataset
+drop <- tableList$tableID[tableList$flag == T]
+
+tableList <- tableList[!tableList$tableID %in% drop,]
+variableList <- variableList[!variableList$tableID %in% drop,]
+universeList <- universeList[!universeList$tableID %in% drop,]
+
+
 
 ####  Save  ####
 saveRDS(tableList, file = "Data/Census_tables.rds")

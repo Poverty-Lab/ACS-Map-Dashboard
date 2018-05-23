@@ -8,7 +8,6 @@ tractToCCA <- function(acs
                        , est = NULL
                        , se = NULL
                        , tractID = NULL
-                       , type = c("Count", "Proportion", "Mean")
                        , level = c("Individual", "Household", "Housing Unit")) {
   
   ####  Readme  ####
@@ -16,7 +15,6 @@ tractToCCA <- function(acs
   #est: A vector of estimates to aggregate. If you supply an acs object, est will automatically populate from that.
   #se: A vector of standard errors to aggregate. If you supply an acs object, se will automatically populate from that.
   #tractID: A vector of tract IDs to aggregate. If you supply an acs object, tractID will automatically populate from that.
-  #type: The type of statistic to aggregate. Count, proportion, or ratio.
   #level: The level of analysis. Individual or household.
   
   
@@ -37,10 +35,6 @@ tractToCCA <- function(acs
   
   if(is.null(acs) & (length(est) != length(se) | length(est) != length(tractID))) {
     stop("'est', 'se', and 'tractID' must be of the same length")
-  }
-  
-  if(!type %in% c("Count", "Proportion", "Mean")) {
-    stop("type must be one of Count, Proportion, or Mean")
   }
   
   if(!level %in% c("Individual", "Household", "Housing Unit")) {
@@ -92,27 +86,13 @@ tractToCCA <- function(acs
   
   
   ## Aggregate
-  if(type == "Count") {
-    
-    df.aggEst <- df %>%
-      dplyr::mutate(est = est * pct) %>% #calculate estimate, split by tract:CCA pair (e.g. males per tract:CCA pair)
-      dplyr::group_by(CCA) %>%
-      dplyr::summarise(est = sum(est, na.rm = T)) %>% #calculate estimate, totalled for each CCA (e.g. males per CCA)
-      dplyr::filter(!is.na(CCA)) %>%
-      dplyr::select(CCA, est)
-    
-  } else if(type %in% c("Mean", "Proportion")) {
-    
-    df.aggEst <- df %>%
-      dplyr::mutate(est.num = est * tot) %>% #calculate total estimate for each tract-CCA pairing (e.g. total income for a tract:CCA pair)
-      dplyr::group_by(CCA) %>%
-      dplyr::summarise(est.num = sum(est.num, na.rm = T), #calculate total estimate for each CCA (e.g. total income for a CCA); the numerator
-                       est.denom = sum(tot, na.rm = T)) %>% #calculate total population for each CCA (e.g. total individuals over 25); the denomenator
-      dplyr::mutate(est = est.num / est.denom) %>% #calculate the original mean or proportion for the statistic
-      dplyr::filter(!is.na(CCA)) %>%
-      dplyr::select(CCA, est)
-    
-  } 
+  df.aggEst <- df %>%
+    dplyr::mutate(est = est * pct) %>% #calculate estimate, split by tract:CCA pair (e.g. males per tract:CCA pair)
+    dplyr::group_by(CCA) %>%
+    dplyr::summarise(est = sum(est, na.rm = T)) %>% #calculate estimate, totalled for each CCA (e.g. males per CCA)
+    dplyr::filter(!is.na(CCA)) %>%
+    dplyr::select(CCA, est)
+
   
   
   
@@ -126,21 +106,14 @@ tractToCCA <- function(acs
   df$pct.ind[df$pct.ind >= .9] <- 1
   df <- df[!df$pct.ind < .1,]
   
-  if(type == "Count") {
-    
-    df.aggSE <- df %>%
-      dplyr::mutate(moe = se * 1.645) %>% #calculate 90% margin of error from standard error
-      dplyr::mutate(moe.sq = moe ^ 2) %>% #sqare margin of error
-      dplyr::group_by(CCA) %>%
-      dplyr::summarise(moe = sqrt(sum(moe.sq))) %>% #take root of sum of squares
-      dplyr::filter(!is.na(CCA)) %>%
-      dplyr::select(CCA, moe)
-    
-  } else if(type %in% c("Mean", "Proportion")) {
-    
-    showNotification("This version does not support margins of error for non-count variables", duration = 10)
-    
-  }
+  df.aggSE <- df %>%
+    dplyr::mutate(moe = se * 1.645) %>% #calculate 90% margin of error from standard error
+    dplyr::mutate(moe.sq = moe ^ 2) %>% #sqare margin of error
+    dplyr::group_by(CCA) %>%
+    dplyr::summarise(moe = sqrt(sum(moe.sq))) %>% #take root of sum of squares
+    dplyr::filter(!is.na(CCA)) %>%
+    dplyr::select(CCA, moe)
+
   
   ## For later...
   #Aggregating medians:  http://www.dof.ca.gov/Forecasting/Demographics/Census_Data_Center_Network/documents/How_to_Recalculate_a_Median.pdf
