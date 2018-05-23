@@ -6,7 +6,7 @@
 
 ####  Startup  ####
 
-# clea global environment
+# clear global environment
 rm( list = ls()) 
 
 # load necessary packages
@@ -14,22 +14,20 @@ library(dplyr)
 library(lettercase)
 
 # load necessary data
-raw <- read.csv("https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/ACS2016_Table_Shells.csv", stringsAsFactors = F)
+raw <- read.csv("https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/ACS2016_Table_Shells_With Indexing.csv", stringsAsFactors = F)
 
 
 
 ####  Data Prep  ####
 ## Remove extraneous rows
-raw <- raw[2:nrow(raw),]
 raw <- raw[!raw$Table.ID %in% c("", " "),]
 
 ## Label which rows are table names and which are variable names
 raw <- raw %>% dplyr::group_by(Table.ID) %>% dplyr::mutate(tableIndex = row_number())
 
-raw$rowType <- NA
+raw$rowType <- "Variable Name" #default
 raw$rowType[raw$tableIndex == 1] <- "Table Name"
 raw$rowType[raw$tableIndex == 2] <- "Table Universe"
-raw$rowType[!raw$tableIndex %in% c(1,2)] <- "Variable Name"
 
 ## Select, rename variables
 raw <- dplyr::select(raw,
@@ -38,25 +36,46 @@ raw <- dplyr::select(raw,
                      variableID = UniqueID,
                      stub = Stub)
 
-## Filter to only loadable tables - IN FUTURE LET'S TRY TO MAKE MORE TABLES LOADABLE!
+#stubs to Title Case
+raw$stub <- lettercase::str_title_case(tolower(raw$stub))
+
+## Delete certain rows
+#filter to only loadable tables
 raw <- raw[grepl(pattern = "B[0-9]{5}$", raw$tableID),]
 
-## Remove fake variables (have stubs but not actual data)
+#remove fake variables (have stubs but not actual data)
 raw <- raw[!(raw$rowType == "Variable Name" & raw$variableID == ""),]
 
-tableList <- raw[raw$rowType == "Table Name", c(2,4)]
-variableList <- raw[raw$rowType == "Variable Name", 2:4]
-universeList <- raw[raw$rowType == "Table Universe", c(2,4)]
 
-## Add a flag for median variables, so we can produce a warning in the app (medians can't be aggregated)
-tableList$medianFlag <- grepl("^MEDIAN", tableList$stub)
+####  Reformat With One Variable per Row  ####
+## Separate...
+tables <- raw[raw$rowType == "Table Name", c(2,4)]
+variables <- raw[raw$rowType == "Variable Name", 2:4]
+universes <- raw[raw$rowType == "Table Universe", c(2,4)]
 
-## Table stubs to title case
-tableList$stub <- lettercase::str_title_case(tolower(tableList$stub))
+#rename certain variables
+tables <- dplyr::rename(tables, tableStub = stub)
+variables <- dplyr::rename(variables, variableStub = stub)
+universes <- dplyr::rename(universes, universeStub = stub)
 
-## Variable IDs to stubs, so that all variables will show in the dropdown menu (even when there are two whose stubs would otherwise both be "Under 5" or something like that)
-variableList$stubLong <- paste0(variableList$stub, " (", variableList$variableID, ")")
+## ...and merge back properly formatted
+variables <- merge(variables, tables, by = "tableID")
+variables <- merge(variables, universes, by = "tableID")
 
+
+
+####  Identify Parent Variables  ####
+## A parent variable is a variable of the population a variable is a subpopulation of.
+## Some variables have only one (e.g. "Total" is a parent variable of "Male" in B01001),
+## while others have more than one (e.g. "Total" and "Male" are both parent variables of "Under 5 Years" in B01001).
+## In these cases the highest-level parent is "Parent 1" and subsequent parents are "Parent 2," "Parent 3," etc.
+variables$parentFlag <- grepl(":$", variables$variableStub, perl = T)
+
+parentIndex <- variables %>%
+  dplyr::filter(parentFlag == T) %>%
+  dplyr::group_by(tableID) %>%
+  dplyr::mutate(parentIndex = row_number())
+variables <- variables %>% dplyr::group_by(tableID) %>% dplyr::mutate(tableIndex = row_number())
 
 
 ####  Classify, Filter Tables  ####

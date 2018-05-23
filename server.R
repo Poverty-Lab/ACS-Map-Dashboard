@@ -252,7 +252,7 @@ server <- function( input, output, session ) {
       geom_polygon( aes(x = long, y = lat, group = group, fill = est)
                     , color = "#D2C2C2", size = .25) +
       coord_map() +
-      ggtitle( label = input$maptitle ) + 
+      ggtitle( label = input$title.map ) + 
       theme_void() +
       themeTitle +
       user.map.color() +
@@ -275,7 +275,7 @@ server <- function( input, output, session ) {
                      , color = user.moe.color()
                      , size = 1.25
                      , width = .5 ) +
-      ggtitle( input$bartitle ) +
+      ggtitle( input$title.bar ) +
       theme( plot.title = element_text( hjust = 0.5, size = 20 ) ) +
       xlab( label = "Community Area" ) + 
       ylab( label = variableList$stub[variableList$stubLong == input$variable] ) +
