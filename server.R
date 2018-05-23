@@ -125,12 +125,12 @@ server <- function( input, output, session ) {
     # require that the three inputs needed to fetch ACS data are not NULL
     # note: used to hide initial error message when data is loading
     validate( need( expr = variableList$stubLong == input$variable &
-                        variableList$tableID == tableList$tableID[tableList$stub == input$table]
+                        variableList$tableID == tableList$tableID[tableList$stub == input$select.table]
                       , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
 
     
     #download data
-    table.selected <- tableList$tableID[tableList$stub == input$table]
+    table.selected <- tableList$tableID[tableList$stub == input$select.table]
     
     var <- variableList$variableID[variableList$stubLong == input$variable &
                                    variableList$tableID == table.selected]
@@ -199,11 +199,6 @@ server <- function( input, output, session ) {
     }
     
     }
-
-    if( tableList$medianFlag[tableList$stub == input$select.table] == TRUE ) {
-      showNotification( ui = "You have selected a median, but medians cannot be aggregated up from tract to neighborhood"
-                       , duration = NULL ) 
-      }
  
     # return agg to the Global Environment
     return( agg )
