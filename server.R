@@ -20,7 +20,7 @@ library( viridis )
 
 ####  Server  ####
 server <- function( input, output, session ) {
-  
+  denomOptions <- c("a", "b", "c")
   # store selected variable
   user.variable <- reactive({
     
@@ -140,12 +140,12 @@ server <- function( input, output, session ) {
 
     
     #download data
-    table.selected <- variables$tableID[variables$tableStub == input$select.table]
+    table.selected <- unique(variables$tableID[variables$tableStub == input$select.table])
     
     var <- variables$variableID[variables$variableName == input$variable &
-                                   variables$tableID == table.selected]
+                                variables$tableID == table.selected]
     
-    level <- variables$pop[variables$tableID == table.selected]
+    level <- unique(variables$pop[variables$tableID == table.selected])
 
 
     acs <- acs::acs.fetch( geography = geog
@@ -162,17 +162,17 @@ server <- function( input, output, session ) {
     #Since we only need this when input$statToShow != "Total", let's only run it in those cases
     if(input$statToShow != "Total") {
     
+      var.pop <- variables$variableID[variables$variableStub == input$denom
+                                      & variables$tableID == table.selected]
       
-      ####### REVISE THIS - ALLOW OPTION TO USE DIFFERENT PARENTS AS DENOMENATOR ######
+      acs.pop <- acs::acs.fetch(geography = geog
+                            , endyear = 2016
+                            , span = 5
+                            , variable = var.pop 
+                            , key = "90f2c983812307e03ba93d853cb345269222db13" )
       
-    var.pop <- paste0(strsplit(var, "_")[[1]][1], "_001")
-    acs.pop <- acs::acs.fetch(geography = geog
-                          , endyear = 2016
-                          , span = 5
-                          , variable = var.pop 
-                          , key = "90f2c983812307e03ba93d853cb345269222db13" )
-    agg.pop <- tractToCCA(acs = acs.pop 
-                          , level = level)
+      agg.pop <- tractToCCA(acs = acs.pop 
+                            , level = level)
 
     # tack on population estimate
     if(input$statToShow == "Percent") {
@@ -215,6 +215,7 @@ server <- function( input, output, session ) {
  
     # return agg to the Global Environment
     return( agg )
+    
   })
   
   # store fortified (tidy) data frame
@@ -351,21 +352,43 @@ server <- function( input, output, session ) {
   # the universe documented in the ACS Table
   output$universe <- renderText({
     
-    variables$universeStub[variables$tableID == variables$tableID[variables$tableStub == input$select.table]]
+    unique(variables$universeStub[variables$tableID == variables$tableID[variables$tableStub == input$select.table]])
     
   })
   
   # create drop down menu
   # of variables associated in the ACS Table
   output$variableOptions <- renderUI({
-    
-    selectedTable <- variables$tableID[variables$tableStub == input$select.table]
-    variables <- variables$variableName[variables$tableID == selectedTable]
 
-    selectizeInput("variable", label = "Variable from Table", choices = variables)
-    
+      selectedTable <- unique(variables$tableID[variables$tableStub == input$select.table])
+      variables <- variables$variableName[variables$tableID == selectedTable]
+
+      selectizeInput("variable", label = "Variable from Table", choices = variables)
+        
   })
   
+  # and of potential denominators for each selected variable
+  output$denomOptions <- renderUI ({
+    
+    table.selected <- unique(variables$tableID[variables$tableStub == input$select.table])
+    var <- variables[variables$variableName == input$variable &
+                     variables$tableID == table.selected,]
+    
+    denomOptions <- c(var$parent0Stub,
+                      var$parent1Stub,
+                      var$parent2Stub,
+                      var$parent3Stub,
+                      var$parent4Stub,
+                      var$parent5Stub)
+    denomOptions <- denomOptions[!is.na(denomOptions)]
+    
+    selectInput( inputId = "denom"
+                  , label = "Denominator:"
+                  , choices = denomOptions
+                  , selected = "Total:")
+  
+  })
+    
   # set default map title
   output$maptitle <- renderUI({
     
