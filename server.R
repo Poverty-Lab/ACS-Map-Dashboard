@@ -28,7 +28,7 @@ server <- function( input, output, session ) {
     
     var <- variables$variableID[variables$variableName == input$variable &
                                 variables$tableStub == table.selected]
-    
+          
     return(var)
     
   })
@@ -104,8 +104,6 @@ server <- function( input, output, session ) {
   user.digit <- reactive({
     if(input$round == "Round") {
       
-      if(input$varType == "Count") {
-        
         if(input$statToShow %in% c("Total", "Per 100k")) {
           
           # return zero
@@ -115,13 +113,8 @@ server <- function( input, output, session ) {
           
           # return two
           2
+          
         }
-        
-      } else if(input$varType %in% c("Proportion", "Mean")) {
-        
-        # return two 
-        2
-      }
       
     } else if(input$round == "Don't Round") {
       
@@ -296,7 +289,7 @@ server <- function( input, output, session ) {
       ggtitle( input$title.bar ) +
       theme( plot.title = element_text( hjust = 0.5, size = 20 ) ) +
       xlab( label = "Community Area" ) + 
-      ylab( label = variableList$stub[variableList$stubLong == input$variable] ) +
+      ylab( label = input$variable ) +
       themeMOE +
       scale_y_continuous( labels = user.labels() ) +
       labs( caption = "Source: ACS 2016 5 Year Estimates" )

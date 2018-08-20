@@ -28,19 +28,18 @@ ui <- fluidPage(theme = "style.css",
                          
                          wellPanel(
                                    h1("Step 1: Select a table and variable", class = "step"),
-                                   p("ACS Table", class = "name"),
-                                   
-                                   selectizeInput( inputId = "selectTableSlim"
-                                                   , label = "Press backspace to enable searching"
+
+                                   selectInput( inputId = "selectTableSlim"
+                                                   , label = "ACS Tables:"
                                                    , selected = "Total Population"
-                                                   , choices = tableOptionsSlim ), 
+                                                   , choices = tableOptionsSlim
+                                                   , selectize = F), 
                                    
                                    conditionalPanel(
                                      
                                      condition = "input.selectTableSlim == 'Other'",
                                      selectizeInput( inputId = "selectTable"
-                                                     , label = "Other tables:"
-                                                     # , selected = "Total Population"
+                                                     , label = "Other tables (press backspace to enable searching):"
                                                      , choices = tableOptions )
                                      
                                    ),

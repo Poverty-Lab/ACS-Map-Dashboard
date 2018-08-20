@@ -59,12 +59,32 @@ lookup <-
 #Set options for dataframes
 tableOptions <- variables$tableStub
 
-tableOptionsSlim <- c("Total Population",
-                      "Sex By Age",
-                      "Race",
-                      "Hispanic Or Latino Origin",
-                      "Nativity In The United States",
-                      "Other")
+tableOptionsSlim <- list(
+  "Demographics" = c("Total Population",
+                     "Sex By Age",
+                     "Race",
+                     "Hispanic Or Latino Origin",
+                     "Nativity And Citizenship Status In The United States",
+                     "Geographical Mobility In The Past Year By Age For Current Residence In The United States"),
+  
+  "Home" = c("Tenure",
+             "Own Children Under 18 Years By Family Type And Age",
+             "Household Type (Including Living Alone) By Relationship ",
+             "Language Spoken At Home By Ability To Speak English For The Population 5 Years And Over"),  
+  
+  "Labor Market" = c("Poverty Status In The Past 12 Months By Sex By Age",
+                     "Earnings In The Past 12 Months For Households",
+                     "Employment Status For The Population 16 Years And Over",
+                     "Means Of Transportation To Work"),
+
+  "Education" = c("School Enrollment By Level Of School For The Population 3 Years And Over",
+                  "Educational Attainment For The Population 25 Years And Over"),
+             
+  "Health" = c("Types Of Health Insurance Coverage By Age",
+               "Sex By Age By Disability Status"),
+  
+  "Other"
+)
 
 ####  Prime ACS Download Capabilities  ####
 geog <- 
