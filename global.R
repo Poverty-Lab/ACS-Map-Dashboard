@@ -59,6 +59,12 @@ lookup <-
 #Set options for dataframes
 tableOptions <- variables$tableStub
 
+tableOptionsSlim <- c("Total Population",
+                      "Sex By Age",
+                      "Race",
+                      "Hispanic Or Latino Origin",
+                      "Nativity In The United States",
+                      "Other")
 
 ####  Prime ACS Download Capabilities  ####
 geog <- 

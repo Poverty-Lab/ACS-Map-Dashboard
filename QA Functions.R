@@ -6,11 +6,20 @@
 
 setInputs <- function(config = 1) {
   
+  input <- c()
+  
   if(config == 1) {
     
-    input <- c()
+    input$variable <- "Total"
+    input$selectTableSlim <- "Total Population"
+    input$statToShow <- "Total"
+    input$map.color.palette <- "Default"
+
+  } else if(config == 2) {
+    
     input$variable <- "Asian Alone"
-    input$select.table <- "Race"
+    input$selectTableSlim <- "Other"
+    input$selectTable <- "Race"
     input$statToShow <- "Total"
     input$map.color.palette <- "Default"
     
