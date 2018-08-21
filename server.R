@@ -1,6 +1,6 @@
 #
 # Author:   Isaac Ahuvia and Cristian Nuno
-# Date:     May 18, 2018
+# Date:     August 21, 2018
 # Purpose:  Create Server
 #
 
@@ -20,6 +20,33 @@ library( viridis )
 
 ####  Server  ####
 server <- function( input, output, session ) {
+  
+  # store selected table
+  user.table <- reactive({
+    
+    table <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
+    
+    return(table)
+    
+  })
+  
+  user.tableID <- reactive({
+    
+    tableID <- unique(variables$tableID[variables$tableStub == user.table()])
+    
+    return(tableID)
+    
+  })
+
+  # store selected variable
+  user.variable <- reactive({
+    
+    var <- variables$variableID[variables$variableName == input$variable &
+                                variables$tableStub == user.table()]
+          
+    return(var)
+    
+  })
   
   # store labels based on user input
   user.labels <- reactive({
@@ -90,10 +117,9 @@ server <- function( input, output, session ) {
   # the user rounds the data
   # seen in the "Table" tab
   user.digit <- reactive({
+    
     if(input$round == "Round") {
       
-      if(input$varType == "Count") {
-        
         if(input$statToShow %in% c("Total", "Per 100k")) {
           
           # return zero
@@ -103,40 +129,35 @@ server <- function( input, output, session ) {
           
           # return two
           2
+          
         }
-        
-      } else if(input$varType %in% c("Proportion", "Mean")) {
-        
-        # return two 
-        2
-      }
       
     } else if(input$round == "Don't Round") {
       
       # return 12
       # note: this is a safe number since we don't plan on having estimates in the trillions
       12
+      
     }
+    
   })
   
   # query the ACS API
   # based on the ACS Table and store the results
   user.data <- reactive({
+
     # require that the three inputs needed to fetch ACS data are not NULL
     # note: used to hide initial error message when data is loading
-    validate( need( expr = variableList$stubLong == input$variable &
-                        variableList$tableID == tableList$tableID[tableList$stub == input$select.table]
+    validate( need( expr = variables$variableName == input$variable &
+                      variables$tableStub == user.table()
                       , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
 
     
     #download data
-    table.selected <- tableList$tableID[tableList$stub == input$select.table]
+    var <- variables$variableID[variables$variableName == input$variable &
+                                variables$tableID == user.tableID()]
     
-    var <- variableList$variableID[variableList$stubLong == input$variable &
-                                   variableList$tableID == table.selected]
-    
-    level <- universeList$type[universeList$tableID == table.selected]
-
+    level <- unique(variables$pop[variables$tableID == user.tableID()])
 
     acs <- acs::acs.fetch( geography = geog
                            , endyear = 2016
@@ -152,14 +173,17 @@ server <- function( input, output, session ) {
     #Since we only need this when input$statToShow != "Total", let's only run it in those cases
     if(input$statToShow != "Total") {
     
-    var.pop <- paste0(strsplit(var, "_")[[1]][1], "_001")
-    acs.pop <- acs::acs.fetch(geography = geog
-                          , endyear = 2016
-                          , span = 5
-                          , variable = var.pop 
-                          , key = "90f2c983812307e03ba93d853cb345269222db13" )
-    agg.pop <- tractToCCA(acs = acs.pop 
-                          , level = level)
+      var.pop <- variables$variableID[variables$variableStub == input$denom
+                                      & variables$tableID == user.tableID()]
+      
+      acs.pop <- acs::acs.fetch(geography = geog
+                            , endyear = 2016
+                            , span = 5
+                            , variable = var.pop 
+                            , key = "90f2c983812307e03ba93d853cb345269222db13" )
+      
+      agg.pop <- tractToCCA(acs = acs.pop 
+                            , level = level)
 
     # tack on population estimate
     if(input$statToShow == "Percent") {
@@ -202,6 +226,7 @@ server <- function( input, output, session ) {
  
     # return agg to the Global Environment
     return( agg )
+    
   })
   
   # store fortified (tidy) data frame
@@ -252,7 +277,7 @@ server <- function( input, output, session ) {
       geom_polygon( aes(x = long, y = lat, group = group, fill = est)
                     , color = "#D2C2C2", size = .25) +
       coord_map() +
-      ggtitle( label = input$titleMap ) + 
+      ggtitle( label = input$title.map ) + 
       theme_void() +
       themeTitle +
       user.map.color() +
@@ -275,10 +300,10 @@ server <- function( input, output, session ) {
                      , color = user.moe.color()
                      , size = 1.25
                      , width = .5 ) +
-      ggtitle( input$titleBar ) +
+      ggtitle( input$title.bar ) +
       theme( plot.title = element_text( hjust = 0.5, size = 20 ) ) +
       xlab( label = "Community Area" ) + 
-      ylab( label = variableList$stub[variableList$stubLong == input$variable] ) +
+      ylab( label = input$variable ) +
       themeMOE +
       scale_y_continuous( labels = user.labels() ) +
       labs( caption = "Source: ACS 2016 5 Year Estimates" )
@@ -286,6 +311,11 @@ server <- function( input, output, session ) {
   
   # display user.map() in the UI
   output$map <- renderPlot({
+    
+    validate( need( expr = !is.null(input$variable) & !is.null(user.table()) & 
+                      (input$statToShow == "Total" | (input$statToShow != "Total" & !is.null(input$denom)))
+                    , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
+    
     user.map()
   })
   
@@ -337,19 +367,83 @@ server <- function( input, output, session ) {
   # render text to identify
   # the universe documented in the ACS Table
   output$universe <- renderText({
-    universeList$stub[universeList$tableID == tableList$tableID[tableList$stub == input$select.table]]
-    })
+    
+    unique(variables$universeStub[variables$tableID == variables$tableID[variables$tableStub == user.table()]])
+    
+  })
   
   # create drop down menu
   # of variables associated in the ACS Table
   output$variableOptions <- renderUI({
-    
-    selectedTable <- tableList$tableID[tableList$stub == input$select.table]
-    variables <- variableList$stubLong[variableList$tableID == selectedTable]
+
+    variables <- variables$variableName[variables$tableID == user.tableID()]
 
     selectizeInput("variable", label = "Variable from Table", choices = variables)
+        
+  })
+  
+  # and of potential stats to choose
+  output$statOptions <- renderUI ({
+    
+    validate( need( expr = !is.null(input$variable) & !is.null(user.table())
+                    , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
+    
+    if(input$variable == "Total") {
+      
+      statOptions <- "Total"
+      
+    } else {
+      
+      statOptions <- c("Total", "Percent", "Per 100k", "Per Individual Unit")
+      
+    }
+
+    selectInput("statToShow", "Statistic to Show:"
+                , choices = statOptions
+                , selected = "Total")
+
+  })
+  
+  # and of potential denominators for each selected variable
+  output$denomOptions <- renderUI ({
+    
+    var <- variables[variables$variableName == input$variable &
+                     variables$tableID == user.tableID(),]
+    
+    denomOptions <- c(var$parent0Stub,
+                      var$parent1Stub,
+                      var$parent2Stub,
+                      var$parent3Stub,
+                      var$parent4Stub,
+                      var$parent5Stub)
+    denomOptions <- denomOptions[!is.na(denomOptions)]
+    
+    selectInput( inputId = "denom"
+                  , label = "Denominator:"
+                  , choices = denomOptions
+                  , selected = "Total:")
+  
+  })
+    
+  # set default map title
+  output$maptitle <- renderUI({
+    
+    default <- variables$plotTitle[variables$variableID == variables$variableID[variables$variableName == input$variable &
+                                                                                  variables$tableStub == user.table()]]
+    textInput("title.map", label = "Title", value = default)
     
   })
+  
+  # set default barplot title
+  output$bartitle <- renderUI({
+    
+    default <- variables$plotTitle[variables$variableID == variables$variableID[variables$variableName == input$variable &
+                                                                                  variables$tableStub == user.table()]]
+    
+    textInput("title.bar", label = "Title", value = default)
+    
+  })
+  
   
 } # end of server
 

@@ -1,6 +1,6 @@
 #
 # Author:   Isaac Ahuvia and Cristian Nuno
-# Date:     May 18, 2018
+# Date:     August 21, 2018
 # Purpose:  Create UI
 #
 
@@ -28,22 +28,37 @@ ui <- fluidPage(theme = "style.css",
                          
                          wellPanel(
                                    h1("Step 1: Select a table and variable", class = "step"),
-                                   p("ACS Table", class = "name"),
-                                   
-                                   selectizeInput( inputId = "select.table"
-                                                   , label = "Press backspace to enable searching"
+
+                                   selectInput( inputId = "selectTableSlim"
+                                                   , label = "ACS Tables:"
                                                    , selected = "Total Population"
-                                                   , choices = tableOptions ), 
+                                                   , choices = tableOptionsSlim
+                                                   , selectize = F), 
+                                   
+                                   conditionalPanel(
+                                     
+                                     condition = "input.selectTableSlim == 'Other'",
+                                     selectizeInput( inputId = "selectTable"
+                                                     , label = "Other tables (press backspace to enable searching):"
+                                                     , choices = tableOptions )
+                                     
+                                   ),
                                    
                                    textOutput( outputId = "universe"),
                                    br(),
-                                   shiny::uiOutput( outputId = "variableOptions" )
+                                   uiOutput( outputId = "variableOptions" )
                          ), 
                          
                          wellPanel(
 
                                    h1("Step 2: Choose a statistic to show", class = "step"),
-                                   selectInput("statToShow", "Statistic to Show:", choices = c("Total", "Percent", "Per 100k", "Per Individual Unit"), selected = "Total")
+                                   uiOutput( outputId = "statOptions" ),
+                                   conditionalPanel(
+
+                                     condition = "input.statToShow != 'Total'",
+                                     uiOutput( outputId = "denomOptions" )
+
+                                   )
 
                          )
                          
@@ -67,7 +82,7 @@ ui <- fluidPage(theme = "style.css",
                                                      
                                                      wellPanel(h1("Map Options"),
                                                                
-                                                               textInput(label = "Title", inputId = "titleMap"),
+                                                               uiOutput( outputId = "maptitle" ),
                                                                
                                                                radioButtons(label = "Choose a color palette:"
                                                                             , inputId = "map.color.palette"
@@ -101,7 +116,7 @@ ui <- fluidPage(theme = "style.css",
                                                      
                                                      wellPanel(h1("Bar Plot Options"),
                                                                
-                                                               textInput(label = "Title", inputId = "titleBar"),
+                                                               uiOutput( outputId = "bartitle" ),
                                                                
                                                                radioButtons(label = "Direction"
                                                                             , inputId = "direction"
