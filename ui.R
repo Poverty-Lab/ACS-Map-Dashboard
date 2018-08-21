@@ -52,9 +52,7 @@ ui <- fluidPage(theme = "style.css",
                          wellPanel(
 
                                    h1("Step 2: Choose a statistic to show", class = "step"),
-                                   selectInput("statToShow", "Statistic to Show:"
-                                               , choices = c("Total", "Percent", "Per 100k", "Per Individual Unit")
-                                               , selected = "Total"),
+                                   uiOutput( outputId = "statOptions" ),
                                    conditionalPanel(
 
                                      condition = "input.statToShow != 'Total'",

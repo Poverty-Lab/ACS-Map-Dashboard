@@ -1,6 +1,6 @@
 #
 # Author:   Isaac Ahuvia and Cristian Nuno
-# Date:     May 18, 2018
+# Date:     August 21, 2018
 # Purpose:  Create Server
 #
 
@@ -297,6 +297,11 @@ server <- function( input, output, session ) {
   
   # display user.map() in the UI
   output$map <- renderPlot({
+    
+    validate( need( expr = !is.null(input$variable) & !is.null(table.selected) & 
+                      (input$statToShow == "Total" | (input$statToShow != "Total" & !is.null(input$denom)))
+                    , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
+    
     user.map()
   })
   
@@ -361,11 +366,34 @@ server <- function( input, output, session ) {
 
     table.selected <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
     
-    selectedTable <- unique(variables$tableID[variables$tableStub == table.selected])
-    variables <- variables$variableName[variables$tableID == selectedTable]
+    table.selectedID <- unique(variables$tableID[variables$tableStub == table.selected])
+    
+    variables <- variables$variableName[variables$tableID == table.selectedID]
 
     selectizeInput("variable", label = "Variable from Table", choices = variables)
         
+  })
+  
+  # and of potential stats to choose
+  output$statOptions <- renderUI ({
+    
+    validate( need( expr = !is.null(input$variable) & !is.null(table.selected)
+                    , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
+    
+    if(input$variable == "Total") {
+      
+      statOptions <- "Total"
+      
+    } else {
+      
+      statOptions <- c("Total", "Percent", "Per 100k", "Per Individual Unit")
+      
+    }
+
+    selectInput("statToShow", "Statistic to Show:"
+                , choices = statOptions
+                , selected = "Total")
+
   })
   
   # and of potential denominators for each selected variable
@@ -373,9 +401,10 @@ server <- function( input, output, session ) {
     
     table.selected <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
     
-    table.selected <- unique(variables$tableID[variables$tableStub == table.selected])
+    table.selectedID <- unique(variables$tableID[variables$tableStub == table.selected])
+    
     var <- variables[variables$variableName == input$variable &
-                     variables$tableID == table.selected,]
+                     variables$tableID == table.selectedID,]
     
     denomOptions <- c(var$parent0Stub,
                       var$parent1Stub,

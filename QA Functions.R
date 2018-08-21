@@ -23,6 +23,13 @@ setInputs <- function(config = 1) {
     input$statToShow <- "Total"
     input$map.color.palette <- "Default"
     
+  } else if(config == 3) {
+    
+    input$variable <- "Total"
+    input$selectTableSlim <- "Language Spoken At Home By Ability To Speak English For The Population 5 Years And Over"
+    input$statToShow <- "Total"
+    input$map.color.palette <- "Default"
+    
   }
   
   input <<- input
