@@ -12,9 +12,10 @@ rm( list = ls())
 # load necessary packages
 library(dplyr)
 library(lettercase)
+library(zoo)
 
 # load necessary data
-raw <- read.csv("https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/rename/Data/ACS2016_Table_Shells_With Indexing.csv", stringsAsFactors = F)
+raw <- read.csv("https://raw.githubusercontent.com/Poverty-Lab/ACS-Map-Dashboard/master/Data/ACS2016_Table_Shells_With_Indexing.csv", stringsAsFactors = F)
 
 
 
@@ -50,9 +51,15 @@ raw <- raw[!(raw$rowType == "Variable Name" & raw$variableID == ""),]
 
 ####  Reformat With One Variable per Row  ####
 ## Separate...
-tables <- raw[raw$rowType == "Table Name", c(2,4)]
-variables <- raw[raw$rowType == "Variable Name", 2:5]
-universes <- raw[raw$rowType == "Table Universe", c(2,4)]
+tables <- raw %>%
+  dplyr::filter(rowType == "Table Name") %>%
+  dplyr::select(tableID, variableID, stub)
+variables <- raw %>%
+  dplyr::filter(rowType == "Variable Name") %>%
+  dplyr::select(tableID, variableID, stub, indent)
+universes <- raw %>%
+  dplyr::filter(rowType == "Table Universe") %>%
+  dplyr::select(tableID, variableID, stub)
 
 #rename certain variables
 tables <- dplyr::rename(tables, tableStub = stub)
@@ -82,28 +89,6 @@ variables$parentIndex <- NA
 variables$parentIndex[variables$parentFlag == T] <- variables$indent[variables$parentFlag == T]
 
 
-
-
-
-
-
-
-
-
-
-
-##############               TO FIX                   #########################
-
-
-
-
-
-
-
-
-
-
-
 ## Create new variables for each parent of a certain variable. Parent 0: highest-level parent
 for(level in c(0,1,2,3,4,5)) {
   
@@ -123,7 +108,6 @@ for(level in c(0,1,2,3,4,5)) {
   variables[[varnameStub]][variables$indent <= level] <- NA
   
 }
-
 
 
 

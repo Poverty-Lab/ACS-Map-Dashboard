@@ -20,14 +20,29 @@ library( viridis )
 
 ####  Server  ####
 server <- function( input, output, session ) {
+  
+  # store selected table
+  user.table <- reactive({
+    
+    table <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
+    
+    return(table)
+    
+  })
+  
+  user.tableID <- reactive({
+    
+    tableID <- unique(variables$tableID[variables$tableStub == user.table()])
+    
+    return(tableID)
+    
+  })
 
   # store selected variable
   user.variable <- reactive({
     
-    table.selected <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
-    
     var <- variables$variableID[variables$variableName == input$variable &
-                                variables$tableStub == table.selected]
+                                variables$tableStub == user.table()]
           
     return(var)
     
@@ -102,6 +117,7 @@ server <- function( input, output, session ) {
   # the user rounds the data
   # seen in the "Table" tab
   user.digit <- reactive({
+    
     if(input$round == "Round") {
       
         if(input$statToShow %in% c("Total", "Per 100k")) {
@@ -121,29 +137,27 @@ server <- function( input, output, session ) {
       # return 12
       # note: this is a safe number since we don't plan on having estimates in the trillions
       12
+      
     }
+    
   })
   
   # query the ACS API
   # based on the ACS Table and store the results
   user.data <- reactive({
-    
-    table.selected <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
-    
+
     # require that the three inputs needed to fetch ACS data are not NULL
     # note: used to hide initial error message when data is loading
     validate( need( expr = variables$variableName == input$variable &
-                      variables$tableStub == table.selected
+                      variables$tableStub == user.table()
                       , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
 
     
     #download data
-    table.selectedID <- unique(variables$tableID[variables$tableStub == table.selected])
-    
     var <- variables$variableID[variables$variableName == input$variable &
-                                variables$tableID == table.selectedID]
+                                variables$tableID == user.tableID()]
     
-    level <- unique(variables$pop[variables$tableID == table.selectedID])
+    level <- unique(variables$pop[variables$tableID == user.tableID()])
 
     acs <- acs::acs.fetch( geography = geog
                            , endyear = 2016
@@ -160,7 +174,7 @@ server <- function( input, output, session ) {
     if(input$statToShow != "Total") {
     
       var.pop <- variables$variableID[variables$variableStub == input$denom
-                                      & variables$tableID == table.selectedID]
+                                      & variables$tableID == user.tableID()]
       
       acs.pop <- acs::acs.fetch(geography = geog
                             , endyear = 2016
@@ -298,7 +312,7 @@ server <- function( input, output, session ) {
   # display user.map() in the UI
   output$map <- renderPlot({
     
-    validate( need( expr = !is.null(input$variable) & !is.null(table.selected) & 
+    validate( need( expr = !is.null(input$variable) & !is.null(user.table()) & 
                       (input$statToShow == "Total" | (input$statToShow != "Total" & !is.null(input$denom)))
                     , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
     
@@ -354,9 +368,7 @@ server <- function( input, output, session ) {
   # the universe documented in the ACS Table
   output$universe <- renderText({
     
-    table.selected <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
-    
-    unique(variables$universeStub[variables$tableID == variables$tableID[variables$tableStub == table.selected]])
+    unique(variables$universeStub[variables$tableID == variables$tableID[variables$tableStub == user.table()]])
     
   })
   
@@ -364,11 +376,7 @@ server <- function( input, output, session ) {
   # of variables associated in the ACS Table
   output$variableOptions <- renderUI({
 
-    table.selected <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
-    
-    table.selectedID <- unique(variables$tableID[variables$tableStub == table.selected])
-    
-    variables <- variables$variableName[variables$tableID == table.selectedID]
+    variables <- variables$variableName[variables$tableID == user.tableID()]
 
     selectizeInput("variable", label = "Variable from Table", choices = variables)
         
@@ -377,7 +385,7 @@ server <- function( input, output, session ) {
   # and of potential stats to choose
   output$statOptions <- renderUI ({
     
-    validate( need( expr = !is.null(input$variable) & !is.null(table.selected)
+    validate( need( expr = !is.null(input$variable) & !is.null(user.table())
                     , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
     
     if(input$variable == "Total") {
@@ -399,12 +407,8 @@ server <- function( input, output, session ) {
   # and of potential denominators for each selected variable
   output$denomOptions <- renderUI ({
     
-    table.selected <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
-    
-    table.selectedID <- unique(variables$tableID[variables$tableStub == table.selected])
-    
     var <- variables[variables$variableName == input$variable &
-                     variables$tableID == table.selectedID,]
+                     variables$tableID == user.tableID(),]
     
     denomOptions <- c(var$parent0Stub,
                       var$parent1Stub,
@@ -424,10 +428,8 @@ server <- function( input, output, session ) {
   # set default map title
   output$maptitle <- renderUI({
     
-    table.selected <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
-
     default <- variables$plotTitle[variables$variableID == variables$variableID[variables$variableName == input$variable &
-                                                                                  variables$tableStub == table.selected]]
+                                                                                  variables$tableStub == user.table()]]
     textInput("title.map", label = "Title", value = default)
     
   })
@@ -435,10 +437,8 @@ server <- function( input, output, session ) {
   # set default barplot title
   output$bartitle <- renderUI({
     
-    table.selected <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
-    
     default <- variables$plotTitle[variables$variableID == variables$variableID[variables$variableName == input$variable &
-                                                                                  variables$tableStub == table.selected]]
+                                                                                  variables$tableStub == user.table()]]
     
     textInput("title.bar", label = "Title", value = default)
     
