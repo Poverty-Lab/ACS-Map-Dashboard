@@ -11,13 +11,13 @@ Run the app yourself using the following lines of code in [R](https://www.r-proj
 
 ```R
 # install necessary packages
-install.packages( pkgs = c("acs", "bitops", "DT" 
+install.packages(pkgs = c("acs", "bitops", "DT" 
                            , "dplyr", "ggplot2", "mapproj" 
                            , "RCurl", "scales", "shiny"
-                           , "viridisLite", "viridis" ) )
+                           , "viridisLite", "viridis", "zoo"))
                            
 # load the shiny packages
-library( shiny )
+library(shiny)
 
 # Run shiny app from your R/RStudio Console
 shiny::runUrl( url = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/archive/master.zip" )
