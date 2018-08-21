@@ -120,6 +120,7 @@ Below is a visual representation of how the `global.R`, `ui.R`, and `server.R` s
 |  Calculate by count/proportion/mean|x|x|x|
 |  Calculate by individual/household|x|x|x|
 |  Specify total/percent/per 100k|x|x|x|
+|  Specify denominator for above calculation|x|x|x|
 |**Map**| | | |
 |  Custom title|x|x|x|
 |  Geography labels| | |x|
