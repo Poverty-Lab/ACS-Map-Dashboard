@@ -7,7 +7,9 @@ The map, bar plot, and tables produced are all exportable, allowing users to sav
 
 ## Run App
 
-Run the app yourself using the following lines of code in [R](https://www.r-project.org/) or [RStudio](https://www.rstudio.com/products/rstudio/) console:
+Run the app in your browser by visiting https://povertylab.shinyapps.io/ACS-Map-Dashboard/. 
+
+Run the app locally in [R](https://www.r-project.org/) or [RStudio](https://www.rstudio.com/products/rstudio/) by using the following lines of code:
 
 ```R
 # install necessary packages
