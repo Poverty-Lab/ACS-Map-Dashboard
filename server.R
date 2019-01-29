@@ -373,6 +373,16 @@ server <- function( input, output, session ) {
   })
   
   # create drop down menu
+  # of tables to search; doing this here instead of ui.R because it should make the app faster in non-Chrome browsers
+  output$otherTableOptions <- renderUI({
+    
+    selectizeInput( inputId = "selectTable"
+                    , label = "Other tables (press backspace to enable searching):"
+                    , choices = tableOptions )
+    
+  })
+  
+  # create drop down menu
   # of variables associated in the ACS Table
   output$variableOptions <- renderUI({
 
