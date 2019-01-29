@@ -38,9 +38,7 @@ ui <- fluidPage(theme = "style.css",
                                    conditionalPanel(
                                      
                                      condition = "input.selectTableSlim == 'Other'",
-                                     selectizeInput( inputId = "selectTable"
-                                                     , label = "Other tables (press backspace to enable searching):"
-                                                     , choices = tableOptions )
+                                     uiOutput( outputId = "otherTableOptions" )
                                      
                                    ),
                                    
