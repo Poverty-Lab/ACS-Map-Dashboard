@@ -4,6 +4,7 @@ The [ACS Map Dashboard](https://povertylab.shinyapps.io/ACS-Map-Dashboard/) prod
 
 The map, bar plot, and tables produced are all exportable, allowing users to save graphics and data with the click of a button.
 
+**For a tutorial, see https://www.youtube.com/watch?v=hSad5pmTYWI**
 
 ## Run App
 
