@@ -16,6 +16,7 @@ library( scales )
 library( shiny )
 library( viridisLite )
 library( viridis )
+library( shinycssloaders )
 
 
 ####  UI  ####
@@ -70,7 +71,9 @@ ui <- fluidPage(theme = "style.css",
                                               
                                               column(width = 6,
                                                      
-                                                     plotOutput("map"),
+                                                     #add a progress bar instead? https://shiny.rstudio.com/articles/progress.html
+                                                     
+                                                     withSpinner(plotOutput("map")),
                                                      downloadButton( outputId = "dwnld.map"
                                                                      , label = "Save Map" )
                                                      
