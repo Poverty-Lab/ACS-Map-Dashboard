@@ -191,7 +191,7 @@ ui <- fluidPage(theme = "style.css",
                                                      
                                                      a("README", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
                                                      a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
-                                                     p("v 0.9"),
+                                                     p("v 0.9.1"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                                      
                                               )
