@@ -16,10 +16,24 @@ library( scales )
 library( shiny )
 library( viridisLite )
 library( viridis )
+library( shinycssloaders )
+library( shinyjs )
+library( shinydashboard )
 
 
 ####  UI  ####
 ui <- fluidPage(theme = "style.css",
+                
+                conditionalPanel(
+                  
+                  condition = "!output.setupComplete",
+                  h2("App is loading. For best results, use Google Chrome.", class = "loading")
+                  # img(src = "loading.gif", class = "loading") #right now this chokes up on non-chrome browsers
+                  
+                  ),
+                
+                conditionalPanel(condition = "output.setupComplete",
+                
                 fluidRow(
                   
                   column(width = 3,
@@ -70,7 +84,11 @@ ui <- fluidPage(theme = "style.css",
                                               
                                               column(width = 6,
                                                      
-                                                     plotOutput("map"),
+                                                     #add a progress bar instead? https://shiny.rstudio.com/articles/progress.html
+                                                     
+                                                     withSpinner(plotOutput("map"), 
+                                                                 color = "#8b0021",
+                                                                 type = 6),
                                                      downloadButton( outputId = "dwnld.map"
                                                                      , label = "Save Map" )
                                                      
@@ -173,7 +191,7 @@ ui <- fluidPage(theme = "style.css",
                                                      
                                                      a("README", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
                                                      a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
-                                                     p("v 0.9"),
+                                                     p("v 0.9.1"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                                      
                                               )
@@ -186,6 +204,7 @@ ui <- fluidPage(theme = "style.css",
                   
                 )
                 
+                )
 ) # end of UI
 
 

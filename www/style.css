@@ -33,3 +33,13 @@ a:hover {
 .btn {
 	border-color: #8b0021;
 }
+
+h2.loading {
+  text-align: center;
+}
+
+img.loading {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
