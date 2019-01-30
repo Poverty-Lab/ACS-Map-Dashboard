@@ -17,6 +17,8 @@ library( shiny )
 library( viridisLite )
 library( viridis )
 library( shinycssloaders )
+library( shinyjs )
+library( shinydashboard )
 
 
 ## Source aggregation function and plot themes

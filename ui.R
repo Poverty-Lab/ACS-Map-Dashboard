@@ -17,10 +17,23 @@ library( shiny )
 library( viridisLite )
 library( viridis )
 library( shinycssloaders )
+library( shinyjs )
+library( shinydashboard )
 
 
 ####  UI  ####
 ui <- fluidPage(theme = "style.css",
+                
+                conditionalPanel(
+                  
+                  condition = "!output.setupComplete",
+                  h2("App is loading. For best results, use Google Chrome.", class = "loading")
+                  # img(src = "loading.gif", class = "loading") #right now this chokes up on non-chrome browsers
+                  
+                  ),
+                
+                conditionalPanel(condition = "output.setupComplete",
+                
                 fluidRow(
                   
                   column(width = 3,
@@ -73,7 +86,9 @@ ui <- fluidPage(theme = "style.css",
                                                      
                                                      #add a progress bar instead? https://shiny.rstudio.com/articles/progress.html
                                                      
-                                                     withSpinner(plotOutput("map")),
+                                                     withSpinner(plotOutput("map"), 
+                                                                 color = "#8b0021",
+                                                                 type = 6),
                                                      downloadButton( outputId = "dwnld.map"
                                                                      , label = "Save Map" )
                                                      
@@ -189,6 +204,7 @@ ui <- fluidPage(theme = "style.css",
                   
                 )
                 
+                )
 ) # end of UI
 
 

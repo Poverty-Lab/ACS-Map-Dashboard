@@ -17,10 +17,31 @@ library( shiny )
 library( viridisLite )
 library( viridis )
 library( shinycssloaders )
+library( shinyjs )
+library( shinydashboard )
 
 
 ####  Server  ####
 server <- function( input, output, session ) {
+  
+  rv <- reactiveValues()
+  rv$setupComplete <- FALSE
+  
+  observe({
+    
+    if(!is.null(user.data)){
+      
+      rv$setupComplete <- TRUE
+      
+    }
+    
+    ## the conditional panel reads this output
+    output$setupComplete <- reactive({
+      return(rv$setupComplete)
+    })
+    outputOptions(output, 'setupComplete', suspendWhenHidden=FALSE)
+    
+  })
   
   # store selected table
   user.table <- reactive({
