@@ -84,8 +84,6 @@ ui <- fluidPage(theme = "style.css",
                                               
                                               column(width = 6,
                                                      
-                                                     #add a progress bar instead? https://shiny.rstudio.com/articles/progress.html
-                                                     
                                                      withSpinner(plotOutput("map"), 
                                                                  color = "#8b0021",
                                                                  type = 6),
@@ -112,9 +110,11 @@ ui <- fluidPage(theme = "style.css",
                                                                
                                                      ), 
                                                      
-                                                     a("README", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
-                                                     a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
-                                                     p("v 0.9"),
+                                                     a("Tutorial", target ="_blank", href = "https://www.youtube.com/watch?v=hSad5pmTYWI"), br(),
+                                                     a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
+                                                     a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"), br(),
+                                                     a("Report a bug", href = "mailto:ahuvia@uchicago.edu"),
+                                                     p("v 0.9.1"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                               )
                                      ),
@@ -160,9 +160,11 @@ ui <- fluidPage(theme = "style.css",
                                                                
                                                      ), 
                                                      
-                                                     a("README", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
-                                                     a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
-                                                     p("v 0.9"),
+                                                     a("Tutorial", target ="_blank", href = "https://www.youtube.com/watch?v=hSad5pmTYWI"), br(),
+                                                     a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
+                                                     a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"), br(),
+                                                     a("Report a bug", href = "mailto:ahuvia@uchicago.edu"),
+                                                     p("v 0.9.1"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                               )
                                               
@@ -189,8 +191,10 @@ ui <- fluidPage(theme = "style.css",
 
                                                      ), 
                                                      
-                                                     a("README", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
-                                                     a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"),
+                                                     a("Tutorial", target ="_blank", href = "https://www.youtube.com/watch?v=hSad5pmTYWI"), br(),
+                                                     a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
+                                                     a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"), br(),
+                                                     a("Report a bug", href = "mailto:ahuvia@uchicago.edu"),
                                                      p("v 0.9.1"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                                      
