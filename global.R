@@ -81,7 +81,7 @@ tableOptionsSlim <- list(
   
   "Home" = c("Tenure",
              "Own Children Under 18 Years By Family Type And Age",
-             "Household Type (Including Living Alone) By Relationship",
+             # "Household Type (Including Living Alone) By Relationship",
              "Language Spoken At Home By Ability To Speak English For The Population 5 Years And Over (Hispanic Or Latino)"),  
   
   "Labor Market" = c("Poverty Status In The Past 12 Months By Sex By Age",

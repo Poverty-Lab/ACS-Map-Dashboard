@@ -165,7 +165,7 @@ server <- function( input, output, session ) {
   # based on the ACS Table and store the results
   user.data <- reactive({
 
-    req(input$variable, user.table(), user.tableID())
+    req(input$variable, user.table(), user.tableID(), input$statToShow)
     
     # require that the three inputs needed to fetch ACS data are not NULL
     # note: used to hide initial error message when data is loading
@@ -314,7 +314,7 @@ server <- function( input, output, session ) {
   # store map created from fortified.data()
   user.map <- reactive({
     
-    req(fortified.data(), input$title.map, user.map.color())
+    req(fortified.data(), input$title.map, user.map.color(), input$statToShow)
     
     ggplot( data = fortified.data() ) +
       geom_polygon( aes(x = long, y = lat, group = group, fill = est)
@@ -357,7 +357,7 @@ server <- function( input, output, session ) {
   # display user.map() in the UI
   output$map <- renderPlot({
     
-    req(input$variable, user.table(), input$statToShow)
+    req(input$variable, user.table(), input$statToShow, input$title.map)
     # 
     # validate( need( expr = !is.null(input$variable) & !is.null(user.table()) & 
     #                   (input$statToShow == "Total" | (input$statToShow != "Total" & !is.null(input$denom)))
