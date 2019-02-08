@@ -339,6 +339,7 @@ server <- function( input, output, session ) {
                     , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
     
     user.map()
+    
   })
   
   # save the user.map()

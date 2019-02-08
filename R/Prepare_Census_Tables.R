@@ -41,6 +41,9 @@ raw <- dplyr::select(raw,
 #stubs to Title Case
 raw$stub <- lettercase::str_title_case(tolower(raw$stub))
 
+#remove trailing whitespace from stubs
+raw$stub <- trimws(raw$stub, which = "right")
+
 ## Delete certain rows
 #filter to only loadable tables
 raw <- raw[grepl(pattern = "B[0-9]{5}$", raw$tableID),]
