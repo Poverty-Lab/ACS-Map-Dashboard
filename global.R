@@ -50,10 +50,16 @@ CCAsF <-  # a fortified version compatible with ggplot
   readRDS()
 
 #list of census variables, tables
+#This list includes tables that are currently buggy and shouldn't be accessible through the published app
+blacklist <- c(
+  "Sex By Age By Employment Status For The Population 16 Years And Over"
+)
+
 variables <- 
   url( description = "https://github.com/Poverty-Lab/ACS-Map-Dashboard/blob/master/Data/Census_variables.rds?raw=true" ) %>%
   gzcon() %>%
-  readRDS()
+  readRDS() %>%
+  dplyr::filter(!tableStub %in% blacklist)
 
 #tract:CCA lookup
 lookup <- 
@@ -62,7 +68,7 @@ lookup <-
   readRDS()
 
 #Set options for dataframes
-tableOptions <- variables$tableStub
+tableOptions <- unique(variables$tableStub)
 
 tableOptionsSlim <- list(
   
