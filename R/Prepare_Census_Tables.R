@@ -56,13 +56,13 @@ raw <- raw[!(raw$rowType == "Variable Name" & raw$variableID == ""),]
 ## Separate...
 tables <- raw %>%
   dplyr::filter(rowType == "Table Name") %>%
-  dplyr::select(tableID, variableID, stub)
+  dplyr::select(tableID, stub)
 variables <- raw %>%
   dplyr::filter(rowType == "Variable Name") %>%
   dplyr::select(tableID, variableID, stub, indent)
 universes <- raw %>%
   dplyr::filter(rowType == "Table Universe") %>%
-  dplyr::select(tableID, variableID, stub)
+  dplyr::select(tableID, stub)
 
 #rename certain variables
 tables <- dplyr::rename(tables, tableStub = stub)
