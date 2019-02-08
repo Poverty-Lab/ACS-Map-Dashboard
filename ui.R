@@ -24,16 +24,6 @@ library( shinydashboard )
 ####  UI  ####
 ui <- fluidPage(theme = "style.css",
                 
-                conditionalPanel(
-                  
-                  condition = "!output.setupComplete",
-                  h2("App is loading. For best results, use Google Chrome.", class = "loading")
-                  # img(src = "loading.gif", class = "loading") #right now this chokes up on non-chrome browsers
-                  
-                  ),
-                
-                conditionalPanel(condition = "output.setupComplete",
-                
                 fluidRow(
                   
                   column(width = 3,
@@ -114,7 +104,7 @@ ui <- fluidPage(theme = "style.css",
                                                      a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
                                                      a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"), br(),
                                                      a("Report a bug", href = "mailto:ahuvia@uchicago.edu"),
-                                                     p("v 0.9.1"),
+                                                     p("v 0.9.2"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                               )
                                      ),
@@ -164,7 +154,7 @@ ui <- fluidPage(theme = "style.css",
                                                      a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
                                                      a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"), br(),
                                                      a("Report a bug", href = "mailto:ahuvia@uchicago.edu"),
-                                                     p("v 0.9.1"),
+                                                     p("v 0.9.2"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                               )
                                               
@@ -195,7 +185,7 @@ ui <- fluidPage(theme = "style.css",
                                                      a("Readme", target = "_blank", href = "https://github.com/Poverty-Lab/ACS-Map-Dashboard#acs-map-dashboard"), br(),
                                                      a("Aggregation details", target = "_blank", href = "Tract-to-Neighborhood_aggregation.pdf"), br(),
                                                      a("Report a bug", href = "mailto:ahuvia@uchicago.edu"),
-                                                     p("v 0.9.1"),
+                                                     p("v 0.9.2"),
                                                      img(src = "pl_logo_150x.png", align = "right")
                                                      
                                               )
@@ -205,8 +195,6 @@ ui <- fluidPage(theme = "style.css",
                          )
                          
                   )
-                  
-                )
                 
                 )
 ) # end of UI
