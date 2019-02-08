@@ -23,28 +23,11 @@ library( shinydashboard )
 
 ####  Server  ####
 server <- function( input, output, session ) {
-  
-  rv <- reactiveValues()
-  rv$setupComplete <- FALSE
-  
-  observe({
-    
-    if(!is.null(user.data)){
-      
-      rv$setupComplete <- TRUE
-      
-    }
-    
-    ## the conditional panel reads this output
-    output$setupComplete <- reactive({
-      return(rv$setupComplete)
-    })
-    outputOptions(output, 'setupComplete', suspendWhenHidden=FALSE)
-    
-  })
-  
+
   # store selected table
   user.table <- reactive({
+    
+    req(input$selectTableSlim, input$selectTable)
     
     table <- if_else(input$selectTableSlim == "Other", input$selectTable, input$selectTableSlim)
     
@@ -53,6 +36,8 @@ server <- function( input, output, session ) {
   })
   
   user.tableID <- reactive({
+    
+    req(user.table())
     
     tableID <- unique(variables$tableID[variables$tableStub == user.table()])
     
@@ -63,6 +48,8 @@ server <- function( input, output, session ) {
   # store selected variable
   user.variable <- reactive({
     
+    req(user.table())
+    
     var <- variables$variableID[variables$variableName == input$variable &
                                 variables$tableStub == user.table()]
           
@@ -72,6 +59,8 @@ server <- function( input, output, session ) {
   
   # store labels based on user input
   user.labels <- reactive({
+    
+    req(input$statToShow)
   
       if(input$statToShow %in% c("Total", "Per 100k", "Per Individual Unit")) {
 
@@ -87,6 +76,8 @@ server <- function( input, output, session ) {
   
   # store user color for map
   user.map.color <- reactive({
+    
+    req(input$map.color.palette)
   
     switch( EXPR = input$map.color.palette
             , Default                    = scale_fill_viridis( direction = -1
@@ -112,6 +103,8 @@ server <- function( input, output, session ) {
   # store user color for barplot
   user.bplot.color <- reactive({
     
+    req(input$bplot.color.palette)
+    
     switch( EXPR = input$bplot.color.palette
             , Default                    = "#01010E"
             , `Crime Lab`                = "#350E20"
@@ -126,6 +119,8 @@ server <- function( input, output, session ) {
   # based on user.bplot.color()
   user.moe.color <- reactive({
     
+    req(input$bplot.color.palette)
+    
     switch( EXPR = input$bplot.color.palette
             , Default                    = "#F8A429"
             , `Crime Lab`                = "#F8A429"
@@ -139,6 +134,8 @@ server <- function( input, output, session ) {
   # the user rounds the data
   # seen in the "Table" tab
   user.digit <- reactive({
+    
+    req(input$round, statToShow)
     
     if(input$round == "Round") {
       
@@ -168,6 +165,8 @@ server <- function( input, output, session ) {
   # based on the ACS Table and store the results
   user.data <- reactive({
 
+    req(input$variable, user.table(), user.tableID())
+    
     # require that the three inputs needed to fetch ACS data are not NULL
     # note: used to hide initial error message when data is loading
     validate( need( expr = variables$variableName == input$variable &
@@ -255,20 +254,28 @@ server <- function( input, output, session ) {
   # that contains aggregated census tract statistics
   # for each CCA in a reactive expression
   fortified.data <- reactive({
+    
+    req(user.data())
+    
     merge( x = CCAsF
            , y = user.data()
            , by = "CCA"
            , all = FALSE )
+    
   })
   
   # store data frame
   # that contains census tract statistics
   # for each CCA in a reactive data frame
   cca.ct.data <- reactive({
+    
+    req(user.data())
+    
     merge( x = CCAs
            , y = user.data()
            , by = "CCA"
            , all = FALSE )
+    
   })
   
   # store data frame
@@ -278,6 +285,8 @@ server <- function( input, output, session ) {
   # users' interaction with the input$direction radio button
   bplot.data <- reactive({
  
+    req(cca.ct.data(), input$direction, input$nGeog)
+    
       switch( EXPR = input$direction
               , "Ascending" = cca.ct.data() %>%
                 dplyr::arrange( est ) %>%
@@ -291,9 +300,21 @@ server <- function( input, output, session ) {
     
   })
   
+  # set default map title
+  output$maptitle <- renderUI({
+    
+    req(input$variable, user.table())
+    
+    default <- variables$plotTitle[variables$variableID == variables$variableID[variables$variableName == input$variable &
+                                                                                  variables$tableStub == user.table()]]
+    textInput("title.map", label = "Title", value = default)
+    
+  })
   
   # store map created from fortified.data()
   user.map <- reactive({
+    
+    req(fortified.data(), input$title.map, user.map.color())
     
     ggplot( data = fortified.data() ) +
       geom_polygon( aes(x = long, y = lat, group = group, fill = est)
@@ -304,12 +325,14 @@ server <- function( input, output, session ) {
       themeTitle +
       user.map.color() +
       labs( caption = "Source: ACS 2016 5 Year Estimates" )
-    
+
   })
   
 
   # store barplot created from bplot.data()
   user.bplot <- reactive({
+    
+    req(bplot.data(), user.bplot.color(), user.moe.color(), input$variable)
     
     ggplot( data = bplot.data() ) +
       geom_bar( aes( x  = CCA
@@ -334,9 +357,11 @@ server <- function( input, output, session ) {
   # display user.map() in the UI
   output$map <- renderPlot({
     
-    validate( need( expr = !is.null(input$variable) & !is.null(user.table()) & 
-                      (input$statToShow == "Total" | (input$statToShow != "Total" & !is.null(input$denom)))
-                    , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
+    req(input$variable, user.table(), input$statToShow)
+    # 
+    # validate( need( expr = !is.null(input$variable) & !is.null(user.table()) & 
+    #                   (input$statToShow == "Total" | (input$statToShow != "Total" & !is.null(input$denom)))
+    #                 , message = "Data is loading. Please make sure to select a table, variable, and statistic." ))
     
     user.map()
     
@@ -391,8 +416,10 @@ server <- function( input, output, session ) {
   # the universe documented in the ACS Table
   output$universe <- renderText({
     
-    unique(variables$universeStub[variables$tableID == variables$tableID[variables$tableStub == user.table()]])
+    req(user.table())
     
+    variables$universeStub[variables$tableStub == user.table()][1]
+
   })
   
   # create drop down menu
@@ -409,6 +436,8 @@ server <- function( input, output, session ) {
   # of variables associated in the ACS Table
   output$variableOptions <- renderUI({
 
+    req(user.tableID)
+    
     variables <- variables$variableName[variables$tableID == user.tableID()]
 
     selectizeInput("variable", label = "Variable from Table", choices = variables)
@@ -417,6 +446,8 @@ server <- function( input, output, session ) {
   
   # and of potential stats to choose
   output$statOptions <- renderUI ({
+    
+    req(input$variable)
     
     validate( need( expr = !is.null(input$variable) & !is.null(user.table())
                     , message = "Loading. If no data loads, make sure you have selected a table and variable" ))
@@ -440,6 +471,8 @@ server <- function( input, output, session ) {
   # and of potential denominators for each selected variable
   output$denomOptions <- renderUI ({
     
+    req(user.tableID(), input$variable, input$statToShow)
+    
     var <- variables[variables$variableName == input$variable &
                      variables$tableID == user.tableID(),]
     
@@ -458,17 +491,12 @@ server <- function( input, output, session ) {
   
   })
     
-  # set default map title
-  output$maptitle <- renderUI({
-    
-    default <- variables$plotTitle[variables$variableID == variables$variableID[variables$variableName == input$variable &
-                                                                                  variables$tableStub == user.table()]]
-    textInput("title.map", label = "Title", value = default)
-    
-  })
+
   
   # set default barplot title
   output$bartitle <- renderUI({
+    
+    req(user.table())
     
     default <- variables$plotTitle[variables$variableID == variables$variableID[variables$variableName == input$variable &
                                                                                   variables$tableStub == user.table()]]
