@@ -135,7 +135,8 @@ server <- function( input, output, session ) {
   # seen in the "Table" tab
   user.digit <- reactive({
     
-    req(input$round, statToShow)
+    # Not sure why, but this line of code was causing an error when producing tables - "statToShow not found"
+    # req(input$round, statToShow)
     
     if(input$round == "Round") {
       
